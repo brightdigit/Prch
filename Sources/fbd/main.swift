@@ -1,3 +1,3 @@
-struct floxbx {
-    var text = "Hello, World!"
-}
+import FloxBxKit
+
+try Server().start()

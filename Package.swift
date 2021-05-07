@@ -16,6 +16,8 @@ let package = Package(
     dependencies: [
         // Dependencies declare other packages that this package depends on.
       .package(url: "https://github.com/vapor/vapor.git", from: "4.0.0"),
+        .package(url: "https://github.com/vapor/fluent.git", from: "4.0.0"),
+        .package(url: "https://github.com/vapor/fluent-postgres-driver.git", from: "2.0.0"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -26,10 +28,23 @@ let package = Package(
         .target(
             name: "FloxBxKit",
             dependencies: [
+                .product(name: "Fluent", package: "fluent"),
+                .product(name: "FluentPostgresDriver", package: "fluent-postgres-driver"),
               .product(name: "Vapor", package: "vapor")
-            ]),
+            ],
+            swiftSettings: [
+                // Enable better optimizations when building in Release configuration. Despite the use of
+                // the `.unsafeFlags` construct required by SwiftPM, this flag is recommended for Release
+                // builds. See <https://github.com/swift-server/guides#building-for-production> for details.
+                .unsafeFlags(["-cross-module-optimization"], .when(configuration: .release))
+            ]
+        ),
         .testTarget(
             name: "floxbxTests",
-            dependencies: ["FloxBxKit"]),
+            dependencies: [
+              "FloxBxKit",
+              .product(name: "XCTVapor", package: "vapor")]
+        )  
+      
     ]
 )
