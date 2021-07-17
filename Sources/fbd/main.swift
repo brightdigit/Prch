@@ -1,3 +1,3 @@
-import FloxBxKit
+import FloxBxServerKit
 
 try Server().start()

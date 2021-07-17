@@ -5,12 +5,15 @@ import PackageDescription
 
 let package = Package(
     name: "FloxBx",
-    platforms: [.macOS(.v11)],
+    platforms: [.macOS(.v11), .iOS(.v14), .watchOS(.v7)],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
             name: "FloxBxKit",
             targets: ["FloxBxKit"]),
+      .library(
+          name: "FloxBxServerKit",
+          targets: ["FloxBxServerKit"]),
       .executable(name: "fbd", targets: ["fbd"])
     ],
     dependencies: [
@@ -24,13 +27,19 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
       .executableTarget(
           name: "fbd",
-          dependencies: ["FloxBxKit"]),
+          dependencies: ["FloxBxServerKit"]),
+      .target(
+          name: "FloxBxKit",
+          dependencies: [
+          ]
+      ),
         .target(
-            name: "FloxBxKit",
+            name: "FloxBxServerKit",
             dependencies: [
                 .product(name: "Fluent", package: "fluent"),
                 .product(name: "FluentPostgresDriver", package: "fluent-postgres-driver"),
-              .product(name: "Vapor", package: "vapor")
+              .product(name: "Vapor", package: "vapor"),
+              "FloxBxKit"
             ],
             swiftSettings: [
                 // Enable better optimizations when building in Release configuration. Despite the use of
@@ -40,9 +49,9 @@ let package = Package(
             ]
         ),
         .testTarget(
-            name: "floxbxTests",
+            name: "FloxBxServerKitTests",
             dependencies: [
-              "FloxBxKit",
+              "FloxBxServerKit",
               .product(name: "XCTVapor", package: "vapor")]
         )  
       
