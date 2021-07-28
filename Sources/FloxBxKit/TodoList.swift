@@ -5,6 +5,7 @@
 //  Created by Leo Dion on 5/21/21.
 //
 
+#if canImport(SwiftUI)
 import SwiftUI
 
 struct TodoList: View {
@@ -32,3 +33,4 @@ struct TodoList_Previews: PreviewProvider {
       ]))
     }
 }
+#endif

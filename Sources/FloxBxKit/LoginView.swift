@@ -5,6 +5,7 @@
 //  Created by Leo Dion on 5/10/21.
 //
 
+#if canImport(SwiftUI)
 import SwiftUI
 
 #if os(watchOS)
@@ -94,3 +95,4 @@ public struct LoginView_Previews: PreviewProvider {
       }
   }
 }
+#endif

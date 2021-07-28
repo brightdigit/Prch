@@ -5,6 +5,7 @@
 //  Created by Leo Dion on 5/16/21.
 //
 
+#if canImport(SwiftUI)
 import SwiftUI
 
 struct ContentView: View {
@@ -38,3 +39,4 @@ struct ContentView_Previews: PreviewProvider {
       ContentView()
     }
 }
+#endif

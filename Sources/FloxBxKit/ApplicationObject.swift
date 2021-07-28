@@ -5,6 +5,7 @@
 //  Created by Leo Dion on 5/16/21.
 //
 
+#if canImport(Combine) && canImport(SwiftUI)
 import Combine
 import SwiftUI
 
@@ -337,3 +338,4 @@ public class ApplicationObject: ObservableObject {
     }.resume()
   }
 }
+#endif
