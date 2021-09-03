@@ -28,7 +28,8 @@ let package = Package(
     ), // dev
   ],
   targets: [
-    .target(name: "Prch")
+    .target(name: "Prch"),
+    .testTarget(name: "PrchTests", dependencies: ["Prch"])
   ]
 )
 
