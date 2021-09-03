@@ -1,6 +1,5 @@
 import Foundation
 
-
 public enum APIClientError: Error {
   case unexpectedStatusCode(statusCode: Int, data: Data)
   case decodingError(DecodingError)

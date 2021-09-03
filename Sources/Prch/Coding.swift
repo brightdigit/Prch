@@ -1,15 +1,14 @@
 import Foundation
 
-
 public protocol Model: Codable, Equatable {}
 
 public typealias DateTime = JSONOptionalDate
 public typealias File = Data
 public typealias ID = UUID
 
-fileprivate let _dateEncodingFormatter = DateFormatter(formatString: "yyyy-MM-dd'T'HH:mm:ssZZZZZ",
-                                                        locale: Locale(identifier: "en_US_POSIX"),
-                                                        calendar: Calendar(identifier: .gregorian))
+private let _dateEncodingFormatter = DateFormatter(formatString: "yyyy-MM-dd'T'HH:mm:ssZZZZZ",
+                                                   locale: Locale(identifier: "en_US_POSIX"),
+                                                   calendar: Calendar(identifier: .gregorian))
 
 public protocol ResponseDecoder {
   func decode<T: Decodable>(_ type: T.Type, from: Data) throws -> T
@@ -153,7 +152,7 @@ public extension KeyedDecodingContainer {
     return array
   }
 
-  public func decodeArrayIfPresent<T: Decodable>(_ key: K) throws -> [T]? {
+  func decodeArrayIfPresent<T: Decodable>(_ key: K) throws -> [T]? {
     try decodeOptional {
       if contains(key) {
         return try decodeArray(key)

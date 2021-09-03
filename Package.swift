@@ -25,7 +25,7 @@ let package = Package(
     .package(
       url: "https://github.com/mattpolzin/swift-test-codecov",
       .branch("master")
-    ), // dev
+    ) // dev
   ],
   targets: [
     .target(name: "Prch"),

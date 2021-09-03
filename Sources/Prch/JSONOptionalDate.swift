@@ -1,6 +1,5 @@
 import Foundation
 
-
 public enum JSONOptionalDate: Codable, Equatable {
   case none
   case some(Date)

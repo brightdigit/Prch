@@ -1,6 +1,5 @@
 import Foundation
 
-
 open class APIRequest<ResponseType: APIResponseValue> {
   public let service: APIService<ResponseType>
   open private(set) var queryParameters: [String: Any]
