@@ -14,18 +14,18 @@ let package = Package(
     .library(name: "Prch", targets: ["Prch"])
   ],
   dependencies: [
-////    .package(url: "https://github.com/shibapm/Komondor", from: "1.1.0"), // dev
-////    .package(url: "https://github.com/eneko/SourceDocs", from: "1.2.1"), // dev
-////    .package(url: "https://github.com/nicklockwood/SwiftFormat", from: "0.47.0"), // dev
-////    .package(url: "https://github.com/realm/SwiftLint", from: "0.43.0"), // dev
+    .package(url: "https://github.com/shibapm/Komondor", from: "1.1.0"), // dev
+    .package(url: "https://github.com/eneko/SourceDocs", from: "1.2.1"), // dev
+    .package(url: "https://github.com/nicklockwood/SwiftFormat", from: "0.47.0"), // dev
+    .package(url: "https://github.com/realm/SwiftLint", from: "0.43.0"), // dev
     .package(
       url: "https://github.com/shibapm/Rocket.git",
       from: "1.2.0"
-////    ), // dev
+    ), // dev
     .package(
       url: "https://github.com/mattpolzin/swift-test-codecov",
       .branch("master")
-////    ) // dev
+    ) // dev
   ],
   targets: [
     .target(name: "Prch"),
@@ -41,15 +41,15 @@ let package = Package(
   let config = PackageConfiguration([
     "rocket": [
       "steps": [
-        ["hide_dev_dependencies": "Package@swift-5.5.swift"],
+        ["hide_dev_dependencies": ["package_path" : "Package@swift-5.5.swift"]],
         "hide_dev_dependencies",
         "git_add",
         "commit",
         "tag",
         "unhide_dev_dependencies",
-        ["unhide_dev_dependencies": "Package@swift-5.5.swift"],
+        ["unhide_dev_dependencies": ["package_path" : "Package@swift-5.5.swift"]],
         "git_add",
-        "commit "
+        ["commit" : ["message": "Unhide dev dependencies"]]
       ]
     ],
     "komondor": [
