@@ -30,7 +30,8 @@ extension APIClientError: CustomStringConvertible {
   public var description: String {
     switch self {
     case let .unexpectedStatusCode(statusCode, _): return "\(name): \(statusCode)"
-    case let .decodingError(error): return "\(name): \(error.localizedDescription)\n\(error)"
+    case let .decodingError(error):
+      return "\(name): \(error.localizedDescription)\n\(error)"
     case let .validationError(error): return "\(name): \(error.localizedDescription)"
     case let .requestEncodingError(error): return "\(name): \(error)"
     case let .networkError(error): return "\(name): \(error.localizedDescription)"

@@ -15,7 +15,8 @@ public protocol APIResponseValue: CustomDebugStringConvertible, CustomStringConv
   var success: SuccessType? { get }
 }
 
-public enum APIResponseResult<SuccessType, FailureType>: CustomStringConvertible, CustomDebugStringConvertible {
+public enum APIResponseResult<SuccessType, FailureType>: CustomStringConvertible,
+  CustomDebugStringConvertible {
   case success(SuccessType)
   case failure(FailureType)
 
@@ -58,7 +59,11 @@ public struct APIResponse<T: APIResponseValue> {
   /// The data returned by the server.
   public let data: Data?
 
-  init(request: APIRequest<T>, result: APIResult<T>, urlRequest: URLRequest? = nil, urlResponse: HTTPURLResponse? = nil, data: Data? = nil) {
+  init(request: APIRequest<T>,
+       result: APIResult<T>,
+       urlRequest: URLRequest? = nil,
+       urlResponse: HTTPURLResponse? = nil,
+       data: Data? = nil) {
     self.request = request
     self.result = result
     self.urlRequest = urlRequest

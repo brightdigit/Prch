@@ -10,10 +10,17 @@ public class APIClient<SessionType: Session> {
   public let session: SessionType
 
   @discardableResult
-  public func request<ResponseType>(_ request: APIRequest<ResponseType>, _ completion: @escaping (APIResult<ResponseType>) -> Void) -> Task? {
+  public func request<ResponseType>(
+    _ request: APIRequest<ResponseType>,
+    _ completion: @escaping (APIResult<ResponseType>) -> Void
+  ) -> Task? {
     var sessionRequest: SessionType.RequestType
     do {
-      sessionRequest = try session.createRequest(request, withBaseURL: api.baseURL, andHeaders: api.headers)
+      sessionRequest = try session.createRequest(
+        request,
+        withBaseURL: api.baseURL,
+        andHeaders: api.headers
+      )
     } catch {
       completion(.failure(.requestEncodingError(error)))
       return nil
@@ -26,7 +33,11 @@ public class APIClient<SessionType: Session> {
 }
 
 extension Result where Success: APIResponseValue, Failure == APIClientError {
-  init(_: Success.Type, result: Result<Response, APIClientError>, decoder: ResponseDecoder) {
+  init(
+    _: Success.Type,
+    result: Result<Response, APIClientError>,
+    decoder: ResponseDecoder
+  ) {
     self = result.flatMap { response -> APIResult<Success> in
       guard let httpStatus = response.statusCode, let data = response.data else {
         return .failure(APIClientError.invalidResponse)

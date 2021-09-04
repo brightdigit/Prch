@@ -29,10 +29,14 @@ extension AnyCodable: Codable {
     } else if let dictionary = try? container.decode([String: AnyCodable].self) {
       self.init(dictionary.mapValues { $0.value })
     } else {
-      throw DecodingError.dataCorruptedError(in: container, debugDescription: "AnyCodable value cannot be decoded")
+      throw DecodingError.dataCorruptedError(
+        in: container,
+        debugDescription: "AnyCodable value cannot be decoded"
+      )
     }
   }
 
+  // swiftlint:disable:next cyclomatic_complexity function_body_length
   public func encode(to encoder: Encoder) throws {
     var container = encoder.singleValueContainer()
 
@@ -98,13 +102,17 @@ extension AnyCodable: Codable {
       try object.encode(to: encoder)
 
     default:
-      let context = EncodingError.Context(codingPath: container.codingPath, debugDescription: "AnyCodable value cannot be encoded")
+      let context = EncodingError.Context(
+        codingPath: container.codingPath,
+        debugDescription: "AnyCodable value cannot be encoded"
+      )
       throw EncodingError.invalidValue(value, context)
     }
   }
 }
 
 extension AnyCodable: Equatable {
+  // swiftlint:disable:next cyclomatic_complexity function_body_length
   public static func == (lhs: AnyCodable, rhs: AnyCodable) -> Bool {
     switch (lhs.value, rhs.value) {
     case is (Void, Void):
@@ -190,7 +198,13 @@ extension AnyCodable: CustomDebugStringConvertible {
   }
 }
 
-extension AnyCodable: ExpressibleByNilLiteral, ExpressibleByBooleanLiteral, ExpressibleByIntegerLiteral, ExpressibleByFloatLiteral, ExpressibleByStringLiteral, ExpressibleByArrayLiteral, ExpressibleByDictionaryLiteral {
+extension AnyCodable: ExpressibleByNilLiteral,
+  ExpressibleByBooleanLiteral,
+  ExpressibleByIntegerLiteral,
+  ExpressibleByFloatLiteral,
+  ExpressibleByStringLiteral,
+  ExpressibleByArrayLiteral,
+  ExpressibleByDictionaryLiteral {
   public init(nilLiteral _: ()) {
     self.init(nil as Any?)
   }
