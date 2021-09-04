@@ -33,7 +33,8 @@ func decode<T>(_ key: KeyedDecodingContainer.Key) throws -> T where T: Decodable
 ### `decodeIfPresent(_:)`
 
 ```swift
-func decodeIfPresent<T>(_ key: KeyedDecodingContainer.Key) throws -> T? where T: Decodable
+func decodeIfPresent<T>(_ key: KeyedDecodingContainer.Key
+) throws -> T? where T: Decodable
 ```
 
 ### `decodeIfPresent(_:)`
@@ -57,7 +58,10 @@ func decodeAnyIfPresent<T>(_ key: K) throws -> T?
 ### `decodeArray(_:safeArrayDecoding:)`
 
 ```swift
-func decodeArray<T: Decodable>(_ key: K, safeArrayDecoding: Bool = false) throws -> [T]
+func decodeArray<T: Decodable>(
+  _ key: K,
+  safeArrayDecoding: Bool = false
+) throws -> [T]
 ```
 
 ### `decodeArrayIfPresent(_:)`

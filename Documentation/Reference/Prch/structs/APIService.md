@@ -53,5 +53,11 @@ public let securityRequirements: [SecurityRequirement]
 ### `init(id:tag:method:path:hasBody:isUpload:securityRequirements:)`
 
 ```swift
-public init(id: String, tag: String = "", method: String, path: String, hasBody: Bool, isUpload: Bool = false, securityRequirements: [SecurityRequirement] = [])
+public init(id: String,
+            tag: String = "",
+            method: String,
+            path: String,
+            hasBody: Bool,
+            isUpload: Bool = false,
+            securityRequirements: [SecurityRequirement] = [])
 ```

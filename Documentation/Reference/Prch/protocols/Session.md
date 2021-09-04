@@ -10,11 +10,18 @@ public protocol Session
 ### `createRequest(_:withBaseURL:andHeaders:)`
 
 ```swift
-func createRequest<ResponseType: APIResponseValue>(_ request: APIRequest<ResponseType>, withBaseURL baseURL: URL, andHeaders headers: [String: String]) throws -> RequestType
+func createRequest<ResponseType: APIResponseValue>(
+  _ request: APIRequest<ResponseType>,
+  withBaseURL baseURL: URL,
+  andHeaders headers: [String: String]
+) throws -> RequestType
 ```
 
 ### `beginRequest(_:_:)`
 
 ```swift
-@discardableResult func beginRequest(_ request: RequestType, _ completion: @escaping ((APIResult<Response>) -> Void)) -> Task
+@discardableResult func beginRequest(
+  _ request: RequestType,
+  _ completion: @escaping ((APIResult<Response>) -> Void)
+) -> Task
 ```

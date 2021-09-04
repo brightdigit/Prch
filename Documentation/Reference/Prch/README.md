@@ -45,6 +45,7 @@
 -   [Date](extensions/Date.md)
 -   [DateDay](extensions/DateDay.md)
 -   [DateFormatter](extensions/DateFormatter.md)
+-   [DecodingError](extensions/DecodingError.md)
 -   [Dictionary](extensions/Dictionary.md)
 -   [JSONOptionalDate](extensions/JSONOptionalDate.md)
 -   [KeyedDecodingContainer](extensions/KeyedDecodingContainer.md)

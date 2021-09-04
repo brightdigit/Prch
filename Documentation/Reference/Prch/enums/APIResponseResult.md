@@ -3,7 +3,8 @@
 # `APIResponseResult`
 
 ```swift
-public enum APIResponseResult<SuccessType, FailureType>: CustomStringConvertible, CustomDebugStringConvertible
+public enum APIResponseResult<SuccessType, FailureType>: CustomStringConvertible,
+  CustomDebugStringConvertible
 ```
 
 ## Cases

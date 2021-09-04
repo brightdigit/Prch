@@ -50,9 +50,9 @@ let package = Package(
         "swift run swiftformat .",
         "swift run swiftlint autocorrect",
         "swift run sourcedocs generate build --clean --reproducible-docs --all-modules",
-        "git add ."
-        // "swift run swiftformat --lint .",
-        // "swift run swiftlint"
+        "git add .",
+        "swift run swiftformat --lint .",
+        "swift run swiftlint"
       ]
     ]
   ]).write()

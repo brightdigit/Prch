@@ -6,9 +6,13 @@ public typealias DateTime = JSONOptionalDate
 public typealias File = Data
 public typealias ID = UUID
 
-private let _dateEncodingFormatter = DateFormatter(formatString: "yyyy-MM-dd'T'HH:mm:ssZZZZZ",
-                                                   locale: Locale(identifier: "en_US_POSIX"),
-                                                   calendar: Calendar(identifier: .gregorian))
+private let _dateEncodingFormatter = DateFormatter(
+  formatString: "yyyy-MM-dd'T'HH:mm:ssZZZZZ",
+
+  locale: Locale(identifier: "en_US_POSIX"),
+
+  calendar: Calendar(identifier: .gregorian)
+)
 
 public protocol ResponseDecoder {
   func decode<T: Decodable>(_ type: T.Type, from: Data) throws -> T
@@ -62,11 +66,32 @@ public struct StringCodingKey: CodingKey, ExpressibleByStringLiteral {
   }
 }
 
+public extension DecodingError {
+  static func mismatch<MismatchType>(
+    ofType type: MismatchType.Type,
+    withCodingPath codingPath: [CodingKey] = [StringCodingKey(string: "")]
+  ) -> DecodingError {
+    DecodingError.typeMismatch(
+      MismatchType.self,
+      DecodingError.Context(
+        codingPath: codingPath,
+        debugDescription: "Decoding of \(type) failed"
+      )
+    )
+  }
+}
+
 // any json decoding
 public extension ResponseDecoder {
   func decodeAny<T>(_: T.Type, from data: Data) throws -> T {
     guard let decoded = try decode(AnyCodable.self, from: data) as? T else {
-      throw DecodingError.typeMismatch(T.self, DecodingError.Context(codingPath: [StringCodingKey(string: "")], debugDescription: "Decoding of \(T.self) failed"))
+      throw DecodingError.mismatch(ofType: T.self)
+//      throw DecodingError.typeMismatch(
+//        T.self,
+//        DecodingError.Context(
+//          codingPath: [StringCodingKey(string: "")],
+//          debugDescription: "Decoding of \(T.self) failed")
+//      )
     }
     return decoded
   }
@@ -76,18 +101,20 @@ public extension ResponseDecoder {
 public extension KeyedDecodingContainer {
   func decodeAny<T>(_: T.Type, forKey key: K) throws -> T {
     guard let value = try decode(AnyCodable.self, forKey: key).value as? T else {
-      throw DecodingError.typeMismatch(T.self, DecodingError.Context(codingPath: codingPath, debugDescription: "Decoding of \(T.self) failed"))
+      throw DecodingError.mismatch(ofType: T.self, withCodingPath: codingPath)
     }
     return value
   }
 
   func decodeAnyIfPresent<T>(_: T.Type, forKey key: K) throws -> T? {
     try decodeOptional {
-      guard let value = try decodeIfPresent(AnyCodable.self, forKey: key)?.value else { return nil }
+      guard let value = try decodeIfPresent(
+        AnyCodable.self, forKey: key
+      )?.value else { return nil }
       if let typedValue = value as? T {
         return typedValue
       } else {
-        throw DecodingError.typeMismatch(T.self, DecodingError.Context(codingPath: codingPath, debugDescription: "Decoding of \(T.self) failed"))
+        throw DecodingError.mismatch(ofType: T.self, withCodingPath: codingPath)
       }
     }
   }
@@ -104,7 +131,8 @@ public extension KeyedDecodingContainer {
     try decode(T.self, forKey: key)
   }
 
-  func decodeIfPresent<T>(_ key: KeyedDecodingContainer.Key) throws -> T? where T: Decodable {
+  func decodeIfPresent<T>(_ key: KeyedDecodingContainer.Key
+  ) throws -> T? where T: Decodable {
     try decodeOptional {
       try decodeIfPresent(T.self, forKey: key)
     }
@@ -122,7 +150,10 @@ public extension KeyedDecodingContainer {
     try decodeAnyIfPresent(T.self, forKey: key)
   }
 
-  func decodeArray<T: Decodable>(_ key: K, safeArrayDecoding: Bool = false) throws -> [T] {
+  func decodeArray<T: Decodable>(
+    _ key: K,
+    safeArrayDecoding: Bool = false
+  ) throws -> [T] {
     var container: UnkeyedDecodingContainer
     var array: [T] = []
 
@@ -162,7 +193,9 @@ public extension KeyedDecodingContainer {
     }
   }
 
-  private func decodeOptional<T>(_ closure: () throws -> T?, safeOptionalDecoding: Bool = false) throws -> T? {
+  private func decodeOptional<T>(
+    _ closure: () throws -> T?, safeOptionalDecoding: Bool = false
+  ) throws -> T? {
     if safeOptionalDecoding {
       do {
         return try closure()
@@ -190,7 +223,12 @@ public extension KeyedEncodingContainer {
 // Date structs for date and date-time formats
 
 public extension DateFormatter {
-  convenience init(formatString: String, locale: Locale? = nil, timeZone: TimeZone? = nil, calendar: Calendar? = nil) {
+  convenience init(
+    formatString: String,
+    locale: Locale? = nil,
+    timeZone: TimeZone? = nil,
+    calendar: Calendar? = nil
+  ) {
     self.init()
     dateFormat = formatString
     if let locale = locale {
@@ -229,7 +267,10 @@ let dateDecoder: (Decoder) throws -> Date = { decoder in
 
   guard let date = formatterWithMilliseconds.date(from: string) ??
     formatterWithoutMilliseconds.date(from: string) else {
-    throw DecodingError.dataCorruptedError(in: container, debugDescription: "Could not decode date")
+    throw DecodingError.dataCorruptedError(
+      in: container,
+      debugDescription: "Could not decode date"
+    )
   }
   return date
 }
@@ -250,7 +291,10 @@ public struct DateDay: Codable, Comparable {
 
   public init(date: Date = Date()) {
     self.date = date
-    let dateComponents = Calendar.current.dateComponents([.day, .month, .year], from: date)
+    let dateComponents = Calendar.current.dateComponents(
+      [.day, .month, .year],
+      from: date
+    )
     guard let year = dateComponents.year,
           let month = dateComponents.month,
           let day = dateComponents.day else {
@@ -262,7 +306,9 @@ public struct DateDay: Codable, Comparable {
   }
 
   public init(year: Int, month: Int, day: Int) {
-    let dateComponents = DateComponents(calendar: .current, year: year, month: month, day: day)
+    let dateComponents = DateComponents(
+      calendar: .current, year: year, month: month, day: day
+    )
     guard let date = dateComponents.date else {
       fatalError("Could not create date in current calendar")
     }
@@ -276,7 +322,11 @@ public struct DateDay: Codable, Comparable {
     let container = try decoder.singleValueContainer()
     let string = try container.decode(String.self)
     guard let date = DateDay.dateFormatter.date(from: string) else {
-      throw DecodingError.dataCorruptedError(in: container, debugDescription: "Date not in correct format of \(DateDay.dateFormatter.dateFormat ?? "")")
+      let dateFormat = DateDay.dateFormatter.dateFormat ?? ""
+      throw DecodingError.dataCorruptedError(
+        in: container,
+        debugDescription: "Date not in correct format of \(dateFormat)"
+      )
     }
     self.init(date: date)
   }

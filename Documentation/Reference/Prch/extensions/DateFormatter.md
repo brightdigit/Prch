@@ -9,7 +9,12 @@ public extension DateFormatter
 ### `init(formatString:locale:timeZone:calendar:)`
 
 ```swift
-convenience init(formatString: String, locale: Locale? = nil, timeZone: TimeZone? = nil, calendar: Calendar? = nil)
+convenience init(
+  formatString: String,
+  locale: Locale? = nil,
+  timeZone: TimeZone? = nil,
+  calendar: Calendar? = nil
+)
 ```
 
 ### `init(dateStyle:timeStyle:)`
