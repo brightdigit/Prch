@@ -18,8 +18,8 @@ let package = Package(
     .package(url: "https://github.com/eneko/SourceDocs", from: "1.2.1"), // dev
     .package(url: "https://github.com/nicklockwood/SwiftFormat", from: "0.47.0"), // dev
     .package(url: "https://github.com/realm/SwiftLint", from: "0.43.0"), // dev
-    .package(url: "https://github.com/shibapm/Rocket.git",from: "1.2.0"), // dev
-    .package( url: "https://github.com/mattpolzin/swift-test-codecov", .branch("master")) // dev
+    .package(url: "https://github.com/shibapm/Rocket.git", from: "1.2.0"), // dev
+    .package(url: "https://github.com/mattpolzin/swift-test-codecov", .branch("master")) // dev
   ],
   targets: [
     .target(name: "Prch"),
