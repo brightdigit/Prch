@@ -3,7 +3,7 @@ import Foundation
 open class APIRequest<ResponseType: APIResponseValue> {
   public let service: APIService<ResponseType>
   open private(set) var queryParameters: [String: Any]
-  public private(set) var formParameters: [String: Any]
+  open private(set) var formParameters: [String: Any]
   public let encodeBody: ((RequestEncoder) throws -> Data)?
   private(set) var headerParameters: [String: String]
   public var customHeaders: [String: String] = [:]
