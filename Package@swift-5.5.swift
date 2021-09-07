@@ -1,5 +1,5 @@
 // swift-tools-version:5.5
-// swiftlint:disable explicit_top_level_acl
+// swiftlint:disable explicit_top_level_acl line_length
 import PackageDescription
 
 let package = Package(
