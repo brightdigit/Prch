@@ -106,6 +106,18 @@ public extension KeyedDecodingContainer {
     return value
   }
 
+  func decodeAnyCodableDictionary(
+    _ key: K) throws -> [String: AnyCodable]? {
+    guard let value = try decodeIfPresent(
+      AnyCodable.self, forKey: key
+    )?.value else { return nil }
+    if let typedValue = value as? [String: Any] {
+      return typedValue.mapValues(AnyCodable.init)
+    } else {
+      throw DecodingError.mismatch(ofType: [String: AnyCodable].self, withCodingPath: codingPath)
+    }
+  }
+
   func decodeAnyIfPresent<T>(_: T.Type, forKey key: K) throws -> T? {
     try decodeOptional {
       guard let value = try decodeIfPresent(

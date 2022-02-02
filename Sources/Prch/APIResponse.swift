@@ -8,6 +8,7 @@ public typealias CodableAny = AnyCodable
 
 public protocol APIResponseValue: CustomDebugStringConvertible, CustomStringConvertible {
   associatedtype SuccessType
+  associatedtype APIType: API
   var statusCode: Int { get }
   var successful: Bool { get }
   var response: Any { get }
@@ -43,9 +44,9 @@ public enum APIResponseResult<SuccessType, FailureType>: CustomStringConvertible
   }
 }
 
-public struct APIResponse<T: APIResponseValue> {
+public struct APIResponse<T: APIResponseValue, APIType> where T.APIType == APIType {
   /// The APIRequest used for this response
-  public let request: APIRequest<T>
+  public let request: APIRequest<T, APIType>
 
   /// The result of the response .
   public let result: APIResult<T>
@@ -59,7 +60,7 @@ public struct APIResponse<T: APIResponseValue> {
   /// The data returned by the server.
   public let data: Data?
 
-  init(request: APIRequest<T>,
+  init(request: APIRequest<T, APIType>,
        result: APIResult<T>,
        urlRequest: URLRequest? = nil,
        urlResponse: HTTPURLResponse? = nil,

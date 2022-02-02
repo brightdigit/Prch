@@ -40,7 +40,7 @@ public enum JSONOptionalDate: Codable, Equatable {
   public func encode(to encoder: Encoder) throws {
     var container = encoder.singleValueContainer()
 
-    if let date = self.date {
+    if let date = date {
       try container.encode(date)
     } else {
       try container.encodeNil()

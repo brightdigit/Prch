@@ -6,10 +6,11 @@ import Foundation
 
 public protocol Session {
   associatedtype RequestType
-  func createRequest<ResponseType: APIResponseValue>(
-    _ request: APIRequest<ResponseType>,
+  func createRequest<ResponseType: APIResponseValue, APIType: API>(
+    _ request: APIRequest<ResponseType, APIType>,
     withBaseURL baseURL: URL,
-    andHeaders headers: [String: String]
+    andHeaders headers: [String: String],
+    usingEncoder encoder: RequestEncoder
   ) throws -> RequestType
   @discardableResult func beginRequest(
     _ request: RequestType,

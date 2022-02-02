@@ -21,10 +21,11 @@ extension URLSession: Session {
     return task
   }
 
-  public func createRequest<ResponseType>(
-    _ request: APIRequest<ResponseType>,
+  public func createRequest<ResponseType, APIType>(
+    _ request: APIRequest<ResponseType, APIType>,
     withBaseURL baseURL: URL,
-    andHeaders headers: [String: String]
+    andHeaders headers: [String: String],
+    usingEncoder encoder: RequestEncoder
   ) throws -> URLRequest where ResponseType: APIResponseValue {
     guard var componenets = URLComponents(
       url: baseURL.appendingPathComponent(request.path),
@@ -57,7 +58,7 @@ extension URLSession: Session {
     )
 
     if let encodeBody = request.encodeBody {
-      urlRequest.httpBody = try encodeBody(JSONEncoder())
+      urlRequest.httpBody = try encodeBody(encoder)
     }
     return urlRequest
   }
