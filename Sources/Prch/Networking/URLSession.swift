@@ -7,7 +7,7 @@ import Foundation
 extension URLSession: Session {
   public func beginRequest(
     _ request: URLRequest,
-    _ completion: @escaping ((APIResult<Response>) -> Void)
+    _ completion: @escaping ((Result<ResponseComponents, ClientError>) -> Void)
   ) -> Task {
     let task = dataTask(with: request) { data, response, error in
       let result = URLSessionResponse.resultBasedOnResponse(
@@ -21,16 +21,17 @@ extension URLSession: Session {
     return task
   }
 
-  public func createRequest<ResponseType>(
-    _ request: APIRequest<ResponseType>,
+  public func createRequest<ResponseType, APIType>(
+    _ request: Request<ResponseType, APIType>,
     withBaseURL baseURL: URL,
-    andHeaders headers: [String: String]
-  ) throws -> URLRequest where ResponseType: APIResponseValue {
+    andHeaders headers: [String: String],
+    usingEncoder encoder: RequestEncoder
+  ) throws -> URLRequest where ResponseType: Response {
     guard var componenets = URLComponents(
       url: baseURL.appendingPathComponent(request.path),
       resolvingAgainstBaseURL: false
     ) else {
-      throw APIClientError.badURL(baseURL, request.path)
+      throw ClientError.badURL(baseURL, request.path)
     }
 
     // filter out parameters with empty string value
@@ -43,7 +44,7 @@ extension URLSession: Session {
     componenets.queryItems = queryItems
 
     guard let url = componenets.url else {
-      throw APIClientError.urlComponents(componenets)
+      throw ClientError.urlComponents(componenets)
     }
 
     var urlRequest = URLRequest(url: url)
@@ -57,7 +58,7 @@ extension URLSession: Session {
     )
 
     if let encodeBody = request.encodeBody {
-      urlRequest.httpBody = try encodeBody(JSONEncoder())
+      urlRequest.httpBody = try encodeBody(encoder)
     }
     return urlRequest
   }
