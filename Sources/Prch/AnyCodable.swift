@@ -1,6 +1,6 @@
 import Foundation
 
-@available(*, renamed: "AnyCodable")
+@available(*, deprecated, renamed: "AnyCodable")
 public typealias CodableAny = AnyCodable
 
 public struct AnyCodable {

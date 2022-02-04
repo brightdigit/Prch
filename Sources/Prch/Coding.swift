@@ -261,31 +261,31 @@ public extension DateFormatter {
   }
 }
 
-let dateDecoder: (Decoder) throws -> Date = { decoder in
-  let container = try decoder.singleValueContainer()
-  let string = try container.decode(String.self)
-
-  let formatterWithMilliseconds = DateFormatter()
-  formatterWithMilliseconds.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
-  formatterWithMilliseconds.locale = Locale(identifier: "en_US_POSIX")
-  formatterWithMilliseconds.timeZone = TimeZone(identifier: "UTC")
-  formatterWithMilliseconds.calendar = Calendar(identifier: .gregorian)
-
-  let formatterWithoutMilliseconds = DateFormatter()
-  formatterWithoutMilliseconds.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
-  formatterWithoutMilliseconds.locale = Locale(identifier: "en_US_POSIX")
-  formatterWithoutMilliseconds.timeZone = TimeZone(identifier: "UTC")
-  formatterWithoutMilliseconds.calendar = Calendar(identifier: .gregorian)
-
-  guard let date = formatterWithMilliseconds.date(from: string) ??
-    formatterWithoutMilliseconds.date(from: string) else {
-    throw DecodingError.dataCorruptedError(
-      in: container,
-      debugDescription: "Could not decode date"
-    )
-  }
-  return date
-}
+// let dateDecoder: (Decoder) throws -> Date = { decoder in
+//  let container = try decoder.singleValueContainer()
+//  let string = try container.decode(String.self)
+//
+//  let formatterWithMilliseconds = DateFormatter()
+//  formatterWithMilliseconds.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
+//  formatterWithMilliseconds.locale = Locale(identifier: "en_US_POSIX")
+//  formatterWithMilliseconds.timeZone = TimeZone(identifier: "UTC")
+//  formatterWithMilliseconds.calendar = Calendar(identifier: .gregorian)
+//
+//  let formatterWithoutMilliseconds = DateFormatter()
+//  formatterWithoutMilliseconds.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
+//  formatterWithoutMilliseconds.locale = Locale(identifier: "en_US_POSIX")
+//  formatterWithoutMilliseconds.timeZone = TimeZone(identifier: "UTC")
+//  formatterWithoutMilliseconds.calendar = Calendar(identifier: .gregorian)
+//
+//  guard let date = formatterWithMilliseconds.date(from: string) ??
+//    formatterWithoutMilliseconds.date(from: string) else {
+//    throw DecodingError.dataCorruptedError(
+//      in: container,
+//      debugDescription: "Could not decode date"
+//    )
+//  }
+//  return date
+// }
 
 public struct DateDay: Codable, Comparable {
   /// The date formatter used for encoding and decoding
