@@ -105,7 +105,7 @@ file_length:
   - 200
 function_body_length:
   - 15
-  - 15
+  - 25
 function_parameter_count: 8
 line_length:
   - 90

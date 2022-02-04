@@ -1,5 +1,6 @@
 import Foundation
 
+// swiftlint:disable:next line_length
 @available(*, deprecated, message: "Use `Date?` and apply dateformatter to encoder and decoder.")
 public enum JSONOptionalDate: Codable, Equatable {
   case none

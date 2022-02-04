@@ -1,6 +1,8 @@
 import Foundation
 
-open class APIRequest<ResponseType: APIResponseValue, APIType> where ResponseType.APIType == APIType {
+open class APIRequest<
+  ResponseType: APIResponseValue, APIType
+> where ResponseType.APIType == APIType {
   public let service: APIService<ResponseType>
   open private(set) var queryParameters: [String: Any]
   open private(set) var formParameters: [String: Any]

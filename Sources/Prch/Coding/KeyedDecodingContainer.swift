@@ -17,7 +17,10 @@ public extension KeyedDecodingContainer {
     if let typedValue = value as? [String: Any] {
       return typedValue.mapValues(AnyCodable.init)
     } else {
-      throw DecodingError.mismatch(ofType: [String: AnyCodable].self, withCodingPath: codingPath)
+      throw DecodingError.mismatch(
+        ofType: [String: AnyCodable].self,
+        withCodingPath: codingPath
+      )
     }
   }
 

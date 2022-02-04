@@ -55,7 +55,7 @@ let package = Package(
         "swift test --enable-code-coverage --enable-test-discovery --generate-linuxmain",
         "swift run swiftformat .",
         "swift run swiftlint autocorrect",
-        "git add ."
+        "git add .",
         "swift run swiftformat --lint .",
         "swift run swiftlint"
       ]
