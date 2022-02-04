@@ -1,5 +1,8 @@
 import Foundation
 
+@available(*, renamed: "AnyCodable")
+public typealias CodableAny = AnyCodable
+
 public struct AnyCodable {
   let value: Any
 
