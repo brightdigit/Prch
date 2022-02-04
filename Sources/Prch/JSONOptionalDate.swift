@@ -48,3 +48,5 @@ public enum JSONOptionalDate: Codable, Equatable {
     }
   }
 }
+
+public typealias DateTime = JSONOptionalDate

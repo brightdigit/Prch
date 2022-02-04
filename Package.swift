@@ -56,8 +56,8 @@ let package = Package(
         "swift run swiftformat .",
         "swift run swiftlint autocorrect",
         "git add ."
-        // "swift run swiftformat --lint .",
-        // "swift run swiftlint"
+        "swift run swiftformat --lint .",
+        "swift run swiftlint"
       ]
     ]
   ]).write()
