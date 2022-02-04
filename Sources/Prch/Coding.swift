@@ -2,6 +2,7 @@ import Foundation
 
 public protocol Model: Codable, Equatable {}
 
+@available(*, deprecated, message: "Use `Date?` and apply dateformatter to encoder and decoder.")
 public typealias DateTime = JSONOptionalDate
 public typealias File = Data
 public typealias ID = UUID
@@ -150,6 +151,7 @@ public extension KeyedDecodingContainer {
     }
   }
 
+  @available(*, deprecated)
   func decodeIfPresent(_ key: KeyedDecodingContainer.Key) throws -> DateTime {
     try decodeIfPresent(DateTime.self, forKey: key) ?? .none
   }
@@ -375,6 +377,7 @@ public extension DateDay {
 }
 
 public extension Date {
+  @available(*, deprecated)
   func encode() -> Any {
     _dateEncodingFormatter.string(from: self)
   }

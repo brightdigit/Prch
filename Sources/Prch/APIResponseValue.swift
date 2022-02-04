@@ -13,7 +13,7 @@ public protocol APIResponseValue: CustomDebugStringConvertible, CustomStringConv
   var success: SuccessType? { get }
 }
 
-extension APIResponseValue {
+public extension APIResponseValue {
   var result: APIResponseResult<SuccessType, FailureType> {
     if let successValue = success {
       return .success(successValue)
