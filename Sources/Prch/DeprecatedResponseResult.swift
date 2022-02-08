@@ -1,18 +1,19 @@
 import Foundation
 
-public enum APIResponseResult<SuccessType, FailureType>: CustomStringConvertible,
-  CustomDebugStringConvertible {
+public enum DeprecatedResponseResult<
+  SuccessType, DefaultResponseType
+>: CustomStringConvertible, CustomDebugStringConvertible {
   case success(SuccessType)
-  case failure(FailureType)
+  case failure(DefaultResponseType)
 
-  public var value: Any {
+  var value: Any {
     switch self {
     case let .success(value): return value
     case let .failure(value): return value
     }
   }
 
-  public var successful: Bool {
+  var successful: Bool {
     switch self {
     case .success: return true
     case .failure: return false

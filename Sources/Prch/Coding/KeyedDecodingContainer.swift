@@ -56,11 +56,6 @@ public extension KeyedDecodingContainer {
     }
   }
 
-  @available(*, deprecated)
-  func decodeIfPresent(_ key: KeyedDecodingContainer.Key) throws -> DateTime {
-    try decodeIfPresent(DateTime.self, forKey: key) ?? .none
-  }
-
   func decodeAny<T>(_ key: K) throws -> T {
     try decodeAny(T.self, forKey: key)
   }

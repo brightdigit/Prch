@@ -1,6 +1,6 @@
 import Foundation
 
-public protocol Response {
+public protocol ResponseComponents {
   var statusCode: Int? { get }
   var data: Data? { get }
 }
@@ -9,7 +9,7 @@ public protocol Response {
   import FoundationNetworking
 #endif
 
-struct URLSessionResponse: Response {
+struct URLSessionResponse: ResponseComponents {
   let response: URLResponse?
   let data: Data?
 
@@ -21,7 +21,7 @@ struct URLSessionResponse: Response {
     _ response: URLResponse?,
     data: Data?,
     error: Error?
-  ) -> APIResult<Response> {
+  ) -> Result<ResponseComponents, ClientError> {
     if let error = error {
       return .failure(.networkError(error))
     } else {

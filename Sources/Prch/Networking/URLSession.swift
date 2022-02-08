@@ -7,7 +7,7 @@ import Foundation
 extension URLSession: Session {
   public func beginRequest(
     _ request: URLRequest,
-    _ completion: @escaping ((APIResult<Response>) -> Void)
+    _ completion: @escaping ((Result<ResponseComponents, ClientError>) -> Void)
   ) -> Task {
     let task = dataTask(with: request) { data, response, error in
       let result = URLSessionResponse.resultBasedOnResponse(
@@ -22,16 +22,16 @@ extension URLSession: Session {
   }
 
   public func createRequest<ResponseType, APIType>(
-    _ request: APIRequest<ResponseType, APIType>,
+    _ request: Request<ResponseType, APIType>,
     withBaseURL baseURL: URL,
     andHeaders headers: [String: String],
     usingEncoder encoder: RequestEncoder
-  ) throws -> URLRequest where ResponseType: APIResponseValue {
+  ) throws -> URLRequest where ResponseType: Response {
     guard var componenets = URLComponents(
       url: baseURL.appendingPathComponent(request.path),
       resolvingAgainstBaseURL: false
     ) else {
-      throw APIClientError.badURL(baseURL, request.path)
+      throw ClientError.badURL(baseURL, request.path)
     }
 
     // filter out parameters with empty string value
@@ -44,7 +44,7 @@ extension URLSession: Session {
     componenets.queryItems = queryItems
 
     guard let url = componenets.url else {
-      throw APIClientError.urlComponents(componenets)
+      throw ClientError.urlComponents(componenets)
     }
 
     var urlRequest = URLRequest(url: url)

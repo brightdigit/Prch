@@ -1,23 +1,14 @@
 import Foundation
 
-private let _dateEncodingFormatter = DateFormatter(
-  formatString: "yyyy-MM-dd'T'HH:mm:ssZZZZZ",
-
-  locale: Locale(identifier: "en_US_POSIX"),
-
-  calendar: Calendar(identifier: .gregorian)
-)
-
 public extension Date {
-  @available(*, deprecated)
-  func encode() -> Any {
-    _dateEncodingFormatter.string(from: self)
+  func encode(with dateEncodingFormatter: DateFormatter) -> Any {
+    dateEncodingFormatter.string(from: self)
   }
 }
 
-public extension JSONOptionalDate {
-  func encode() -> Any? {
-    date?.encode()
+public extension Optional where Wrapped == Date {
+  func encode(with dateEncodingFormatter: DateFormatter) -> Any? {
+    self?.encode(with: dateEncodingFormatter)
   }
 }
 

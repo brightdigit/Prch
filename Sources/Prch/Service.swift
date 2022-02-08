@@ -1,4 +1,4 @@
-public struct APIService<ResponseType: APIResponseValue> {
+public struct Service<ResponseType: Response> {
   public let id: String
   public let tag: String
   public let method: String
@@ -24,7 +24,7 @@ public struct APIService<ResponseType: APIResponseValue> {
   }
 }
 
-extension APIService: CustomStringConvertible {
+extension Service: CustomStringConvertible {
   public var name: String {
     "\(tag.isEmpty ? "" : "\(tag).")\(id)"
   }

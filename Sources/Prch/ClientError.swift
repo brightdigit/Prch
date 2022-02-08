@@ -1,6 +1,6 @@
 import Foundation
 
-public enum APIClientError: Error {
+public enum ClientError: Error {
   case unexpectedStatusCode(statusCode: Int, data: Data)
   case decodingError(DecodingError)
   case requestEncodingError(Error)
@@ -10,6 +10,7 @@ public enum APIClientError: Error {
   case invalidResponse
   case badURL(URL, String)
   case urlComponents(URLComponents)
+  case timeout(DispatchTime)
 
   public var name: String {
     switch self {
@@ -22,11 +23,12 @@ public enum APIClientError: Error {
     case .invalidResponse: return "Invalid Response"
     case .badURL: return "Bad URL"
     case .urlComponents: return "Bad URL Components"
+    case .timeout: return "Request timed out."
     }
   }
 }
 
-extension APIClientError: CustomStringConvertible {
+extension ClientError: CustomStringConvertible {
   public var description: String {
     switch self {
     case let .unexpectedStatusCode(statusCode, _): return "\(name): \(statusCode)"
@@ -39,6 +41,7 @@ extension APIClientError: CustomStringConvertible {
     case .invalidResponse: return "\(name)"
     case let .badURL(url, path): return "\(name): \(url) \(path)"
     case let .urlComponents(components): return "\(name): \(components)"
+    case let .timeout(timeout): return "\(name): \(timeout)"
     }
   }
 }

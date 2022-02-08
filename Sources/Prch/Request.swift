@@ -1,9 +1,9 @@
 import Foundation
 
-open class APIRequest<
-  ResponseType: APIResponseValue, APIType
+open class Request<
+  ResponseType: Response, APIType
 > where ResponseType.APIType == APIType {
-  public let service: APIService<ResponseType>
+  public let service: Service<ResponseType>
   open private(set) var queryParameters: [String: Any]
   open private(set) var formParameters: [String: Any]
   public let encodeBody: ((RequestEncoder) throws -> Data)?
@@ -18,7 +18,7 @@ open class APIRequest<
     service.path
   }
 
-  public init(service: APIService<ResponseType>,
+  public init(service: Service<ResponseType>,
               queryParameters: [String: Any] = [:],
               formParameters: [String: Any] = [:],
               headers: [String: String] = [:],
@@ -31,7 +31,7 @@ open class APIRequest<
   }
 }
 
-extension APIRequest: CustomStringConvertible {
+extension Request: CustomStringConvertible {
   public var description: String {
     var string = "\(service.name): \(service.method) \(path)"
     if !queryParameters.isEmpty {
@@ -41,7 +41,7 @@ extension APIRequest: CustomStringConvertible {
   }
 }
 
-extension APIRequest: CustomDebugStringConvertible {
+extension Request: CustomDebugStringConvertible {
   public var debugDescription: String {
     var string = description
     if let encodeBody = encodeBody,
