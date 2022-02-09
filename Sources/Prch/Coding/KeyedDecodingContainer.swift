@@ -49,11 +49,13 @@ public extension KeyedDecodingContainer {
     try decode(T.self, forKey: key)
   }
 
-  func decodeIfPresent<T>(_ key: KeyedDecodingContainer.Key
+  func decodeIfPresent<T>(
+    _ key: KeyedDecodingContainer.Key,
+    safeOptionalDecoding: Bool = false
   ) throws -> T? where T: Decodable {
-    try decodeOptional {
+    try decodeOptional({
       try decodeIfPresent(T.self, forKey: key)
-    }
+    }, safeOptionalDecoding: safeOptionalDecoding)
   }
 
   func decodeAny<T>(_ key: K) throws -> T {
