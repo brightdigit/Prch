@@ -37,6 +37,7 @@ public class Client<SessionType: Session, APIType: API> {
 }
 
 public extension Client {
+  #if compiler(>=5.5) && canImport(_Concurrency)
   @available(swift 5.5)
   func request<ResponseType>(
     _ request: Request<ResponseType, APIType>
@@ -48,6 +49,7 @@ public extension Client {
       }
     }
   }
+  #endif
 
   func requestSync<ResponseType>(
     _ request: Request<ResponseType, APIType>
