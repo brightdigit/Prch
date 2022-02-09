@@ -35,8 +35,10 @@ public typealias RequestResponse<ResponseType>
   = ResponseResult<ResponseType.SuccessType, ResponseType.FailureType>
   where ResponseType: Response
 
+public protocol ResponseError: Error {}
+
 public extension ResponseResult {
-  struct FailedResponseError: Error {
+  struct FailedResponseError: ResponseError {
     public let statusCode: Int
     public let response: DefaultResponseType
   }
@@ -51,6 +53,20 @@ public extension ResponseResult {
 
     case let .defaultResponse(statusCode, response):
       throw FailedResponseError(statusCode: statusCode, response: response)
+    }
+  }
+}
+
+extension Result {
+  init<DefaultResponseType>(
+    response: ResponseResult<Success, DefaultResponseType>
+  ) where Failure == Error {
+    let value: Success
+    do {
+      value = try response.get()
+      self = .success(value)
+    } catch {
+      self = .failure(error)
     }
   }
 }

@@ -1,6 +1,6 @@
 import Foundation
 
-public enum ClientError: Error {
+public enum ClientError: ResponseError {
   case unexpectedStatusCode(statusCode: Int, data: Data)
   case decodingError(DecodingError)
   case requestEncodingError(Error)
