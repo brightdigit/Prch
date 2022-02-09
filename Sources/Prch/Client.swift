@@ -38,17 +38,17 @@ public class Client<SessionType: Session, APIType: API> {
 
 public extension Client {
   #if compiler(>=5.5) && canImport(_Concurrency)
-  @available(swift 5.5)
-  func request<ResponseType>(
-    _ request: Request<ResponseType, APIType>
-  ) async throws -> ResponseType.SuccessType {
-    try await withCheckedThrowingContinuation { continuation in
-      self.request(request) { response in
-        let result = Result(response: response)
-        continuation.resume(with: result)
+    @available(swift 5.5)
+    func request<ResponseType>(
+      _ request: Request<ResponseType, APIType>
+    ) async throws -> ResponseType.SuccessType {
+      try await withCheckedThrowingContinuation { continuation in
+        self.request(request) { response in
+          let result = Result(response: response)
+          continuation.resume(with: result)
+        }
       }
     }
-  }
   #endif
 
   func requestSync<ResponseType>(
