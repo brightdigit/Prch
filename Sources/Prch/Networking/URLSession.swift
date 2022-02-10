@@ -21,12 +21,12 @@ extension URLSession: Session {
     return task
   }
 
-  public func createRequest<ResponseType, APIType>(
-    _ request: Request<ResponseType, APIType>,
+  public func createRequest<RequestType: Request>(
+    _ request: RequestType,
     withBaseURL baseURL: URL,
     andHeaders headers: [String: String],
     usingEncoder encoder: RequestEncoder
-  ) throws -> URLRequest where ResponseType: Response {
+  ) throws -> URLRequest {
     guard var componenets = URLComponents(
       url: baseURL.appendingPathComponent(request.path),
       resolvingAgainstBaseURL: false
@@ -48,7 +48,7 @@ extension URLSession: Session {
     }
 
     var urlRequest = URLRequest(url: url)
-    urlRequest.httpMethod = request.service.method
+    urlRequest.httpMethod = request.method
 
     urlRequest.allHTTPHeaderFields = request.headers.merging(
       headers,
