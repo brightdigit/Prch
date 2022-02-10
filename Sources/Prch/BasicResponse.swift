@@ -5,6 +5,16 @@ public enum BasicResponse<
   FailureType: Decodable,
   APIType: API
 >: Response {
+  public var decoded: ResponseDecodedType {
+    switch self {
+    case let .success(value):
+      return .success(value)
+
+    case let .defaultResponse(statusCode, value):
+      return .failure(statusCode, value)
+    }
+  }
+
   public var response: ClientResult<SuccessType, FailureType> {
     switch self {
     case let .success(value):

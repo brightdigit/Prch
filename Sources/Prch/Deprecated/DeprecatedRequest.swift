@@ -1,6 +1,6 @@
 import Foundation
 
-@available(*, deprecated, message: "use `Request`")
+@available(*, deprecated, renamed: "Request")
 open class DeprecatedRequest<
   ResponseType: Response, APIType
 >: Request where ResponseType.APIType == APIType {
