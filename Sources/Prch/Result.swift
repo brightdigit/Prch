@@ -31,7 +31,6 @@ extension Result where Success: Response, Failure == ClientError {
 
   var response: ClientResult<Success.SuccessType, Success.FailureType> {
     let success: Success
-
     switch self {
     case let .success(value):
       success = value
