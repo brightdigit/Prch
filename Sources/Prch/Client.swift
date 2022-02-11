@@ -10,10 +10,10 @@ public class Client<SessionType: Session, APIType: API> {
   public let session: SessionType
 
   @discardableResult
-  public func request<ResponseType>(
-    _ request: Request<ResponseType, APIType>,
+  public func request<RequestType: Request>(
+    _ request: RequestType,
     _ completion: @escaping (
-      RequestResponse<ResponseType>) -> Void
+      ClientResponseResult<RequestType.ResponseType>) -> Void
   ) -> Task? {
     var sessionRequest: SessionType.RequestType
     do {
@@ -24,13 +24,14 @@ public class Client<SessionType: Session, APIType: API> {
         usingEncoder: api.encoder
       )
     } catch {
-      completion(.failure(.requestEncodingError(error)))
+      completion(.failure(ClientError.requestEncodingError(error)))
       return nil
     }
 
     return session.beginRequest(sessionRequest) { result in
-      let clientResult: Result<ResponseType, ClientError> =
-        .init(ResponseType.self, result: result, decoder: self.api.decoder)
+      let clientResult: Result<RequestType.ResponseType, ClientError> =
+        .init(RequestType.ResponseType.self, result: result, decoder: self.api.decoder)
+
       completion(clientResult.response)
     }
   }
@@ -40,9 +41,9 @@ public class Client<SessionType: Session, APIType: API> {
   @available(iOS 13.0.0, macOS 12.0, watchOS 8.0, tvOS 15.0, *)
   public extension Client {
     @available(swift 5.5)
-    func request<ResponseType>(
-      _ request: Request<ResponseType, APIType>
-    ) async throws -> ResponseType.SuccessType {
+    func request<RequestType: Request>(
+      _ request: RequestType
+    ) async throws -> RequestType.ResponseType.SuccessType {
       try await withCheckedThrowingContinuation { continuation in
         self.request(request) { response in
           let result = Result(response: response)
@@ -54,17 +55,17 @@ public class Client<SessionType: Session, APIType: API> {
 #endif
 
 public extension Client {
-  func requestSync<ResponseType>(
-    _ request: Request<ResponseType, APIType>
-  ) throws -> ResponseType.SuccessType {
+  func requestSync<RequestType: Request>(
+    _ request: RequestType
+  ) throws -> RequestType.ResponseType.SuccessType {
     try requestSync(request, timeout: .now() + 5.0)
   }
 
-  func requestSync<ResponseType>(
-    _ request: Request<ResponseType, APIType>,
+  func requestSync<RequestType: Request>(
+    _ request: RequestType,
     timeout: @autoclosure () -> DispatchTime
-  ) throws -> ResponseType.SuccessType {
-    var result: RequestResponse<ResponseType>!
+  ) throws -> RequestType.ResponseType.SuccessType {
+    var result: ClientResponseResult<RequestType.ResponseType>!
     let semaphore = DispatchSemaphore(value: 0)
     self.request(request) {
       result = $0

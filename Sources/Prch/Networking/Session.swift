@@ -6,12 +6,12 @@ import Foundation
 
 public protocol Session {
   associatedtype RequestType
-  func createRequest<ResponseType: Response, APIType: API>(
-    _ request: Request<ResponseType, APIType>,
+  func createRequest<RequestType: Request>(
+    _ request: RequestType,
     withBaseURL baseURL: URL,
     andHeaders headers: [String: String],
     usingEncoder encoder: RequestEncoder
-  ) throws -> RequestType
+  ) throws -> Self.RequestType
   @discardableResult func beginRequest(
     _ request: RequestType,
     _ completion: @escaping ((Result<ResponseComponents, ClientError>) -> Void)
