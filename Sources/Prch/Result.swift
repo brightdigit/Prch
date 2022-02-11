@@ -38,12 +38,6 @@ extension Result where Success: Response, Failure == ClientError {
     case let .failure(error):
       return .failure(error)
     }
-    switch success.decoded {
-    case let .success(value):
-      return .success(value)
-
-    case let .failure(statusCode, failure):
-      return .defaultResponse(statusCode, failure)
-    }
+    return success.response
   }
 }

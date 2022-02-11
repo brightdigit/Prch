@@ -31,6 +31,7 @@ public class Client<SessionType: Session, APIType: API> {
     return session.beginRequest(sessionRequest) { result in
       let clientResult: Result<RequestType.ResponseType, ClientError> =
         .init(RequestType.ResponseType.self, result: result, decoder: self.api.decoder)
+
       completion(clientResult.response)
     }
   }
