@@ -29,9 +29,9 @@ extension Result where Success: Response, Failure == ClientError {
     }
   }
 
-  var response: ResponseResult<Success.SuccessType, Success.FailureType> {
+  var response: ClientResult<Success.SuccessType, Success.FailureType> {
     let success: Success
-    
+
     switch self {
     case let .success(value):
       success = value
@@ -39,12 +39,7 @@ extension Result where Success: Response, Failure == ClientError {
     case let .failure(error):
       return .failure(error)
     }
-    
-    switch success.decoded {
-    case let .success(value):
-      return .success(value)
-    case let .failure(statusCode, failure):
-      return .defaultResponse(statusCode, failure)
-    }
+
+    return success.response
   }
 }

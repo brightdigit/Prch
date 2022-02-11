@@ -13,7 +13,7 @@ public class Client<SessionType: Session, APIType: API> {
   public func request<RequestType: Request>(
     _ request: RequestType,
     _ completion: @escaping (
-      RequestResponse<RequestType.ResponseType>) -> Void
+      ClientResponseResult<RequestType.ResponseType>) -> Void
   ) -> Task? {
     var sessionRequest: SessionType.RequestType
     do {
@@ -31,6 +31,7 @@ public class Client<SessionType: Session, APIType: API> {
     return session.beginRequest(sessionRequest) { result in
       let clientResult: Result<RequestType.ResponseType, ClientError> =
         .init(RequestType.ResponseType.self, result: result, decoder: self.api.decoder)
+
       completion(clientResult.response)
     }
   }
@@ -64,7 +65,7 @@ public extension Client {
     _ request: RequestType,
     timeout: @autoclosure () -> DispatchTime
   ) throws -> RequestType.ResponseType.SuccessType {
-    var result: RequestResponse<RequestType.ResponseType>!
+    var result: ClientResponseResult<RequestType.ResponseType>!
     let semaphore = DispatchSemaphore(value: 0)
     self.request(request) {
       result = $0

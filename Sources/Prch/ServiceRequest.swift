@@ -5,6 +5,10 @@ public protocol ServiceRequest: Request {
 }
 
 public extension ServiceRequest {
+  var name: String {
+    service.name
+  }
+
   var method: String {
     service.method
   }

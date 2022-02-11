@@ -1,6 +1,6 @@
 import Foundation
 
-@available(*, deprecated, renamed: "Request")
+@available(*, deprecated, message: "use `Request`")
 open class DeprecatedRequest<
   ResponseType: Response, APIType
 >: Request where ResponseType.APIType == APIType {
@@ -13,6 +13,10 @@ open class DeprecatedRequest<
 
   public var headers: [String: String] {
     headerParameters.merging(customHeaders) { _, custom in custom }
+  }
+
+  public var name: String {
+    service.name
   }
 
   open var path: String {
@@ -34,9 +38,7 @@ open class DeprecatedRequest<
     headerParameters = headers
     self.encodeBody = encodeBody
   }
-}
 
-extension DeprecatedRequest: CustomStringConvertible {
   public var description: String {
     var string = "\(service.name): \(service.method) \(path)"
     if !queryParameters.isEmpty {
@@ -44,9 +46,7 @@ extension DeprecatedRequest: CustomStringConvertible {
     }
     return string
   }
-}
 
-extension DeprecatedRequest: CustomDebugStringConvertible {
   public var debugDescription: String {
     var string = description
     if let encodeBody = encodeBody,
