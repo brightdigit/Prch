@@ -8,7 +8,7 @@ public protocol BodyRequest: ServiceRequest {
 public extension BodyRequest {
   var encodeBody: ((RequestEncoder) throws -> Data)? {
     { defaultEncoder in
-      try defaultEncoder.encode(body)
+      try defaultEncoder.encode(self.body)
     }
   }
 }
