@@ -37,22 +37,21 @@ public class Client<SessionType: Session, APIType: API> {
   }
 }
 
-#if compiler(>=5.5) && canImport(_Concurrency)
-  @available(iOS 13.0.0, macOS 12.0, watchOS 8.0, tvOS 15.0, *)
-  public extension Client {
-    @available(swift 5.5)
-    func request<RequestType: Request>(
-      _ request: RequestType
-    ) async throws -> RequestType.ResponseType.SuccessType {
-      try await withCheckedThrowingContinuation { continuation in
-        self.request(request) { response in
-          let result = Result(response: response)
-          continuation.resume(with: result)
-        }
+@available(iOS 13.0.0, macOS 12.0, watchOS 8.0, tvOS 15.0, *)
+public extension Client {
+  @available(swift 5.5)
+  func request<RequestType: Request>(
+    _ request: RequestType
+  ) async throws -> RequestType.ResponseType.SuccessType {
+    // return self.session.request(request)
+    try await withCheckedThrowingContinuation { continuation in
+      self.request(request) { response in
+        let result = Result(response: response)
+        continuation.resume(with: result)
       }
     }
   }
-#endif
+}
 
 public extension Client {
   func requestSync<RequestType: Request>(
