@@ -22,3 +22,9 @@ public extension DeprecatedResponse {
     decoded.response
   }
 }
+
+public extension DeprecatedResponse where FailureType == Never {
+  var failure: FailureType? {
+    nil
+  }
+}
