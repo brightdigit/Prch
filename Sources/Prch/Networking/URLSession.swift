@@ -5,19 +5,21 @@ import Foundation
 #endif
 
 extension URLSession: Session {
-  @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
-  public func request(_ request: RequestType) async throws -> ResponseComponents {
-    if #available(macOS 12.0, iOS 15.0, watchOS 8.0, tvOS 15.0, *) {
-      let components = try await self.data(for: request)
-      return URLSessionResponse(components)
-    } else {
-      return try await withCheckedThrowingContinuation { continuation in
-        _ = self.beginRequest(request) { result in
-          continuation.resume(with: result)
+  #if compiler(>=5.5) && canImport(_Concurrency)
+    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
+    public func request(_ request: RequestType) async throws -> ResponseComponents {
+      if #available(macOS 12.0, iOS 15.0, watchOS 8.0, tvOS 15.0, *) {
+        let components = try await self.data(for: request)
+        return URLSessionResponse(components)
+      } else {
+        return try await withCheckedThrowingContinuation { continuation in
+          _ = self.beginRequest(request) { result in
+            continuation.resume(with: result)
+          }
         }
       }
     }
-  }
+  #endif
 
   public func beginRequest(
     _ request: URLRequest,
