@@ -37,7 +37,7 @@ public class Client<SessionType: Session, APIType: API> {
   }
 }
 
-#if compiler(>=5.5) && canImport(_Concurrency)
+#if compiler(>=5.5.2) && canImport(_Concurrency)
   @available(iOS 13.0.0, macOS 12.0, watchOS 8.0, tvOS 15.0, *)
   public extension Client {
     @available(swift 5.5)

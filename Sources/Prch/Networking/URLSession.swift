@@ -5,19 +5,34 @@ import Foundation
 #endif
 
 extension URLSession: Session {
-  #if compiler(>=5.5) && canImport(_Concurrency)
+  #if compiler(>=5.5.2) && canImport(_Concurrency)
+    @available(macOS, deprecated: 12.0)
+    @available(iOS, deprecated: 15.0)
+    @available(watchOS, deprecated: 8.0)
+    @available(tvOS, deprecated: 15.0)
     @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
-    public func request(_ request: RequestType) async throws -> ResponseComponents {
-      if #available(macOS 12.0, iOS 15.0, watchOS 8.0, tvOS 15.0, *) {
-        let components = try await self.data(for: request)
-        return URLSessionResponse(components)
-      } else {
-        return try await withCheckedThrowingContinuation { continuation in
-          _ = self.beginRequest(request) { result in
-            continuation.resume(with: result)
-          }
+    fileprivate func responseComponentsFrom(
+      _ request: URLRequest
+    ) async throws -> ResponseComponents {
+      try await withCheckedThrowingContinuation { continuation in
+        _ = self.beginRequest(request) { result in
+          continuation.resume(with: result)
         }
       }
+    }
+
+    @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
+    public func request(_ request: RequestType) async throws -> ResponseComponents {
+      #if canImport(FoundationNetworking)
+        return try await responseComponentsFrom(request)
+      #else
+        if #available(macOS 12.0, iOS 15.0, watchOS 8.0, tvOS 15.0, *) {
+          let components = try await self.data(for: request)
+          return URLSessionResponse(components)
+        } else {
+          return try await responseComponentsFrom(request)
+        }
+      #endif
     }
   #endif
 

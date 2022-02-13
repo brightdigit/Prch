@@ -18,7 +18,7 @@ public protocol Session {
     _ completion: @escaping ((Result<ResponseComponents, ClientError>) -> Void)
   ) -> Task
 
-  #if compiler(>=5.5) && canImport(_Concurrency)
+  #if compiler(>=5.5.2) && canImport(_Concurrency)
     @available(macOS 10.15, iOS 13, watchOS 6, tvOS 13, *)
     func request(
       _ request: RequestType
