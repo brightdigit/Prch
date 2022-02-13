@@ -37,19 +37,29 @@ public class Client<SessionType: Session, APIType: API> {
   }
 }
 
-#if compiler(>=5.5) && canImport(_Concurrency)
+#if compiler(>=5.5.2) && canImport(_Concurrency)
   @available(iOS 13.0.0, macOS 12.0, watchOS 8.0, tvOS 15.0, *)
   public extension Client {
     @available(swift 5.5)
     func request<RequestType: Request>(
       _ request: RequestType
     ) async throws -> RequestType.ResponseType.SuccessType {
-      try await withCheckedThrowingContinuation { continuation in
-        self.request(request) { response in
-          let result = Result(response: response)
-          continuation.resume(with: result)
-        }
+      let sessionRequest = try session.createRequest(
+        request,
+        withBaseURL: api.baseURL,
+        andHeaders: api.headers,
+        usingEncoder: api.encoder
+      )
+
+      let response = try await session.request(sessionRequest)
+
+      guard let httpStatus = response.statusCode, let data = response.data else {
+        throw ClientError.invalidResponse
       }
+
+      return try RequestType.ResponseType(
+        statusCode: httpStatus, data: data, decoder: api.decoder
+      ).response.get()
     }
   }
 #endif
