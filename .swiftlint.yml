@@ -102,7 +102,7 @@ cyclomatic_complexity:
   - 9
 file_length:
   - 200
-  - 550
+  - 200
 function_body_length:
   - 15
   - 25
