@@ -1,5 +1,43 @@
 # Prch
 
+# Setting Up Your Client 
+
+```swift
+import Spinetail 
+
+let api = MailchimpAPI(apiKey: "")
+let client = Client(api: api, session: URLSession.shared)
+let request = Lists.GetListsIdMembersId.Request(listId: "", subscriberHash: emailAddress)
+
+client.request(request) { result in
+  switch result {
+  case let .success(member):
+	break
+  case let .defaultResponse(statusCode, response):
+	break
+  case let .failure(error):
+	break
+  }
+}
+
+do {
+  let member = try await client.request(request)
+} catch let error as ClientResponseResult<Lists.GetListsIdMembersId.Response>.FailedResponseError {
+
+} catch  {
+  
+}
+
+do {
+  let member = try client.requestSync(request)
+} catch let error as ClientResponseResult<Lists.GetListsIdMembersId.Response>.FailedResponseError {
+  
+} catch  {
+  
+}
+```
+
+
 # Making Requests via Prch
 
 ## Operation
