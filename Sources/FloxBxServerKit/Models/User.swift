@@ -2,11 +2,10 @@ import Fluent
 import Vapor
 
 final class User: Model {
-  
   static let schema = "Users"
-  struct FieldKeys {
-      static var email: FieldKey { "email" }
-      static var password: FieldKey { "passwordHash" }
+  enum FieldKeys {
+    static var email: FieldKey { "email" }
+    static var password: FieldKey { "passwordHash" }
   }
 
   @ID() var id: UUID?
@@ -14,29 +13,27 @@ final class User: Model {
   @Field(key: FieldKeys.password) var passwordHash: String
   @Children(for: \Todo.$user) var items: [Todo]
 
-    init() { }
+  init() {}
 
   init(id: User.IDValue? = nil,
        email: String,
-       passwordHash: String)
-  {
-      self.id = id
-      self.email = email
-      self.passwordHash = passwordHash
+       passwordHash: String) {
+    self.id = id
+    self.email = email
+    self.passwordHash = passwordHash
   }
 }
 
-extension User : ModelAuthenticatable {
+extension User: ModelAuthenticatable {
   static var usernameKey: KeyPath<User, Field<String>> = \.$email
-  
-  static let passwordHashKey: KeyPath<User, Field<String>>  = \.$passwordHash
-  
+
+  static let passwordHashKey: KeyPath<User, Field<String>> = \.$passwordHash
+
   func verify(password: String) throws -> Bool {
-    try Bcrypt.verify(password, created: self.passwordHash)
+    try Bcrypt.verify(password, created: passwordHash)
   }
-  
-  
 }
+
 extension User {
   func generateToken() throws -> UserToken {
     try .init(

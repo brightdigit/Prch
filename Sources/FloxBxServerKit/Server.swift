@@ -1,35 +1,32 @@
-import Vapor
-import FluentPostgresDriver
 import Canary
 import enum FloxBxKit.Configuration
+import FluentPostgresDriver
+import Vapor
 
 public struct Server {
-  let env : Environment
-  let sentry : CanaryClient
-  
-  public init (env: Environment, sentry: CanaryClient = .init()) {
+  let env: Environment
+  let sentry: CanaryClient
+
+  public init(env: Environment, sentry: CanaryClient = .init()) {
     self.env = env
     self.sentry = sentry
   }
-  
-  public init () throws {
+
+  public init() throws {
     var env = try Environment.detect()
     try LoggingSystem.bootstrap(from: &env)
     self.init(env: env)
   }
-  
+
   // configures your application
   public static func configure(_ app: Application) throws {
-      // uncomment to serve files from /Public folder
-      // app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
+    // uncomment to serve files from /Public folder
+    // app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
 
-    
-      app.databases.use(.postgres(
-          hostname: Environment.get("DATABASE_HOST") ?? "localhost",
-        username: Environment.get("DATABASE_USERNAME") ?? "floxbx", password: ""
-      ), as: .psql)
-    
-    
+    app.databases.use(.postgres(
+      hostname: Environment.get("DATABASE_HOST") ?? "localhost",
+      username: Environment.get("DATABASE_USERNAME") ?? "floxbx", password: ""
+    ), as: .psql)
 
     app.migrations.add(CreateUserMigration())
     app.migrations.add(CreateTodoMigration())
@@ -44,23 +41,22 @@ public struct Server {
     bearer.delete("tokens", use: tokenController.delete(from:))
     bearer.get("tokens", use: tokenController.get(from:))
     try TodoController().boot(routes: bearer)
-      // register routes
+    // register routes
 //    try app.register(collection: TodoController())
 //    try app.register(collection: UserController())
 //    try app.register(collection: UserTokenController())
-    
-    try app.autoMigrate().wait()
 
+    try app.autoMigrate().wait()
   }
 
   @discardableResult
-  public func start () throws -> Application  {
+  public func start() throws -> Application {
     try sentry.start(withOptions: .init(dsn: Configuration.dsn))
     let app = Application(env)
     defer { app.shutdown() }
     try Server.configure(app)
     try app.run()
-    //try routes(app)
+    // try routes(app)
     return app
   }
 }
