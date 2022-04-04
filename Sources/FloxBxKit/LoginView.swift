@@ -20,6 +20,52 @@ typealias FBButtonStyle = DefaultButtonStyle
 typealias FBButtonStyle = BorderlessButtonStyle
 #endif
 
+#if os(macOS)
+extension NSTextContentType {
+  static var emailAddress : NSTextContentType = .username
+}
+#endif
+
+extension View {
+
+  
+  @available(iOS 15.0, watchOS 8.0, *)
+  fileprivate func forEmailAddress2021() -> some View {
+    //var view : some View
+    #if os(macOS)
+    self
+    #else
+    self
+     .textInputAutocapitalization(.never)
+     .disableAutocorrection(true)
+    #endif
+    
+  }
+
+  fileprivate func forEmailAddress2020() -> some View {
+    //var view : some View
+    
+    self
+     .textContentType(.emailAddress)
+    #if os(iOS)
+     .keyboardType(.emailAddress)
+     .autocapitalization(.none)
+    #elseif os(macOS)
+     .textCase(.none)
+    #endif
+  }
+  
+  
+  public func forEmailAddress() -> some View {
+    let view = self.forEmailAddress2020()
+    
+    if #available(iOS 15.0, watchOS 8.0, *) {
+      return AnyView(view.forEmailAddress2021())
+    } else {
+      return AnyView(view)
+    }
+  }
+}
 
 public struct LoginView: View {
   @EnvironmentObject var object: ApplicationObject
@@ -41,6 +87,8 @@ public struct LoginView: View {
       #endif
       VStack{
       TextField("Email Address", text: $emailAddress).textFieldStyle(FBTextFieldStyle())
+          .forEmailAddress()
+          
       SecureField("Password", text: $password).textFieldStyle(FBTextFieldStyle())
       }.padding()
       
