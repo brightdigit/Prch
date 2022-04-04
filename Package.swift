@@ -20,9 +20,9 @@ let package = Package(
         // Dependencies declare other packages that this package depends on.
       .package(url: "https://github.com/vapor/vapor.git", from: "4.0.0"),
         .package(url: "https://github.com/vapor/fluent.git", from: "4.0.0"),
-        .package(url: "https://github.com/vapor/fluent-postgres-driver.git", from: "2.0.0"),      
-        .package(name: "SentryCocoa", path: "Packages/sentry-cocoa"),
-      .package(name: "SentryVanilla", path: "Packages/sentry-swift")
+        .package(url: "https://github.com/vapor/fluent-postgres-driver.git", from: "2.0.0"),
+        .package(url: "https://github.com/brightdigit/Canary.git", from: "0.2.0-beta.1")
+
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -33,8 +33,7 @@ let package = Package(
       .target(
           name: "FloxBxKit",
           dependencies: [
-            .product(name: "SentryCocoa", package: "SentryCocoa", condition: .when(platforms: [.iOS, .watchOS, .macOS, .tvOS])),
-            .product(name: "SentryVanilla", package: "SentryVanilla")
+            "Canary"
           ]
       ),
         .target(

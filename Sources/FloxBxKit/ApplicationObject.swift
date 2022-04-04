@@ -5,9 +5,15 @@
 //  Created by Leo Dion on 5/16/21.
 //
 
+public enum Configuration {
+  
+  public static let dsn = "https://d2a8d5241ccf44bba597074b56eb692d@o919385.ingest.sentry.io/5868822"
+
+}
 #if canImport(Combine) && canImport(SwiftUI)
 import Combine
 import SwiftUI
+import Canary
 
 struct EmptyError : Error {
   
@@ -177,7 +183,9 @@ public class ApplicationObject: ObservableObject {
   @Published var latestError : Error?
   @Published var token : String?
   @Published var items: [TodoContentItem]?
+  
   let credentialsContainer = CredentialsContainer()
+  let sentry = CanaryClient()
   
   static let baseURL : URL = {
     var components = URLComponents()
@@ -202,6 +210,7 @@ public class ApplicationObject: ObservableObject {
     
     .replaceError(with: nil).receive(on: DispatchQueue.main).assign(to: &self.$items)
     
+    try! self.sentry.start(withOptions: .init(dsn: Configuration.dsn))
   }
   
   public static func url(withPath path: String) -> URL {

@@ -1,8 +1,0 @@
-[submodule "Packages/sentry-swift"]
-	path = Packages/sentry-swift
-	url = git@github.com:brightdigit/sentry-swift.git
-	branch = feature/floxbx
-[submodule "Packages/sentry-cocoa"]
-	path = Packages/sentry-cocoa
-	url = git@github.com:brightdigit/sentry-cocoa.git
-	branch = feature/floxbx

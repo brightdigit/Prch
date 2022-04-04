@@ -17,7 +17,7 @@ public extension Application {
   var body: some Scene {
       WindowGroup {
         ContentView().environmentObject(ApplicationObject()).onAppear {
-          Sentry.start(.client)
+          
         }
       }
   }

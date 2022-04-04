@@ -1,25 +1,29 @@
 import Vapor
 import FluentPostgresDriver
-import class FloxBxKit.Sentry
+import Canary
+import enum FloxBxKit.Configuration
 
 public struct Server {
   let env : Environment
+  let sentry : CanaryClient
   
-  public init (env: Environment) {
+  public init (env: Environment, sentry: CanaryClient = .init()) {
     self.env = env
+    self.sentry = sentry
   }
   
   public init () throws {
     var env = try Environment.detect()
     try LoggingSystem.bootstrap(from: &env)
-    self.env = env
+    self.init(env: env)
   }
   
   // configures your application
   public static func configure(_ app: Application) throws {
       // uncomment to serve files from /Public folder
       // app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
-    Sentry.start(.server)
+
+    
       app.databases.use(.postgres(
           hostname: Environment.get("DATABASE_HOST") ?? "localhost",
         username: Environment.get("DATABASE_USERNAME") ?? "floxbx", password: ""
@@ -51,6 +55,7 @@ public struct Server {
 
   @discardableResult
   public func start () throws -> Application  {
+    try sentry.start(withOptions: .init(dsn: Configuration.dsn))
     let app = Application(env)
     defer { app.shutdown() }
     try Server.configure(app)
