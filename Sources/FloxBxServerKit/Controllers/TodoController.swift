@@ -18,6 +18,7 @@ struct TodoController: RouteCollection {
     todos.post(use: create)
     todos.group(":todoID") { todo in
       todo.delete(use: delete)
+      todo.put(use: update)
     }
   }
 
@@ -34,6 +35,19 @@ struct TodoController: RouteCollection {
     return user.$items.create(todo, on: request.db).flatMapThrowing {
       try CreateTodoResponseContent(id: todo.requireID(), title: todo.title)
     }
+  }
+
+  func update(from request: Request) throws -> EventLoopFuture<HTTPResponseStatus> {
+    let user = try request.auth.require(User.self)
+    let todoID: UUID = try request.parameters.require("todoID", as: UUID.self)
+    let content = try request.content.decode(CreateTodoRequestContent.self)
+    return user.$items.query(on: request.db)
+      .filter(\.$id == todoID)
+      .first().unwrap(orError: Abort(.notFound))
+      .flatMap { todo -> EventLoopFuture<Void> in
+        todo.title = content.title
+        return todo.update(on: request.db)
+      }.transform(to: .noContent)
   }
 
   func delete(from request: Request) throws -> EventLoopFuture<HTTPStatus> {

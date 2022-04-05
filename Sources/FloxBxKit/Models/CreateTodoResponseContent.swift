@@ -11,21 +11,25 @@ public struct CreateTodoResponseContent: Codable {
 }
 
 public struct TodoContentItem: Identifiable {
-  public init(title: String) {
-    self.init(id: .init(), title: title, isSaved: false)
+  internal init(clientID: UUID = .init(), serverID: UUID? = nil, title: String) {
+    self.clientID = clientID
+    self.serverID = serverID
+    self.title = title
   }
+  
 
   public init(content: CreateTodoResponseContent) {
-    self.init(id: content.id, title: content.title, isSaved: true)
+    self.init(clientID: content.id, serverID: content.id, title: content.title)
   }
-
-  public init(id: UUID, title: String, isSaved: Bool) {
-    self.id = id
-    self.title = title
-    self.isSaved = isSaved
-  }
-
-  public let id: UUID
+  public let clientID: UUID
+  public let serverID: UUID?
   public var title: String
-  public let isSaved: Bool
+  
+  public var isSaved : Bool {
+    return serverID != nil
+  }
+  
+  public var id : UUID {
+    return self.clientID
+  }
 }

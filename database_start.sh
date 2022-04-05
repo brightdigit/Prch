@@ -1,4 +1,4 @@
-docker run --rm  --name floxbx-pg -e POSTGRES_HOST_AUTH_METHOD=trust -d -p 5432:5432 postgres -c log_statement=all
+docker run --name floxbx-pg -e POSTGRES_HOST_AUTH_METHOD=trust -d -p 5432:5432 postgres -c log_statement=all
 until [ "`docker inspect -f {{.State.Running}} floxbx-pg`"=="true" ]; do
 	sleep 1;
 done;

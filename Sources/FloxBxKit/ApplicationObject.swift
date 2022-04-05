@@ -168,7 +168,7 @@ public enum Configuration {
     @Published public var requiresAuthentication: Bool
     @Published var latestError: Error?
     @Published var token: String?
-    @Published var items: [TodoContentItem]?
+    @Published var items = [TodoContentItem]()
 
     let credentialsContainer = CredentialsContainer()
     let sentry = CanaryClient()
@@ -183,7 +183,7 @@ public enum Configuration {
     static let encoder = JSONEncoder()
     static let decoder = JSONDecoder()
     static let server = "floxbx.work"
-    public init(items _: [TodoContentItem]? = nil) {
+    public init(items _: [TodoContentItem] = []) {
       requiresAuthentication = true
       let authenticated = $token.map { $0 == nil }
       authenticated.receive(on: DispatchQueue.main).assign(to: &$requiresAuthentication)
@@ -191,14 +191,11 @@ public enum Configuration {
         let request = Self.request(withURLPath: "api/v1/todos", method: "GET", withToken: token)
 
         return URLSession.shared.dataTaskPublisher(for: request)
-      }.map(\.data).decode(type: [CreateTodoResponseContent]?.self, decoder: Self.decoder).map { content in
-        guard let content = content else {
-          return nil
-        }
+      }.map(\.data).decode(type: [CreateTodoResponseContent].self, decoder: Self.decoder).map { content in
+        
         return content.map(TodoContentItem.init)
       }
-
-      .replaceError(with: nil).receive(on: DispatchQueue.main).assign(to: &$items)
+      .replaceError(with: []).receive(on: DispatchQueue.main).assign(to: &$items)
 
       try! sentry.start(withOptions: .init(dsn: Configuration.dsn))
     }
@@ -219,19 +216,35 @@ public enum Configuration {
       return request
     }
 
-    public func saveItem(_ item: TodoContentItem) {
-      guard let index = items?.firstIndex(where: { $0.id == item.id }) else {
+    public func saveItem(_ item: TodoContentItem, onlyNew: Bool = false) {
+      guard let index = items.firstIndex(where: { $0.id == item.id }) else {
         return
       }
+      
+      guard !(item.isSaved && onlyNew) else {
+        return
+      }
+
       let content = CreateTodoRequestContent(title: item.title)
       let request: URLRequest
-      do {
-        request = try Self.request(withURLPath: "api/v1/todos", method: "POST", withToken: token, body: content)
-      } catch {
-        DispatchQueue.main.async {
-          self.latestError = error
+      if item.isSaved {
+        do {
+          request = try Self.request(withURLPath: "api/v1/todos/\(item.id)", method: "PUT", withToken: token, body: content)
+        } catch {
+          DispatchQueue.main.async {
+            self.latestError = error
+          }
+          return
         }
-        return
+      } else {
+        do {
+          request = try Self.request(withURLPath: "api/v1/todos", method: "POST", withToken: token, body: content)
+        } catch {
+          DispatchQueue.main.async {
+            self.latestError = error
+          }
+          return
+        }
       }
       URLSession.shared.dataTask(with: request) { data, _, error in
         let dataResult: Result<Data, Error> = Result(success: data, failure: error, otherwise: EmptyError())
@@ -252,7 +265,7 @@ public enum Configuration {
         }
 
         DispatchQueue.main.async {
-          self.items?[index] = .init(content: todoItem)
+          self.items[index] = .init(content: todoItem)
         }
       }.resume()
     }
@@ -288,6 +301,44 @@ public enum Configuration {
           self.requiresAuthentication = true
         }
       }
+    }
+
+    public func beginDeleteItems(atIndexSet indexSet: IndexSet, _ completed: @escaping (Error?) -> Void) {
+      let savedIndexSet = indexSet.filteredIndexSet(includeInteger: {items[$0].isSaved})
+      let requests: [URLRequest]
+      
+      requests = savedIndexSet.map { index in
+        return Self.request(withURLPath: "api/v1/todos/\(items[index].id)", method: "DELETE", withToken: token)
+      }
+      
+      guard !requests.isEmpty else {
+        DispatchQueue.main.async {
+          completed(nil)
+        }
+        return
+      }
+      
+      let group = DispatchGroup()
+
+      var errors = [Error?].init(repeating: nil, count: requests.count)
+      for (index, request) in requests.enumerated() {
+        group.enter()
+        URLSession.shared.dataTask(with: request) { _, _, error in
+          errors[index] = error
+          group.leave()
+        }.resume()
+      }
+      group.notify(queue: .main) {
+        completed(errors.compactMap{$0}.last)
+      }
+    }
+    
+    public func deleteItems(atIndexSet indexSet: IndexSet) {
+      self.beginDeleteItems(atIndexSet: indexSet) { error in
+        self.items.remove(atOffsets: indexSet)
+        self.latestError = error
+      }
+      
     }
 
     public func beginSignup(withCredentials credentials: Credentials) {
