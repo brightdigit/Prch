@@ -15,6 +15,16 @@
 
 default_platform(:ios)
 
+lane :prepare_development do 
+  match({
+    app_identifier: ["com.brightdigit.FloxBx.watchkitapp.watchkitextension","com.brightdigit.FloxBx","com.brightdigit.FloxBx.watchkitapp"]
+  })
+  match({
+    app_identifier: ["com.brightdigit.FloxBx"],
+    platform: "macos"
+  })
+end
+
 platform :ios do
   desc "Push a new beta build to TestFlight"
   lane :beta do
