@@ -1,3 +1,4 @@
+import Foundation
 public struct CreateTodoRequestContent: Codable {
   public init(title: String) {
     self.title = title

@@ -12,6 +12,7 @@ final class User: Model {
   @Field(key: FieldKeys.email) var email: String
   @Field(key: FieldKeys.password) var passwordHash: String
   @Children(for: \Todo.$user) var items: [Todo]
+  @Children(for: \GroupSession.$user) var groupSessions: [GroupSession]
 
   init() {}
 
