@@ -9,14 +9,14 @@ settings:
   bundleIdPrefix: com.brightdigit
   PRODUCT_NAME: FloxBx
 packages:
-  FloxBxKit:
+  FloxBxUI:
     path: ./Packages/FloxBxKit
 targets:
   FloxBx.watchkitapp.watchkitextension:
     type: watchkit2-extension
     platform: watchOS
     dependencies:
-      - package: FloxBxKit
+      - package: FloxBxUI
     sources:
       - path: "Support/watchOS/Extension"
         name: Extension
@@ -91,7 +91,7 @@ targets:
     platform: iOS
     scheme: {}
     dependencies:
-      - package: FloxBxKit
+      - package: FloxBxUI
       - target: "FloxBx.watchkitapp"
     sources:
       - path: "Support/iOS"
@@ -133,7 +133,7 @@ targets:
     platform: macOS
     scheme: {}
     dependencies:
-      - package: FloxBxKit
+      - package: FloxBxUI
     info:
       path: Support/macOS/Info.plist
       properties:

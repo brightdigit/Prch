@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import FloxBxKit
+import FloxBxUI
 
 @main
 struct FloxBxApp: Application {
