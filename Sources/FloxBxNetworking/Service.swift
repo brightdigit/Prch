@@ -1,4 +1,5 @@
 import Foundation
+import FloxBxAuth
 
 public protocol Service {
   func save(credentials: Credentials) throws
@@ -32,7 +33,7 @@ extension CheckedContinuation where T == Void {
   }
 }
 
-extension Service {
+public extension Service {
   func request<RequestType : ClientRequest>(_ request: RequestType) async throws -> RequestType.SuccessType where RequestType.SuccessType: Decodable, RequestType.BodyType: Encodable {
     try await withCheckedThrowingContinuation { continuation in
       self.beginRequest(request) { result in

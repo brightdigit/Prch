@@ -1,5 +1,5 @@
 import Foundation
-
+import FloxBxAuth
 #if canImport(FoundationNetworking)
   import FoundationNetworking
 #endif
@@ -141,7 +141,7 @@ public class ServiceImpl<CoderType: Coder, SessionType: Session, RequestBuilderT
   }
 
   var baseURLComponents: URLComponents
-  let credentialsContainer = CredentialsContainer()
+  let credentialsContainer = CredentialsContainer(accessGroup:  "MLT7M394S7.com.brightdigit.FloxBx", serviceName: "floxbx.work")
   let coder: CoderType
   let session: SessionType
   let builder: RequestBuilderType
@@ -165,7 +165,7 @@ public class ServiceImpl<CoderType: Coder, SessionType: Session, RequestBuilderT
   }
 }
 
-extension ServiceImpl {
+public extension ServiceImpl {
   convenience init(host: String, coder: JSONCoder = .init(encoder: JSONEncoder(), decoder: JSONDecoder()), session: URLSession = .shared, headers: [String: String]) where RequestBuilderType == URLRequestBuilder, SessionType == URLSession, CoderType == JSONCoder {
     var baseURLComponents = URLComponents()
     baseURLComponents.host = host

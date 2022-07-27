@@ -4,7 +4,10 @@
 #if canImport(GroupActivities)
 import GroupActivities
 #endif
-  struct ContentView: View {
+public  struct ContentView: View {
+  public init() {
+  }
+  
     @EnvironmentObject var object: ApplicationObject
 
     var innerView: some View {
@@ -16,7 +19,7 @@ import GroupActivities
       #endif
     }
 
-    var body: some View {
+    public var body: some View {
       TabView {
         NavigationView {
           if #available(iOS 15.0, watchOS 8.0, macOS 12, *) {

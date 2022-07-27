@@ -1,6 +1,6 @@
-public enum Configuration {
-  public static let dsn = "https://d2a8d5241ccf44bba597074b56eb692d@o919385.ingest.sentry.io/5868822"
-}
+import FloxBxModels
+import FloxBxNetworking
+import FloxBxAuth
 
 #if canImport(Combine) && canImport(SwiftUI)
   import Canary
@@ -14,7 +14,7 @@ public enum Configuration {
 
    @available(iOS 15, macOS 12, *)
    public struct FloxBxActivity : GroupActivity  {
-     let id : UUID
+     public let id : UUID
      internal init(id: UUID, username: String) {
        self.id = id
     var metadata = GroupActivityMetadata()
@@ -37,7 +37,7 @@ enum TodoListDelta : Codable {
   case remove([UUID])
 }
 
-  public class ApplicationObject: ObservableObject {
+public class ApplicationObject: ObservableObject {
     
 #if canImport(GroupActivities)
      @Published var groupSession: GroupSession<FloxBxActivity>?
@@ -93,8 +93,8 @@ enum TodoListDelta : Codable {
 
     static let encoder = JSONEncoder()
     static let decoder = JSONDecoder()
-    static let server = "floxbx.work"
-    public init(items _: [TodoContentItem] = []) {
+    //static let server = "floxbx.work"
+    public init(_: [TodoContentItem] = []) {
       requiresAuthentication = true
       let authenticated = $token.map { $0 == nil }
       authenticated.receive(on: DispatchQueue.main).assign(to: &$requiresAuthentication)
@@ -182,8 +182,8 @@ enum TodoListDelta : Codable {
     public func beginDeleteItems(atIndexSet indexSet: IndexSet, _ completed: @escaping (Error?) -> Void) {
       let savedIndexSet = indexSet.filteredIndexSet(includeInteger: { items[$0].isSaved })
 
-      let deletedIds = Set(savedIndexSet.map {
-        items[$0].id
+      let deletedIds = Set(savedIndexSet.compactMap {
+        items[$0].serverID
       })
       
       

@@ -47,7 +47,7 @@
 
   struct TodoList_Previews: PreviewProvider {
     static var previews: some View {
-      TodoListView().environmentObject(ApplicationObject(items: [
+      TodoListView().environmentObject(ApplicationObject([
         .init(title: "Do Stuff")
       ]))
     }

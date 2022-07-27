@@ -1,17 +1,22 @@
 import Foundation
-
+import FloxBxNetworking
 #if canImport(FoundationNetworking)
   import FoundationNetworking
 #endif
 
-struct DeleteTodoItemRequest: ClientVoidRequest {
+public struct DeleteTodoItemRequest: ClientVoidRequest {
+  public init(groupSessionID: UUID? = nil, itemID: UUID) {
+    self.groupSessionID = groupSessionID
+    self.itemID = itemID
+  }
+  
   let groupSessionID: UUID?
   let itemID: UUID
-  static var requiresCredentials: Bool {
+  public static var requiresCredentials: Bool {
     true
   }
 
-  var path: String {
+  public var path: String {
     var path = "api/v1/"
     if let groupSessionID = groupSessionID {
       path.append("group-sessions/\(groupSessionID)/")
@@ -22,15 +27,15 @@ struct DeleteTodoItemRequest: ClientVoidRequest {
                   return path
   }
 
-  var parameters: [String: String] {
+  public var parameters: [String: String] {
     [:]
   }
 
-  var method: RequestMethod {
+  public var method: RequestMethod {
     .DELETE
   }
 
-  var headers: [String: String] {
+  public var headers: [String: String] {
     [:]
   }
 }

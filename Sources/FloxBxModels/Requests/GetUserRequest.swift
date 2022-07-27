@@ -1,11 +1,5 @@
-//
-//  File.swift
-//  
-//
-//  Created by Leo Dion on 4/17/22.
-//
-
 import Foundation
+import FloxBxNetworking
 
 public struct GetUserRequest : ClientSuccessRequest {
   public typealias SuccessType = GetUserResponseContent

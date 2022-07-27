@@ -1,35 +1,15 @@
 import Foundation
+import FloxBxNetworking
 
 
 
 public struct UpsertTodoRequest: ClientBodySuccessRequest {
-  internal init(groupSessionID: UUID?, itemID: UUID?, body: UpsertTodoRequest.BodyType) {
+  public init(groupSessionID: UUID?, itemID: UUID?, body: UpsertTodoRequest.BodyType) {
     self.groupSessionID = groupSessionID
     self.itemID = itemID
     self.body = body
   }
   
-//  internal init(destination: UpsertTodoRequest.Destination, body: UpsertTodoRequest.BodyType) {
-//    self.destination = destination
-//    self.body = body
-//  }
-//
-//  internal init(itemID: UUID?, body: UpsertTodoRequest.BodyType) {
-//    let destination : Destination
-//
-//    if let itemID = itemID {
-//      destination = .itemID(itemID)
-//    } else {
-//      destination = .create
-//    }
-//    self.init(destination: destination, body: body)
-//  }
-  
-//  public enum Destination {
-//    case userID(UUID)
-//    case itemID(UUID)
-//    case create
-//  }
   public let groupSessionID: UUID?
   public let itemID: UUID?
   public let body: BodyType

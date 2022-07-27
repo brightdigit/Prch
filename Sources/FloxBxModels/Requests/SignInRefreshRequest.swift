@@ -1,4 +1,9 @@
+import FloxBxNetworking
+
 public struct SignInRefreshRequest: ClientSuccessRequest {
+  public init() {
+  }
+  
   public typealias SuccessType = CreateTokenResponseContent
 
   public static let requiresCredentials: Bool = true

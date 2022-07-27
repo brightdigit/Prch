@@ -1,5 +1,5 @@
 import SwiftUI
-
+import FloxBxModels
 struct TodoListItemView: View {
   @EnvironmentObject var object: ApplicationObject
   @State var title: String

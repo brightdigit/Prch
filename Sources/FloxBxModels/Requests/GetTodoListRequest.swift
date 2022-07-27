@@ -1,5 +1,10 @@
 import Foundation
+import FloxBxNetworking
 public struct GetTodoListRequest: ClientSuccessRequest {
+  public init(groupSessionID: UUID? = nil) {
+    self.groupSessionID = groupSessionID
+  }
+  
   public typealias SuccessType = [CreateTodoResponseContent]
 
   public typealias BodyType = Void

@@ -1,4 +1,4 @@
-import FloxBxKit
+import FloxBxModels
 import Fluent
 import Vapor
 

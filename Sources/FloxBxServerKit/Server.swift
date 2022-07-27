@@ -1,5 +1,5 @@
 import Canary
-import enum FloxBxKit.Configuration
+import enum FloxBxModels.Configuration
 import FluentPostgresDriver
 import Vapor
 

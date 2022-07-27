@@ -1,7 +1,7 @@
 import Foundation
 
 public struct TodoContentItem: Identifiable, Codable {
-  internal init(clientID: UUID = .init(), serverID: UUID? = nil, title: String) {
+  public init(clientID: UUID = .init(), serverID: UUID? = nil, title: String) {
     self.clientID = clientID
     self.serverID = serverID
     self.title = title
@@ -24,7 +24,7 @@ public struct TodoContentItem: Identifiable, Codable {
   }
 }
 
-extension TodoContentItem {
+public extension TodoContentItem {
   func updatingTitle(_ title: String) -> TodoContentItem {
     TodoContentItem(clientID: clientID, serverID: serverID, title: title)
   }

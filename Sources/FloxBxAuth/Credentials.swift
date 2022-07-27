@@ -5,15 +5,15 @@ public struct Credentials {
     self.token = token
   }
 
-  let username: String
-  let password: String
-  let token: String?
+  public let username: String
+  public let password: String
+  public let token: String?
 
-  func withToken(_ token: String) -> Credentials {
+  public func withToken(_ token: String) -> Credentials {
     Credentials(username: username, password: password, token: token)
   }
 
-  func withoutToken() -> Credentials {
+  public func withoutToken() -> Credentials {
     Credentials(username: username, password: password, token: nil)
   }
 }

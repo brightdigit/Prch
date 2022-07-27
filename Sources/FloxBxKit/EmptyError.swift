@@ -1,1 +1,0 @@
-struct EmptyError: Error {}
