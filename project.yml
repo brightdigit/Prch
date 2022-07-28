@@ -2,9 +2,9 @@ name: FloxBx
 options:
   bundleIdPrefix: com.brightdigit
   deploymentTarget:
-    watchOS: 8.6
-    iOS: 15.5
-    macOS: 12.4
+    watchOS: 7.0
+    iOS: 14.0
+    macOS: 11.0
 settings:
   DEVELOPMENT_TEAM: MLT7M394S7
   CODE_SIGN_IDENTITY: "Apple Development"
