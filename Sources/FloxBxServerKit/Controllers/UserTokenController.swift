@@ -24,11 +24,8 @@ struct UserTokenController: RouteCollection {
         guard try user.verify(password: createTokenRequestContent.password) else {
           throw Abort(.unauthorized)
         }
-
-        // create new token for this user
         return try user.generateToken()
       }.flatMap { token in
-        // save and return token
         token.save(on: request.db).map {
           CreateTokenResponseContent(token: token.value)
         }
@@ -36,8 +33,6 @@ struct UserTokenController: RouteCollection {
   }
 
   func get(from request: Request) -> EventLoopFuture<CreateTokenResponseContent> {
-    // let user = try request.auth.require(User.self)
-
     let userToken: UserToken
     do {
       userToken = try request.auth.require(UserToken.self)

@@ -1,13 +1,10 @@
 #if canImport(SwiftUI)
+  import FloxBxGroupActivities
   import SwiftUI
 
-#if canImport(GroupActivities)
-import GroupActivities
-#endif
-public  struct ContentView: View {
-  public init() {
-  }
-  
+  struct ContentView: View {
+    init() {}
+
     @EnvironmentObject var object: ApplicationObject
 
     var innerView: some View {
@@ -19,23 +16,22 @@ public  struct ContentView: View {
       #endif
     }
 
-    public var body: some View {
+    var body: some View {
       TabView {
         NavigationView {
           if #available(iOS 15.0, watchOS 8.0, macOS 12, *) {
             #if canImport(GroupActivities)
-            innerView.task {
-              for await session in FloxBxActivity.sessions() {                
-                self.object.configureGroupSession(session)
+              innerView.task {
+                for await session in self.object.shareplayObject.sessions() {
+                  self.object.shareplayObject.configureGroupSession(session)
+                }
               }
-            }
             #else
-            innerView
+              innerView
             #endif
           } else {
             innerView
           }
-          
         }
       }
       .sheet(isPresented: self.$object.requiresAuthentication, content: {

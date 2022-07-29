@@ -1,36 +1,29 @@
-import Foundation
 import FloxBxNetworking
+import Foundation
 public struct GetTodoListRequest: ClientSuccessRequest {
   public init(groupSessionID: UUID? = nil) {
     self.groupSessionID = groupSessionID
   }
-  
+
   public typealias SuccessType = [CreateTodoResponseContent]
 
   public typealias BodyType = Void
-  
-  let groupSessionID : UUID?
+
+  let groupSessionID: UUID?
 
   public static var requiresCredentials: Bool {
     true
   }
 
   public var path: String {
-    
-      var path = "api/v1/"
-      if let groupSessionID = groupSessionID {
-        path.append("group-sessions/\(groupSessionID)/")
-        
-      }
-                    path.append("todos")
-                    
-                    return path
+    var path = "api/v1/"
+    if let groupSessionID = groupSessionID {
+      path.append("group-sessions/\(groupSessionID)/")
+    }
+    path.append("todos")
 
-
-    
+    return path
   }
-  
-  
 
   public var parameters: [String: String] {
     [:]

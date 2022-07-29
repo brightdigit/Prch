@@ -1,14 +1,22 @@
+import FloxBxModels
 @testable import FloxBxServerKit
 import Foundation
 import XCTest
 import XCTVapor
 
 final class AppTests: XCTestCase {
-  func testHelloWorld() throws {
-    let app = Application(.testing)
-    try Server.configure(app)
+  var app: Application!
 
-    defer { app.shutdown() }
+  override func setUpWithError() throws {
+    let app = Application(.testing)
+    self.app = app
+    try Server.configure(app)
+  }
+
+  func testHelloWorld() throws {
+    defer {
+      app.shutdown()
+    }
 
     let emailAddress = UUID().uuidString
     let password = UUID().uuidString

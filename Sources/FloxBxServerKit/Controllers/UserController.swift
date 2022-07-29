@@ -4,7 +4,7 @@ import Vapor
 
 extension CreateUserRequestContent: Content {}
 extension CreateUserResponseContent: Content {}
-extension GetUserResponseContent : Content {}
+extension GetUserResponseContent: Content {}
 
 struct UserController: RouteCollection {
   func create(from request: Request) -> EventLoopFuture<CreateUserResponseContent> {
@@ -23,9 +23,8 @@ struct UserController: RouteCollection {
       return CreateUserResponseContent(token: token.value)
     }
   }
-  
+
   func get(from request: Request) throws -> GetUserResponseContent {
-    
     let user = try request.auth.require(User.self)
     let username = user.email
     let id = try user.requireID()

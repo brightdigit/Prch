@@ -19,7 +19,7 @@ public struct URLSessionResponse: SessionResponse {
 
   public typealias DataType = Data
 
-  public let httpURLResponse: HTTPURLResponse
+  let httpURLResponse: HTTPURLResponse
 
   public let data: Data?
 }

@@ -14,14 +14,13 @@
       .toolbar(content: {
         ToolbarItemGroup {
           HStack {
-
             Button {
               #if canImport(GroupActivities)
-              if #available(iOS 15, *) {
-                object.startSharing()
-              } else {
-                // Fallback on earlier versions
-              }
+                if #available(iOS 15, macOS 12, *) {
+                  object.startSharing()
+                } else {
+                  // Fallback on earlier versions
+                }
               #endif
             } label: {
               Image(systemName: "shareplay")
@@ -32,12 +31,12 @@
             } label: {
               Image(systemName: "plus.circle.fill")
             }
-            
-              #if os(iOS)
 
-                EditButton()
+            #if os(iOS)
 
-              #endif
+              EditButton()
+
+            #endif
           }
         }
       })

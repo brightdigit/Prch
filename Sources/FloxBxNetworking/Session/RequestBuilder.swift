@@ -1,5 +1,5 @@
-import Foundation
 import FloxBxAuth
+import Foundation
 
 #if canImport(FoundationNetworking)
   import FoundationNetworking

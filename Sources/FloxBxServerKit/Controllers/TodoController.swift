@@ -33,58 +33,33 @@ struct TodoController: RouteCollection {
 
   func index(from request: Request) throws -> EventLoopFuture<[CreateTodoResponseContent]> {
     let user = try request.auth.require(User.self)
-    
-    let itemsDB : EventLoopFuture<[Todo]>
-    if let sessionID: UUID = request.parameters.get("sessionID", as: UUID.self) {
-      
-      let session = GroupSession.find(sessionID, on: request.db).unwrap(orError: Abort(.notFound))
-      itemsDB = session.flatMap { session in
-        session.$user.get(on: request.db)
-      }.flatMap { user in
-        user.$items.get(on: request.db)
-      }
-    } else {
-      itemsDB = user.$items.get(on: request.db)
-    }
-    return itemsDB.flatMapEachThrowing(CreateTodoResponseContent.init(todoItem:))
+
+    let userF: EventLoopFuture<User> = GroupSession.user(fromRequest: request, otherwise: user)
+    return userF.flatMap { user in
+      user.$items.get(on: request.db)
+    }.flatMapEachThrowing(CreateTodoResponseContent.init(todoItem:))
   }
 
   func create(from request: Request) throws -> EventLoopFuture<CreateTodoResponseContent> {
     let user = try request.auth.require(User.self)
     let content = try request.content.decode(CreateTodoRequestContent.self)
     let todo = Todo(title: content.title)
-    
-    let userF : EventLoopFuture<User>
-    if let sessionID: UUID = request.parameters.get("sessionID", as: UUID.self) {
-      let session = GroupSession.find(sessionID, on: request.db).unwrap(orError: Abort(.notFound))
-      userF = session.flatMap{
-        $0.$user.get(on: request.db)
-      }
-    } else {
-      userF = request.eventLoop.makeSucceededFuture(user)
-    }
-    
+
+    let userF: EventLoopFuture<User> = GroupSession.user(fromRequest: request, otherwise: user)
+
     return userF.flatMap { user in
-      return user.$items.create(todo, on: request.db).flatMapThrowing {
+      user.$items.create(todo, on: request.db).flatMapThrowing {
         try CreateTodoResponseContent(id: todo.requireID(), title: todo.title)
       }
     }
-    
   }
 
   func update(from request: Request) throws -> EventLoopFuture<CreateTodoResponseContent> {
     let user = try request.auth.require(User.self)
     let todoID: UUID = try request.parameters.require("todoID", as: UUID.self)
     let content = try request.content.decode(CreateTodoRequestContent.self)
-    let userF : EventLoopFuture<User>
-    if let sessionID: UUID = request.parameters.get("sessionID", as: UUID.self) {
-      let session = GroupSession.find(sessionID, on: request.db).unwrap(orError: Abort(.notFound))
-      userF = session.flatMap{
-        $0.$user.get(on: request.db)
-      }
-    } else {
-      userF = request.eventLoop.makeSucceededFuture(user)
-    }
+    let userF: EventLoopFuture<User> = GroupSession.user(fromRequest: request, otherwise: user)
+
     return userF.flatMap { user in
       user.$items.query(on: request.db)
         .filter(\.$id == todoID)
@@ -97,18 +72,9 @@ struct TodoController: RouteCollection {
   }
 
   func delete(from request: Request) throws -> EventLoopFuture<HTTPStatus> {
-    
     let user = try request.auth.require(User.self)
     let todoID: UUID = try request.parameters.require("todoID", as: UUID.self)
-    let userF : EventLoopFuture<User>
-    if let sessionID: UUID = request.parameters.get("sessionID", as: UUID.self) {
-      let session = GroupSession.find(sessionID, on: request.db).unwrap(orError: Abort(.notFound))
-      userF = session.flatMap{
-        $0.$user.get(on: request.db)
-      }
-    } else {
-      userF = request.eventLoop.makeSucceededFuture(user)
-    }
+    let userF: EventLoopFuture<User> = GroupSession.user(fromRequest: request, otherwise: user)
     return userF.flatMap { user in
       user.$items.query(on: request.db).filter(\.$id == todoID).all()
         .flatMap { $0.delete(on: request.db) }

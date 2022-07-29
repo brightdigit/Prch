@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
   name: "FloxBx",
-  platforms: [.macOS(.v12), .iOS(.v15), .watchOS(.v7)],
+  platforms: [.macOS(.v11), .iOS(.v14), .watchOS(.v7)],
   products: [
     // Products define the executables and libraries a package produces, and make them visible to other packages.
     .library(
@@ -33,14 +33,15 @@ let package = Package(
       dependencies: ["FloxBxServerKit"]
     ),
     .target(name: "FloxBxModels",
-           dependencies: ["FloxBxNetworking"]),
+            dependencies: ["FloxBxNetworking"]),
     .target(name: "FloxBxNetworking", dependencies: ["FloxBxAuth"]),
-    .target(name: "FloxBxUI",dependencies: [
-      
-        "Canary",
+    .target(name: "FloxBxUI", dependencies: [
+      "Canary",
       "FloxBxModels",
-      "FloxBxAuth"
+      "FloxBxAuth",
+      "FloxBxGroupActivities"
     ]),
+    .target(name: "FloxBxGroupActivities"),
     .target(name: "FloxBxAuth"),
     .target(
       name: "FloxBxServerKit",

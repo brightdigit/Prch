@@ -4,6 +4,12 @@ import Foundation
   import FoundationNetworking
 #endif
 
+#if canImport(Darwin)
+  import Darwin
+#else
+  public typealias OSStatus = Int32
+#endif
+
 enum KeychainError: Error {
   case unexpectedPasswordData
   case noPassword

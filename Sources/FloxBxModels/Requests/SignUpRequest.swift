@@ -4,7 +4,7 @@ public struct SignUpRequest: ClientBodySuccessRequest {
   public init(body: CreateUserRequestContent) {
     self.body = body
   }
-  
+
   public let body: CreateUserRequestContent
 
   public var headers: [String: String] {

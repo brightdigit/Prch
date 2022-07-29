@@ -1,28 +1,26 @@
-import Foundation
 import FloxBxNetworking
+import Foundation
 
-public struct GetUserRequest : ClientSuccessRequest {
+public struct GetUserRequest: ClientSuccessRequest {
   public typealias SuccessType = GetUserResponseContent
-  
+
   public static var requiresCredentials: Bool {
-    return true
+    true
   }
-  
+
   public var path: String {
-    return "api/v1/users"
+    "api/v1/users"
   }
-  
-  public var parameters: [String : String] {
+
+  public var parameters: [String: String] {
     [:]
   }
-  
+
   public var method: RequestMethod {
-    return .GET
+    .GET
   }
-  
-  public var headers: [String : String] {
-    return [:]
+
+  public var headers: [String: String] {
+    [:]
   }
-  
-  
 }

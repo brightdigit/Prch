@@ -1,7 +1,5 @@
 #if canImport(SwiftUI)
   import SwiftUI
-  import FloxBxUI
-
   public protocol Application: App {}
 
   public extension Application {

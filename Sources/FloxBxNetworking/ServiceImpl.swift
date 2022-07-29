@@ -1,5 +1,5 @@
-import Foundation
 import FloxBxAuth
+import Foundation
 #if canImport(FoundationNetworking)
   import FoundationNetworking
 #endif
@@ -141,18 +141,19 @@ public class ServiceImpl<CoderType: Coder, SessionType: Session, RequestBuilderT
   }
 
   var baseURLComponents: URLComponents
-  let credentialsContainer = CredentialsContainer(accessGroup:  "MLT7M394S7.com.brightdigit.FloxBx", serviceName: "floxbx.work")
+  let credentialsContainer: CredentialsContainer
   let coder: CoderType
   let session: SessionType
   let builder: RequestBuilderType
 
   let headers: [String: String]
 
-  internal init(baseURLComponents: URLComponents, coder: CoderType, session: SessionType, builder: RequestBuilderType, headers: [String: String]) {
+  internal init(baseURLComponents: URLComponents, coder: CoderType, session: SessionType, builder: RequestBuilderType, credentialsContainer: CredentialsContainer, headers: [String: String]) {
     self.baseURLComponents = baseURLComponents
     self.coder = coder
     self.session = session
     self.builder = builder
+    self.credentialsContainer = credentialsContainer
     self.headers = headers
   }
 
@@ -165,11 +166,13 @@ public class ServiceImpl<CoderType: Coder, SessionType: Session, RequestBuilderT
   }
 }
 
-public extension ServiceImpl {
-  convenience init(host: String, coder: JSONCoder = .init(encoder: JSONEncoder(), decoder: JSONDecoder()), session: URLSession = .shared, headers: [String: String]) where RequestBuilderType == URLRequestBuilder, SessionType == URLSession, CoderType == JSONCoder {
-    var baseURLComponents = URLComponents()
-    baseURLComponents.host = host
-    baseURLComponents.scheme = "https"
-    self.init(baseURLComponents: baseURLComponents, coder: coder, session: session, builder: .init(), headers: headers)
+#if canImport(Security)
+  public extension ServiceImpl {
+    convenience init(host: String, accessGroup: String, serviceName: String, coder: JSONCoder = .init(encoder: JSONEncoder(), decoder: JSONDecoder()), session: URLSession = .shared, headers: [String: String]) where RequestBuilderType == URLRequestBuilder, SessionType == URLSession, CoderType == JSONCoder {
+      var baseURLComponents = URLComponents()
+      baseURLComponents.host = host
+      baseURLComponents.scheme = "https"
+      self.init(baseURLComponents: baseURLComponents, coder: coder, session: session, builder: .init(), credentialsContainer: KeychainContainer(accessGroup: accessGroup, serviceName: serviceName), headers: headers)
+    }
   }
-}
+#endif

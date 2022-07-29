@@ -54,7 +54,7 @@
     }
   }
 
-  public struct LoginView: View {
+  struct LoginView: View {
     @EnvironmentObject var object: ApplicationObject
     @State var emailAddress: String = ""
     @State var password: String = ""
@@ -62,9 +62,9 @@
       @State var presentLoginOrSignup = false
     #endif
 
-    public init() {}
+    init() {}
 
-    public var content: some View {
+    var content: some View {
       VStack {
         #if !os(watchOS)
           Spacer()
@@ -104,7 +104,7 @@
       }.padding().frame(maxWidth: 300, maxHeight: 500)
     }
 
-    public var body: some View {
+    var body: some View {
       #if os(watchOS)
         self.content.sheet(isPresented: self.$presentLoginOrSignup, content: {
           VStack {
@@ -124,8 +124,8 @@
     }
   }
 
-  public struct LoginView_Previews: PreviewProvider {
-    public static var previews: some View {
+  struct LoginView_Previews: PreviewProvider {
+    static var previews: some View {
       ForEach(ColorScheme.allCases, id: \.self) {
         LoginView().preferredColorScheme($0)
       }
