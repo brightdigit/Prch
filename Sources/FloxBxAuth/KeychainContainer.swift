@@ -124,6 +124,51 @@
       }
     }
 
+    @discardableResult
+    fileprivate func deleteToken() throws -> Bool {
+      let tokenQuery: [String: Any] = [kSecClass as String: kSecClassGenericPassword,
+                                       kSecAttrService as String: serviceName,
+                                       kSecAttrAccessGroup as String: accessGroup]
+      let tokenStatus = SecItemDelete(tokenQuery as CFDictionary)
+
+      switch tokenStatus {
+      case errSecItemNotFound:
+        return false
+
+      case errSecSuccess:
+        return true
+
+      default:
+        throw KeychainError.unhandledError(status: tokenStatus)
+      }
+    }
+
+    @discardableResult
+    fileprivate func deletePassword() throws -> Bool {
+      let query: [String: Any] = [kSecClass as String: kSecClassInternetPassword,
+                                  kSecAttrServer as String: serviceName,
+                                  kSecAttrAccessGroup as String: accessGroup,
+                                  kSecAttrSynchronizable as String: kSecAttrSynchronizableAny]
+      let tokenStatus = SecItemDelete(query as CFDictionary)
+
+      switch tokenStatus {
+      case errSecItemNotFound:
+        return false
+
+      case errSecSuccess:
+        return true
+
+      default:
+        throw KeychainError.unhandledError(status: tokenStatus)
+      }
+    }
+
+    public func reset() throws -> Credentials.ResetResult {
+      let didDeleteToken = try deleteToken()
+      let didDeletePassword = try deletePassword()
+      return .init(didDeletePassword: didDeletePassword, didDeleteToken: didDeleteToken)
+    }
+
     public func save(credentials: Credentials) throws {
       try upsertAccount(credentials.username, andPassword: credentials.password)
       if let token = credentials.token {

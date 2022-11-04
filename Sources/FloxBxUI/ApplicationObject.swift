@@ -9,7 +9,7 @@ import FloxBxNetworking
   import SwiftUI
 
   class ApplicationObject: ObservableObject {
-    @Published var shareplayObject = SharePlayObject<TodoListDelta>()
+    @Published var shareplayObject: SharePlayObject<TodoListDelta, GroupActivityConfiguration, UUID>
 
     var cancellables = [AnyCancellable]()
 
@@ -33,15 +33,24 @@ import FloxBxNetworking
     let sentry = CanaryClient()
 
     init(_ items: [TodoContentItem] = []) {
+      if #available(iOS 15, *) {
+        #if canImport(GroupActivities)
+          self.shareplayObject = .init(FloxBxActivity.self)
+        #else
+          self.shareplayObject = .init()
+        #endif
+      } else {
+        shareplayObject = .init()
+      }
       requiresAuthentication = true
       let authenticated = $token.map { $0 == nil }
       authenticated.receive(on: DispatchQueue.main).assign(to: &$requiresAuthentication)
 
-      let groupSessionIDPub = shareplayObject.$groupSessionID
+      let groupSessionIDPub = shareplayObject.$groupActivityID
 
-      $token.share().compactMap { $0 }.combineLatest(groupSessionIDPub).map(\.1).flatMap { groupSessionID in
+      $token.share().compactMap { $0 }.combineLatest(groupSessionIDPub).map(\.1).flatMap { groupActivityID in
         Future { closure in
-          self.service.beginRequest(GetTodoListRequest(groupSessionID: groupSessionID)) { result in
+          self.service.beginRequest(GetTodoListRequest(groupActivityID: groupActivityID)) { result in
             closure(result)
           }
         }
@@ -52,7 +61,6 @@ import FloxBxNetworking
 
       if #available(iOS 15, macOS 12, *) {
         #if canImport(GroupActivities)
-          self.shareplayObject.startSharingPublisher.sink(receiveValue: self.startSharing).store(in: &self.cancellables)
           self.shareplayObject.messagePublisher.sink(receiveValue: self.handle(_:)).store(in: &self.cancellables)
         #endif
       }
@@ -94,7 +102,7 @@ import FloxBxNetworking
       }
 
       let content = CreateTodoRequestContent(title: item.title)
-      let request = UpsertTodoRequest(groupSessionID: shareplayObject.groupSessionID, itemID: item.serverID, body: content)
+      let request = UpsertTodoRequest(groupActivityID: shareplayObject.groupActivityID, itemID: item.serverID, body: content)
 
       service.beginRequest(request) { todoItemResult in
         switch todoItemResult {
@@ -136,7 +144,7 @@ import FloxBxNetworking
       var errors = [Error?].init(repeating: nil, count: deletedIds.count)
       for (index, id) in deletedIds.enumerated() {
         group.enter()
-        let request = DeleteTodoItemRequest(groupSessionID: shareplayObject.groupSessionID, itemID: id)
+        let request = DeleteTodoItemRequest(groupActivityID: shareplayObject.groupActivityID, itemID: id)
         service.beginRequest(request) { error in
           errors[index] = error
           group.leave()
@@ -176,10 +184,28 @@ import FloxBxNetworking
     }
 
     fileprivate func saveCredentials(_ newCreds: Credentials) {
-      try? service.save(credentials: newCreds)
+      do {
+        try service.save(credentials: newCreds)
+      } catch {
+        latestError = error
+        return
+      }
       DispatchQueue.main.async {
         self.username = newCreds.username
         self.token = newCreds.token
+      }
+    }
+
+    func logout() {
+      do {
+        try service.resetCredentials()
+      } catch {
+        latestError = error
+        return
+      }
+      DispatchQueue.main.async {
+        self.username = nil
+        self.token = nil
       }
     }
 

@@ -2,13 +2,13 @@ import FloxBxNetworking
 import Foundation
 
 public struct UpsertTodoRequest: ClientBodySuccessRequest {
-  public init(groupSessionID: UUID?, itemID: UUID?, body: UpsertTodoRequest.BodyType) {
-    self.groupSessionID = groupSessionID
+  public init(groupActivityID: UUID?, itemID: UUID?, body: UpsertTodoRequest.BodyType) {
+    self.groupActivityID = groupActivityID
     self.itemID = itemID
     self.body = body
   }
 
-  public let groupSessionID: UUID?
+  public let groupActivityID: UUID?
   public let itemID: UUID?
   public let body: BodyType
 
@@ -22,8 +22,8 @@ public struct UpsertTodoRequest: ClientBodySuccessRequest {
 
   public var path: String {
     var path = "api/v1/"
-    if let groupSessionID = groupSessionID {
-      path.append("group-sessions/\(groupSessionID)/")
+    if let groupActivityID = groupActivityID {
+      path.append("group-sessions/\(groupActivityID)/")
     }
     path.append("todos")
 

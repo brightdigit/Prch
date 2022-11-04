@@ -5,12 +5,12 @@ import Foundation
 #endif
 
 public struct DeleteTodoItemRequest: ClientVoidRequest {
-  public init(groupSessionID: UUID? = nil, itemID: UUID) {
-    self.groupSessionID = groupSessionID
+  public init(groupActivityID: UUID? = nil, itemID: UUID) {
+    self.groupActivityID = groupActivityID
     self.itemID = itemID
   }
 
-  let groupSessionID: UUID?
+  let groupActivityID: UUID?
   let itemID: UUID
   public static var requiresCredentials: Bool {
     true
@@ -18,8 +18,8 @@ public struct DeleteTodoItemRequest: ClientVoidRequest {
 
   public var path: String {
     var path = "api/v1/"
-    if let groupSessionID = groupSessionID {
-      path.append("group-sessions/\(groupSessionID)/")
+    if let groupActivityID = groupActivityID {
+      path.append("group-sessions/\(groupActivityID)/")
     }
     path.append("todos/\(itemID)")
 

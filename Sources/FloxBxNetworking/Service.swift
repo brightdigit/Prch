@@ -4,6 +4,9 @@ import Foundation
 public protocol Service {
   func save(credentials: Credentials) throws
 
+  @discardableResult
+  func resetCredentials() throws -> Credentials.ResetResult
+
   func fetchCredentials() throws -> Credentials?
 
   func beginRequest<RequestType: ClientRequest>(_ request: RequestType, _ completed: @escaping (Result<RequestType.SuccessType, Error>) -> Void) where
