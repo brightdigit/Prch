@@ -30,7 +30,6 @@ opt_in_rules:
   - file_name
   - file_name_no_space
   - file_types_order
-  - first_where
   - flatmap_over_map_reduce
   - force_unwrapping
   - function_default_parameter_at_end
@@ -45,9 +44,9 @@ opt_in_rules:
   - legacy_random
   - literal_expression_end_indentation
   - lower_acl_than_parent
-  - missing_docs
+  #- missing_docs
   - modifier_order
-  - multiline_arguments
+  #- multiline_arguments
   - multiline_arguments_brackets
   - multiline_function_chains
   - multiline_literal_brackets
@@ -83,12 +82,11 @@ opt_in_rules:
   - strong_iboutlet
   - switch_case_on_newline
   - toggle_bool
-  - trailing_closure
+  #- trailing_closure
   - type_contents_order
   - unavailable_function
   - unneeded_parentheses_in_closure_argument
   - unowned_variable_capture
-  - untyped_error_in_catch
   - unused_declaration
   - unused_import
   - vertical_parameter_alignment_on_call
@@ -100,12 +98,15 @@ opt_in_rules:
 cyclomatic_complexity:
   - 6
   - 9
+type_body_length:
+  - 250
+  - 500
 file_length:
-  - 200
-  - 200
+  - 400
+  - 800
 function_body_length:
-  - 15
   - 25
+  - 40
 function_parameter_count: 8
 line_length:
   - 90
@@ -114,9 +115,8 @@ identifier_name:
   excluded:
     - id
 excluded:
-  - Tests/*/XCTestManifests.swift
+  - Tests
   - DerivedData
   - .build
-  - Tests/LinuxMain.swift
 indentation_width:
   indentation_width: 2

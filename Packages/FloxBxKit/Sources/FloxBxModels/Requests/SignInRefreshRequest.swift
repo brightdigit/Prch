@@ -1,8 +1,6 @@
 import FloxBxNetworking
 
 public struct SignInRefreshRequest: ClientSuccessRequest {
-  public init() {}
-
   public typealias SuccessType = CreateTokenResponseContent
 
   public static let requiresCredentials = true
@@ -18,4 +16,6 @@ public struct SignInRefreshRequest: ClientSuccessRequest {
   public var headers: [String: String] {
     [:]
   }
+
+  public init() {}
 }

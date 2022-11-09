@@ -3,21 +3,32 @@
   import SwiftUI
   import UIKit
 
-  @available(iOS 15.4, *)
   /// SwiftUI View for `GroupActivitySharingController`
-  public struct GroupActivitySharingView<ActivityType: GroupActivity>: UIViewControllerRepresentable {
-    public init(activity: ActivityType) {
-      controller = try! GroupActivitySharingController(activity)
-    }
+  @available(iOS 15.4, *)
+  public struct GroupActivitySharingView<
+    ActivityType: GroupActivity
+  >: UIViewControllerRepresentable {
+    public typealias UIViewControllerType = GroupActivitySharingController
 
     private let controller: GroupActivitySharingController
 
-    public func makeUIViewController(context _: Context) -> GroupActivitySharingController {
+    public init(activity: ActivityType) {
+      do {
+        controller = try GroupActivitySharingController(activity)
+      } catch {
+        preconditionFailure(error.localizedDescription)
+      }
+    }
+
+    public func makeUIViewController(
+      context _: Context
+    ) -> GroupActivitySharingController {
       controller
     }
 
-    public func updateUIViewController(_: GroupActivitySharingController, context _: Context) {}
-
-    public typealias UIViewControllerType = GroupActivitySharingController
+    public func updateUIViewController(
+      _: GroupActivitySharingController,
+      context _: Context
+    ) {}
   }
 #endif

@@ -4,8 +4,8 @@ import FluentPostgresDriver
 import Vapor
 
 public struct Server {
-  let env: Environment
-  let sentry: CanaryClient
+  private let env: Environment
+  private let sentry: CanaryClient
 
   public init(env: Environment, sentry: CanaryClient = .init()) {
     self.env = env
@@ -44,11 +44,6 @@ public struct Server {
     bearer.get("users", use: userController.get(from:))
     try TodoController().boot(routes: bearer)
     try GroupSessionController().boot(routes: bearer)
-    // register routes
-//    try app.register(collection: TodoController())
-//    try app.register(collection: UserController())
-//    try app.register(collection: UserTokenController())
-
     try app.autoMigrate().wait()
   }
 

@@ -12,6 +12,7 @@ settings:
   CURRENT_PROJECT_VERSION: "1"
   bundleIdPrefix: com.brightdigit
   PRODUCT_NAME: FloxBx
+  LINT_MODE: ${LINT_MODE}
 packages:
   FloxBxUI:
     path: ./Packages/FloxBxKit
@@ -132,6 +133,10 @@ targets:
           - group.com.brightdigit.FloxBx
         keychain-access-groups:
           - $(AppIdentifierPrefix)com.brightdigit.FloxBx
+    postBuildScripts:
+    - path: Packages/FloxBxKit/scripts/lint.sh
+      name: Lint
+      basedOnDependencyAnalysis: false  
   FloxBx.macOS:
     type: application
     platform: macOS
@@ -180,3 +185,7 @@ targets:
           - group.com.brightdigit.FloxBx
         keychain-access-groups:
           - $(AppIdentifierPrefix)com.brightdigit.FloxBx
+    postBuildScripts:
+    - path: Packages/FloxBxKit/scripts/lint.sh
+      name: Lint
+      basedOnDependencyAnalysis: false  

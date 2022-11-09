@@ -1,16 +1,6 @@
 import Foundation
 
 public struct TodoContentItem: Identifiable, Codable {
-  public init(clientID: UUID = .init(), serverID: UUID? = nil, title: String) {
-    self.clientID = clientID
-    self.serverID = serverID
-    self.title = title
-  }
-
-  public init(content: CreateTodoResponseContent) {
-    self.init(clientID: content.id, serverID: content.id, title: content.title)
-  }
-
   public let clientID: UUID
   public let serverID: UUID?
   public var title: String
@@ -22,10 +12,20 @@ public struct TodoContentItem: Identifiable, Codable {
   public var id: UUID {
     clientID
   }
+
+  public init(title: String, clientID: UUID = .init(), serverID: UUID? = nil) {
+    self.clientID = clientID
+    self.serverID = serverID
+    self.title = title
+  }
+
+  public init(content: CreateTodoResponseContent) {
+    self.init(title: content.title, clientID: content.id, serverID: content.id)
+  }
 }
 
-public extension TodoContentItem {
-  func updatingTitle(_ title: String) -> TodoContentItem {
-    TodoContentItem(clientID: clientID, serverID: serverID, title: title)
+extension TodoContentItem {
+  public func updatingTitle(_ title: String) -> TodoContentItem {
+    TodoContentItem(title: title, clientID: clientID, serverID: serverID)
   }
 }

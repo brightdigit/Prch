@@ -1,16 +1,21 @@
 import Fluent
 
-struct CreateTodoMigration: Migration {
-  func prepare(on database: Database) -> EventLoopFuture<Void> {
+internal struct CreateTodoMigration: Migration {
+  internal func prepare(on database: Database) -> EventLoopFuture<Void> {
     database.schema(Todo.schema)
       .id()
       .field(Todo.FieldKeys.userID, .uuid, .required)
       .field(Todo.FieldKeys.title, .string, .required)
-      .foreignKey(Todo.FieldKeys.userID, references: User.schema, .id, onDelete: .cascade, onUpdate: .cascade)
+      .foreignKey(
+        Todo.FieldKeys.userID,
+        references: User.schema, .id,
+        onDelete: .cascade,
+        onUpdate: .cascade
+      )
       .create()
   }
 
-  func revert(on database: Database) -> EventLoopFuture<Void> {
+  internal func revert(on database: Database) -> EventLoopFuture<Void> {
     database.schema(Todo.schema).delete()
   }
 }

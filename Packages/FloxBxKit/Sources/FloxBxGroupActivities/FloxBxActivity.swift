@@ -6,6 +6,7 @@ import Foundation
   @available(iOS 15, macOS 12, *)
   public struct FloxBxActivity: SharePlayActivity {
     public let id: UUID
+    public let metadata: GroupActivityMetadata
     public init(id: UUID, username: String) {
       self.id = id
       var metadata = GroupActivityMetadata()
@@ -13,13 +14,11 @@ import Foundation
       metadata.type = .generic
       self.metadata = metadata
     }
-
-    public let metadata: GroupActivityMetadata
   }
 
   @available(iOS 15, macOS 12, *)
-  public extension FloxBxActivity {
-    init(configuration: GroupActivityConfiguration) {
+  extension FloxBxActivity {
+    public init(configuration: GroupActivityConfiguration) {
       self.init(id: configuration.groupActivityID, username: configuration.username)
     }
   }

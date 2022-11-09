@@ -2,16 +2,15 @@ import FloxBxModels
 import Fluent
 import Vapor
 
-extension CreateGroupSessionResponseContent: Content {}
-
-struct GroupSessionController: RouteCollection {
-  func boot(routes: RoutesBuilder) throws {
+internal struct GroupSessionController: RouteCollection {
+  internal func boot(routes: RoutesBuilder) throws {
     let group = routes.grouped("group-sessions")
 
     group.post(use: create(from:))
   }
 
-  func create(from request: Request) throws -> EventLoopFuture<CreateGroupSessionResponseContent> {
+  internal func create(from request: Request) throws
+    -> EventLoopFuture<CreateGroupSessionResponseContent> {
     let user = try request.auth.require(User.self)
     let userID = try user.requireID()
     let groupSession = GroupSession(userID: userID)

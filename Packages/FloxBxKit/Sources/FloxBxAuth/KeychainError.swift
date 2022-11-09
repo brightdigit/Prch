@@ -10,7 +10,7 @@ import Foundation
   public typealias OSStatus = Int32
 #endif
 
-enum KeychainError: Error {
+internal enum KeychainError: Error {
   case unexpectedPasswordData
   case noPassword
   case unhandledError(status: OSStatus)

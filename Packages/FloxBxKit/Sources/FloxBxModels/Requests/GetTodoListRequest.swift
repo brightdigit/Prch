@@ -1,19 +1,15 @@
 import FloxBxNetworking
 import Foundation
 public struct GetTodoListRequest: ClientSuccessRequest {
-  public init(groupActivityID: UUID? = nil) {
-    self.groupActivityID = groupActivityID
-  }
-
   public typealias SuccessType = [CreateTodoResponseContent]
 
   public typealias BodyType = Void
 
-  let groupActivityID: UUID?
-
   public static var requiresCredentials: Bool {
     true
   }
+
+  private let groupActivityID: UUID?
 
   public var path: String {
     var path = "api/v1/"
@@ -35,5 +31,9 @@ public struct GetTodoListRequest: ClientSuccessRequest {
 
   public var headers: [String: String] {
     [:]
+  }
+
+  public init(groupActivityID: UUID? = nil) {
+    self.groupActivityID = groupActivityID
   }
 }

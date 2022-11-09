@@ -1,18 +1,17 @@
 import FloxBxNetworking
 
 public struct SignUpRequest: ClientBodySuccessRequest {
-  public init(body: CreateUserRequestContent) {
-    self.body = body
+  public typealias BodyType = CreateUserRequestContent
+
+  public typealias SuccessType = CreateUserResponseContent
+  public static var requiresCredentials: Bool {
+    false
   }
 
   public let body: CreateUserRequestContent
 
   public var headers: [String: String] {
     [:]
-  }
-
-  public static var requiresCredentials: Bool {
-    false
   }
 
   public var path: String {
@@ -23,9 +22,9 @@ public struct SignUpRequest: ClientBodySuccessRequest {
     [:]
   }
 
-  public typealias BodyType = CreateUserRequestContent
-
-  public typealias SuccessType = CreateUserResponseContent
-
   public var method: RequestMethod { .POST }
+
+  public init(body: CreateUserRequestContent) {
+    self.body = body
+  }
 }

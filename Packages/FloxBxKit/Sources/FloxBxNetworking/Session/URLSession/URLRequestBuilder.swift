@@ -6,12 +6,23 @@ import Foundation
 #endif
 
 public struct URLRequestBuilder: RequestBuilder {
+  public typealias SessionRequestType = URLRequest
   public init() {}
-  public func build<BodyRequestType, CoderType>(request: BodyRequestType, withBaseURL baseURLComponents: URLComponents, withHeaders headers: [String: String], withEncoder _: CoderType) throws -> URLRequest where BodyRequestType: ClientRequest, CoderType: Coder, BodyRequestType.BodyType == Void, CoderType.DataType == Data {
+  public func build<BodyRequestType, CoderType>(
+    request: BodyRequestType,
+    withBaseURL baseURLComponents: URLComponents,
+    withHeaders headers: [String: String],
+    withEncoder _: CoderType
+  ) throws -> URLRequest
+    where BodyRequestType: ClientRequest,
+    CoderType: Coder,
+    BodyRequestType.BodyType == Void,
+    CoderType.DataType == Data {
     var componenents = baseURLComponents
     componenents.path = request.actualPath
     componenents.queryItems = request.parameters.map(URLQueryItem.init)
 
+    // swiftlint:disable:next force_unwrapping
     let url = componenents.url!
     var urlRequest = URLRequest(url: url)
     urlRequest.httpMethod = request.method.rawValue
@@ -24,11 +35,21 @@ public struct URLRequestBuilder: RequestBuilder {
     return urlRequest
   }
 
-  public func build<BodyRequestType, CoderType>(request: BodyRequestType, withBaseURL baseURLComponents: URLComponents, withHeaders headers: [String: String], withEncoder encoder: CoderType) throws -> URLRequest where BodyRequestType: ClientRequest, CoderType: Coder, BodyRequestType.BodyType: Encodable, CoderType.DataType == Data {
+  public func build<BodyRequestType, CoderType>(
+    request: BodyRequestType,
+    withBaseURL baseURLComponents: URLComponents,
+    withHeaders headers: [String: String],
+    withEncoder encoder: CoderType
+  ) throws -> URLRequest
+    where BodyRequestType: ClientRequest,
+    CoderType: Coder,
+    BodyRequestType.BodyType: Encodable,
+    CoderType.DataType == Data {
     var componenents = baseURLComponents
     componenents.path = "/\(request.path)"
     componenents.queryItems = request.parameters.map(URLQueryItem.init)
 
+    // swiftlint:disable:next force_unwrapping
     let url = componenents.url!
     var urlRequest = URLRequest(url: url)
     urlRequest.httpMethod = request.method.rawValue
@@ -49,6 +70,4 @@ public struct URLRequestBuilder: RequestBuilder {
     }
     return ["Authorization": "Bearer \(token)"]
   }
-
-  public typealias SessionRequestType = URLRequest
 }

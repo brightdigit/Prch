@@ -2,15 +2,15 @@ import FloxBxModels
 import Fluent
 import Vapor
 
-extension CreateTokenRequestContent: Content {}
-
-extension CreateTokenResponseContent: Content {}
-
-struct UserTokenController: RouteCollection {
-  func create(from request: Request) -> EventLoopFuture<CreateTokenResponseContent> {
+internal struct UserTokenController: RouteCollection {
+  internal func create(
+    from request: Request
+  ) -> EventLoopFuture<CreateTokenResponseContent> {
     let createTokenRequestContent: CreateTokenRequestContent
     do {
-      createTokenRequestContent = try request.content.decode(CreateTokenRequestContent.self)
+      createTokenRequestContent = try request.content.decode(
+        CreateTokenRequestContent.self
+      )
     } catch {
       return request.eventLoop.makeFailedFuture(error)
     }
@@ -25,14 +25,17 @@ struct UserTokenController: RouteCollection {
           throw Abort(.unauthorized)
         }
         return try user.generateToken()
-      }.flatMap { token in
+      }
+      .flatMap { token in
         token.save(on: request.db).map {
           CreateTokenResponseContent(token: token.value)
         }
       }
   }
 
-  func get(from request: Request) -> EventLoopFuture<CreateTokenResponseContent> {
+  internal func get(
+    from request: Request
+  ) -> EventLoopFuture<CreateTokenResponseContent> {
     let userToken: UserToken
     do {
       userToken = try request.auth.require(UserToken.self)
@@ -62,7 +65,7 @@ struct UserTokenController: RouteCollection {
     }
   }
 
-  func delete(from request: Request) -> EventLoopFuture<HTTPResponseStatus> {
+  internal func delete(from request: Request) -> EventLoopFuture<HTTPResponseStatus> {
     let userToken: UserToken
     do {
       userToken = try request.auth.require(UserToken.self)
@@ -76,7 +79,7 @@ struct UserTokenController: RouteCollection {
     }
   }
 
-  func boot(routes: RoutesBuilder) throws {
+  internal func boot(routes: RoutesBuilder) throws {
     routes.post("tokens", use: create(from:))
     let tokenProtected = routes.grouped(UserToken.authenticator())
     tokenProtected.delete("tokens", use: delete(from:))

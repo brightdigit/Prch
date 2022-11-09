@@ -2,14 +2,16 @@
   import FloxBxGroupActivities
   import SwiftUI
 
-  struct ContentView: View {
-    init() {}
+  internal struct ContentView: View {
+    @EnvironmentObject private var object: ApplicationObject
 
-    @EnvironmentObject var object: ApplicationObject
     #if canImport(GroupActivities)
-      @State var activity: ActivityIdentifiableContainer<UUID>?
+      @State private var activity: ActivityIdentifiableContainer<UUID>?
     #endif
-    var innerView: some View {
+
+    @State private var shouldDisplayLoginView: Bool = false
+
+    private var innerView: some View {
       let view = TodoListView()
       #if os(macOS)
         return view.frame(width: 500, height: 500)
@@ -18,15 +20,14 @@
       #endif
     }
 
-    var mainView: some View {
+    private var mainView: some View {
       TabView {
         NavigationView {
           if #available(iOS 15.0, watchOS 8.0, macOS 12, *) {
             #if canImport(GroupActivities)
               innerView.task {
-                for await session in self.object.shareplayObject.getSessions(FloxBxActivity.self) {
-                  self.object.shareplayObject.configureGroupSession(session)
-                }
+                await self.object.shareplayObject
+                  .listenForSessions(forActivity: FloxBxActivity.self)
               }
             #else
               innerView
@@ -36,17 +37,27 @@
           }
         }
       }
-      .sheet(isPresented: self.$object.requiresAuthentication, content: {
+      .sheet(isPresented: self.$shouldDisplayLoginView, content: {
         LoginView()
       })
+      .onReceive(self.object.$requiresAuthentication) { requiresAuthentication in
+        DispatchQueue.main.async {
+          self.shouldDisplayLoginView = requiresAuthentication
+        }
+      }
     }
 
-    var body: some View {
+    internal var body: some View {
       if #available(iOS 15.4, *) {
-        #if canImport(GroupActivities)
-          mainView.sheet(item: self.$activity) { activity in
-            GroupActivitySharingView<FloxBxActivity>(activity: activity.getGroupActivity())
-          }.onReceive(self.object.shareplayObject.$activity, perform: { activity in
+        #if canImport(GroupActivities) && os(iOS)
+          mainView.sheet(
+            item: self.$activity
+          ) { activity in
+            GroupActivitySharingView<FloxBxActivity>(
+              activity: activity.getGroupActivity()
+            )
+          }
+          .onReceive(self.object.shareplayObject.$activity, perform: { activity in
             self.activity = activity
           })
           .onAppear(perform: {
@@ -64,9 +75,11 @@
         })
       }
     }
+
+    internal init() {}
   }
 
-  struct ContentView_Previews: PreviewProvider {
+  private struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
       ContentView()
     }

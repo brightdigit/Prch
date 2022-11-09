@@ -1,31 +1,36 @@
 import Fluent
 import Vapor
 
-final class UserToken: Model, Content {
-  static let schema = "UserTokens"
-
-  enum FieldKeys {
-    static let userID: FieldKey = "userID"
-    static let value: FieldKey = "value"
-    static let expiresAt: FieldKey = "expiresAt"
+internal final class UserToken: Model, Content {
+  internal enum FieldKeys {
+    internal static let userID: FieldKey = "userID"
+    internal static let value: FieldKey = "value"
+    internal static let expiresAt: FieldKey = "expiresAt"
   }
 
+  internal static let schema = "UserTokens"
+
   @ID(key: .id)
-  var id: UUID?
+  internal var id: UUID?
 
   @Field(key: FieldKeys.value)
-  var value: String
+  internal var value: String
 
   @Parent(key: FieldKeys.userID)
-  var user: User
+  internal var user: User
 
   /// Expiration date. Token will no longer be valid after this point.
   @Timestamp(key: "expiresAt", on: .delete)
-  var expiresAt: Date?
+  internal var expiresAt: Date?
 
-  init() {}
+  internal init() {}
 
-  init(id: UUID? = nil, value: String, userID: User.IDValue, expiresAt: Date = Date(timeInterval: 60 * 60 * 5, since: .init())) {
+  internal init(
+    value: String,
+    userID: User.IDValue,
+    id: UUID? = nil,
+    expiresAt: Date = Date(timeInterval: 60 * 60 * 5, since: .init())
+  ) {
     self.id = id
     self.value = value
     $user.id = userID
@@ -34,10 +39,10 @@ final class UserToken: Model, Content {
 }
 
 extension UserToken: ModelTokenAuthenticatable {
-  static let valueKey: KeyPath<UserToken, Field<String>> = \.$value
-  static let userKey: KeyPath<UserToken, Parent<User>> = \.$user
+  internal static let valueKey: KeyPath<UserToken, Field<String>> = \.$value
+  internal static let userKey: KeyPath<UserToken, Parent<User>> = \.$user
 
-  var isValid: Bool {
+  internal var isValid: Bool {
     guard let expiresAt = expiresAt else {
       return false
     }

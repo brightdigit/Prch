@@ -7,15 +7,21 @@ import Foundation
 
   extension ApplicationObject {
     @available(iOS 15, macOS 12, *)
-    func requestSharing() {
+    internal func requestSharing() {
       Task {
         do {
           guard let username = username else {
             return
           }
 
-          let groupSession = try await self.service.request(CreateGroupSessionRequest())
-          self.shareplayObject.beginRequest(forConfiguration: .init(groupActivityID: groupSession.id, username: username))
+          let groupSession = try await self.createGroupSession()
+          self.shareplayObject
+            .beginRequest(
+              forConfiguration: .init(
+                groupActivityID: groupSession.id,
+                username: username
+              )
+            )
           //
         } catch {
           print("Failed to activate ShoppingListActivity activity: \(error)")
@@ -23,13 +29,13 @@ import Foundation
       }
     }
 
-    func handle(_ deltas: [TodoListDelta]) {
+    internal func handle(_ deltas: [TodoListDelta]) {
       for delta in deltas {
         handle(delta)
       }
     }
 
-    func handle(_ delta: TodoListDelta) {
+    private func handle(_ delta: TodoListDelta) {
       switch delta {
       case let .upsert(id, content):
 
@@ -38,11 +44,14 @@ import Foundation
         }
         if let index = index {
           DispatchQueue.main.async {
-            self.items[index] = self.items[index].updatingTitle(content.title)
+            self.updateItem(
+              at: index,
+              with: self.items[index].updatingTitle(content.title)
+            )
           }
         } else {
           DispatchQueue.main.async {
-            self.items.append(.init(serverID: id, title: content.title))
+            self.addItem(.init(title: content.title, serverID: id))
           }
         }
 
@@ -54,7 +63,7 @@ import Foundation
         }
 
         DispatchQueue.main.async {
-          self.items.remove(atOffsets: IndexSet(indicies))
+          self.removeItems(atOffsets: IndexSet(indicies))
         }
       }
 

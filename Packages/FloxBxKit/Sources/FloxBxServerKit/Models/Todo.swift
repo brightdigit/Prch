@@ -1,25 +1,26 @@
 import Fluent
 import Vapor
 
-final class Todo: Model, Content {
-  static let schema = "Todos"
-  enum FieldKeys {
-    static let title: FieldKey = "title"
-    static let userID: FieldKey = "userID"
+internal final class Todo: Model, Content {
+  internal enum FieldKeys {
+    internal static let title: FieldKey = "title"
+    internal static let userID: FieldKey = "userID"
   }
 
+  internal static let schema = "Todos"
+
   @ID(key: .id)
-  var id: UUID?
+  internal var id: UUID?
 
   @Field(key: "title")
-  var title: String
+  internal var title: String
 
   @Parent(key: FieldKeys.userID)
-  var user: User
+  internal var user: User
 
-  init() {}
+  internal init() {}
 
-  init(id: UUID? = nil, title: String, userID: UUID? = nil) {
+  internal init(title: String, userID: UUID? = nil, id: UUID? = nil) {
     self.id = id
     self.title = title
     if let userID = userID {

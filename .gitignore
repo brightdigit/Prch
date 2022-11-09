@@ -1,4 +1,3 @@
-
 # Created by https://www.toptal.com/developers/gitignore/api/swift,swiftpm,swiftpackagemanager,xcode,macos,linux
 # Edit at https://www.toptal.com/developers/gitignore?templates=swift,swiftpm,swiftpackagemanager,xcode,macos,linux
 
@@ -156,5 +155,18 @@ xcuserdata
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
 
-# End of https://www.toptal.com/developers/gitignore/api/swift,swiftpm,swiftpackagemanager,xcode,macos,linux
-.swiftpm
+/Support/**/*.plist
+/Support/**/*.entitlements
+*.ipa
+*.zip
+*.pkg
+*.app
+
+**/*.xcassets/**/*.png
+**/*.xcassets/**/*.pdf
+**/*.xcassets/**/*.svg
+
+.bundle
+vendor
+.mint
+# End of https://www.toptal.com/developers/gitignore/api/xcode,macos

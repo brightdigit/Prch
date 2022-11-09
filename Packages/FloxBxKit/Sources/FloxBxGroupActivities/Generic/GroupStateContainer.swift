@@ -1,26 +1,28 @@
-import Foundation
+#if canImport(Combine)
+  import Foundation
 
-#if canImport(GroupActivities)
-  import GroupActivities
-#endif
+  #if canImport(GroupActivities)
+    import GroupActivities
+  #endif
 
-/// Contains the state of whether a GroupActivity can be started.
-class GroupStateContainer {
-  let _observer: Any?
-  @Published private(set) var isEligible = false
+  /// Contains the state of whether a GroupActivity can be started.
+  internal class GroupStateContainer {
+    private let anyObserver: Any?
+    @Published internal private(set) var isEligible = false
 
-  init() {
-    #if canImport(GroupActivities)
-      if #available(iOS 15, *) {
-        let observer = GroupStateObserver()
-        self._observer = observer
-        observer.$isEligibleForGroupSession.assign(to: &self.$isEligible)
-        self.isEligible = observer.isEligibleForGroupSession
-      } else {
-        _observer = nil
-      }
-    #else
-      _observer = nil
-    #endif
+    internal init() {
+      #if canImport(GroupActivities)
+        if #available(macOS 12, iOS 15, *) {
+          let observer = GroupStateObserver()
+          self.anyObserver = observer
+          observer.$isEligibleForGroupSession.assign(to: &self.$isEligible)
+          self.isEligible = observer.isEligibleForGroupSession
+        } else {
+          anyObserver = nil
+        }
+      #else
+        anyObserver = nil
+      #endif
+    }
   }
-}
+#endif

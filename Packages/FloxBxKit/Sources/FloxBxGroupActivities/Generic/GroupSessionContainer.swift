@@ -5,18 +5,21 @@ import Foundation
 #endif
 
 public struct GroupSessionContainer<IDType: Hashable> {
-  let session: Any
+  private let session: Any
   public let activityID: IDType
 
   #if canImport(GroupActivities)
-    @available(iOS 15, *)
-    init<ActivityType: GroupActivity & Identifiable>(groupSession: GroupSession<ActivityType>) where ActivityType.ID == IDType {
+    @available(iOS 15, macOS 12, *)
+    internal init<ActivityType: SharePlayActivity>(
+      groupSession: GroupSession<ActivityType>
+    ) where ActivityType.ID == IDType {
       session = groupSession
       activityID = groupSession.activity.id
     }
 
     @available(iOS 15, macOS 12, *)
-    func getGroupSession<ActivityType: GroupActivity & Identifiable>() -> GroupSession<ActivityType> where ActivityType.ID == IDType {
+    internal func getGroupSession<ActivityType: SharePlayActivity>()
+      -> GroupSession<ActivityType> where ActivityType.ID == IDType {
       guard let session = session as? GroupSession<ActivityType> else {
         preconditionFailure()
       }

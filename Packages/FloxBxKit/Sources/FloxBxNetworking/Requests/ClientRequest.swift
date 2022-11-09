@@ -6,7 +6,7 @@ public protocol ClientRequest: ClientBaseRequest {
 }
 
 extension ClientRequest {
-  var actualPath: String {
+  public var actualPath: String {
     guard !path.hasPrefix("/") else {
       return path
     }
