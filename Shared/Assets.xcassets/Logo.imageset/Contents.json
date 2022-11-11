@@ -1,0 +1,27 @@
+{
+  "images" : [
+    {
+      "idiom" : "universal",
+      "filename" : "logo.pdf"
+    },
+    {
+      "scale" : "1x",
+      "filename" : "logo.1x~universal.png",
+      "idiom" : "universal"
+    },
+    {
+      "scale" : "2x",
+      "filename" : "logo.2x~universal.png",
+      "idiom" : "universal"
+    },
+    {
+      "scale" : "3x",
+      "filename" : "logo.3x~universal.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "version" : 1,
+    "author" : "com.brightdigit.Speculid"
+  }
+}

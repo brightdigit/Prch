@@ -1,0 +1,7 @@
+{
+  "set" : "Shared/Assets.xcassets/Logo.imageset",
+  "remove-alpha" : false,
+  "source" : "logo.svg",
+  "geometry" : "200.0",
+  "background" : null
+}
