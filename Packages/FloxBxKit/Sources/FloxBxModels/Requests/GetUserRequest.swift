@@ -1,6 +1,7 @@
 import FloxBxNetworking
 import Foundation
 
+// periphery:ignore
 public struct GetUserRequest: ClientSuccessRequest {
   public typealias SuccessType = GetUserResponseContent
 

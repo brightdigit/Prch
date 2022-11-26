@@ -22,7 +22,6 @@ public struct URLRequestBuilder: RequestBuilder {
     componenents.path = request.actualPath
     componenents.queryItems = request.parameters.map(URLQueryItem.init)
 
-    // swiftlint:disable:next force_unwrapping
     let url = componenents.url!
     var urlRequest = URLRequest(url: url)
     urlRequest.httpMethod = request.method.rawValue
@@ -49,7 +48,6 @@ public struct URLRequestBuilder: RequestBuilder {
     componenents.path = "/\(request.path)"
     componenents.queryItems = request.parameters.map(URLQueryItem.init)
 
-    // swiftlint:disable:next force_unwrapping
     let url = componenents.url!
     var urlRequest = URLRequest(url: url)
     urlRequest.httpMethod = request.method.rawValue

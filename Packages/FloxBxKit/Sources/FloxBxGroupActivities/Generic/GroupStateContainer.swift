@@ -7,6 +7,7 @@
 
   /// Contains the state of whether a GroupActivity can be started.
   internal class GroupStateContainer {
+    // periphery:ignore
     private let anyObserver: Any?
     @Published internal private(set) var isEligible = false
 

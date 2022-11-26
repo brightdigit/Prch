@@ -1,15 +1,13 @@
-import Canary
 import enum FloxBxModels.Configuration
 import FluentPostgresDriver
+import SublimationVapor
 import Vapor
 
 public struct Server {
   private let env: Environment
-  private let sentry: CanaryClient
 
-  public init(env: Environment, sentry: CanaryClient = .init()) {
+  public init(env: Environment) {
     self.env = env
-    self.sentry = sentry
   }
 
   public init() throws {
@@ -22,6 +20,18 @@ public struct Server {
   public static func configure(_ app: Application) throws {
     // uncomment to serve files from /Public folder
     // app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
+
+    #if DEBUG
+      if !app.environment.isRelease {
+        app.lifecycle.use(
+          SublimationLifecycleHandler(
+            ngrokPath: "/opt/homebrew/bin/ngrok",
+            bucketName: Configuration.Sublimation.bucketName,
+            key: Configuration.Sublimation.key
+          )
+        )
+      }
+    #endif
 
     app.databases.use(.postgres(
       hostname: Environment.get("DATABASE_HOST") ?? "localhost",
@@ -49,12 +59,10 @@ public struct Server {
 
   @discardableResult
   public func start() throws -> Application {
-    try sentry.start(withOptions: .init(dsn: Configuration.dsn))
     let app = Application(env)
     defer { app.shutdown() }
     try Server.configure(app)
     try app.run()
-    // try routes(app)
     return app
   }
 }

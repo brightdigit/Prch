@@ -12,7 +12,7 @@
           }
         }.onDelete(perform: object.deleteItems(atIndexSet:))
       }
-      // swiftlint:disable:next closure_body_length
+
       .toolbar(content: {
         ToolbarItemGroup {
           HStack {

@@ -8,6 +8,7 @@ import Foundation
 public struct ActivityIdentifiableContainer<IDType: Hashable>: Identifiable {
   /// Activity ID
   public let id: IDType
+  // periphery:ignore
   private let activity: Any
 
   #if canImport(GroupActivities)
@@ -22,6 +23,7 @@ public struct ActivityIdentifiableContainer<IDType: Hashable>: Identifiable {
 
   /// Gets the GroupActivity inside the container
   /// - Returns: The GroupAcitivty
+  // periphery:ignore
   @available(iOS 15, *)
   public func getGroupActivity<GroupActivityType>() -> GroupActivityType {
     guard let actvitiy = activity as? GroupActivityType else {

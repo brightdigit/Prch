@@ -4,9 +4,9 @@ import Foundation
   import GroupActivities
 #endif
 
-public struct GroupSessionContainer<IDType: Hashable> {
+internal struct GroupSessionContainer<IDType: Hashable> {
   private let session: Any
-  public let activityID: IDType
+  internal let activityID: IDType
 
   #if canImport(GroupActivities)
     @available(iOS 15, macOS 12, *)

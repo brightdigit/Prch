@@ -10,7 +10,6 @@
     #endif
 
     private var content: some View {
-      // swiftlint:disable:next closure_body_length
       VStack {
         #if !os(watchOS)
           Spacer()

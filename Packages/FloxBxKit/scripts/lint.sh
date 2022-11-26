@@ -7,13 +7,19 @@ else
 	PACKAGE_DIR="${SRCROOT}/Packages/FloxBxKit" 	
 fi
 
+if [ -z "$GITHUB_ACTION" ]; then
+	MINT_CMD="/opt/homebrew/bin/mint"
+else
+	MINT_CMD="mint"
+fi
+
 export MINT_PATH="$PACKAGE_DIR/.mint"
 MINT_ARGS="-n -m $PACKAGE_DIR/Mintfile --silent"
-MINT_RUN="mint run $MINT_ARGS"
+MINT_RUN="$MINT_CMD run $MINT_ARGS"
 
 pushd $PACKAGE_DIR
 
-mint bootstrap -m Mintfile
+$MINT_CMD bootstrap -m Mintfile
 
 if [ "$LINT_MODE" == "NONE" ]; then
 	exit

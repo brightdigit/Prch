@@ -35,7 +35,6 @@ public class ServiceImpl<
     self.headers = headers
   }
 
-  // swiftlint:disable:next function_body_length
   public func beginRequest<RequestType>(
     _ request: RequestType,
     _ completed: @escaping (Result<RequestType.SuccessType, Error>) -> Void
@@ -124,7 +123,6 @@ public class ServiceImpl<
     }
   }
 
-  // swiftlint:disable:next function_body_length
   public func beginRequest<RequestType>(
     _ request: RequestType,
     _ completed: @escaping (Result<RequestType.SuccessType, Error>) -> Void
@@ -230,21 +228,18 @@ public class ServiceImpl<
 #if canImport(Security)
   extension ServiceImpl {
     public convenience init(
-      host: String,
+      baseURL: URL,
       accessGroup: String,
       serviceName: String,
-      headers: [String: String],
+      headers: [String: String] = ["Content-Type": "application/json; charset=utf-8"],
       coder: JSONCoder = .init(encoder: JSONEncoder(), decoder: JSONDecoder()),
       session: URLSession = .shared
     ) where
       RequestBuilderType == URLRequestBuilder,
       SessionType == URLSession,
       CoderType == JSONCoder {
-      var baseURLComponents = URLComponents()
-      baseURLComponents.host = host
-      baseURLComponents.scheme = "https"
       self.init(
-        baseURLComponents: baseURLComponents,
+        baseURLComponents: URLComponents(url: baseURL, resolvingAgainstBaseURL: false)!,
         coder: coder,
         session: session,
         builder: .init(),
