@@ -71,6 +71,9 @@ public class ServiceImpl<
     }
     session.request(sessionRequest) { result in
       let decodedResult: Result<RequestType.SuccessType, Error> = result.flatMap { data in
+        guard request.isValidStatusCode(data.statusCode) else {
+          return Result.failure(RequestError.invalidStatusCode(data.statusCode))
+        }
         guard let bodyData = data.data else {
           return Result<RequestType.SuccessType, Error>.failure(RequestError.missingData)
         }
@@ -79,7 +82,6 @@ public class ServiceImpl<
           try self.coder.decode(RequestType.SuccessType.self, from: bodyData)
         }
       }
-      dump(decodedResult)
       completed(decodedResult)
     }
   }
@@ -119,7 +121,13 @@ public class ServiceImpl<
       return
     }
     session.request(sessionRequest) { result in
-      completed(result.asVoid().asError())
+      let error = result.flatMap { response -> Result<Void, Error> in
+        guard request.isValidStatusCode(response.statusCode) else {
+          return .failure(RequestError.invalidStatusCode(response.statusCode))
+        }
+        return .success(())
+      }.asError()
+      completed(error)
     }
   }
 
@@ -160,6 +168,9 @@ public class ServiceImpl<
     }
     session.request(sessionRequest) { result in
       let decodedResult: Result<RequestType.SuccessType, Error> = result.flatMap { data in
+        guard request.isValidStatusCode(data.statusCode) else {
+          return Result<RequestType.SuccessType, Error>.failure(RequestError.invalidStatusCode(data.statusCode))
+        }
         guard let bodyData = data.data else {
           return Result<RequestType.SuccessType, Error>.failure(RequestError.missingData)
         }
@@ -208,7 +219,13 @@ public class ServiceImpl<
       return
     }
     session.request(sessionRequest) { result in
-      completed(result.asVoid().asError())
+      let error = result.flatMap { response -> Result<Void, Error> in
+        guard request.isValidStatusCode(response.statusCode) else {
+          return .failure(RequestError.invalidStatusCode(response.statusCode))
+        }
+        return .success(())
+      }.asError()
+      completed(error)
     }
   }
 

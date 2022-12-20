@@ -1,13 +1,11 @@
+import FloxBxDatabase
 import FloxBxModels
 import Fluent
+import RouteGroups
 import Vapor
 
-internal struct GroupSessionController: RouteCollection {
-  internal func boot(routes: RoutesBuilder) throws {
-    let group = routes.grouped("group-sessions")
-
-    group.post(use: create(from:))
-  }
+internal struct GroupSessionController: RouteGroupCollection {
+  typealias RouteGroupKeyType = RouteGroupKey
 
   internal func create(from request: Request) throws
     -> EventLoopFuture<CreateGroupSessionResponseContent> {
@@ -17,5 +15,13 @@ internal struct GroupSessionController: RouteCollection {
     return user.$groupSessions.create(groupSession, on: request.db).flatMapThrowing {
       try CreateGroupSessionResponseContent(id: groupSession.requireID())
     }
+  }
+
+  var routeGroups: [RouteGroupKey: RouteCollectionBuilder] {
+    [
+      .bearer: { (bearer: RoutesBuilder) in
+        bearer.post("group-sessions", use: create(from:))
+      }
+    ]
   }
 }

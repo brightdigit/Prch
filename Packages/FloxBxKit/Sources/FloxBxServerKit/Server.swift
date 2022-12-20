@@ -1,4 +1,9 @@
+import APNS
+import FloxBxDatabase
 import enum FloxBxModels.Configuration
+import protocol FloxBxModels.Notifiable
+import struct FloxBxModels.PayloadNotification
+import struct FloxBxModels.TagPayload
 import FluentPostgresDriver
 import SublimationVapor
 import Vapor
@@ -16,44 +21,70 @@ public struct Server {
     self.init(env: env)
   }
 
-  // configures your application
-  public static func configure(_ app: Application) throws {
-    // uncomment to serve files from /Public folder
-    // app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
+  static func apns(_ app: Application) throws {
+    guard let appleECP8PrivateKey = Environment.get("APNS_PRIVATE_KEY") else {
+      throw MissingConfigurationError(key: "APNS_PRIVATE_KEY")
+    }
 
-    #if DEBUG
-      if !app.environment.isRelease {
-        app.lifecycle.use(
-          SublimationLifecycleHandler(
-            ngrokPath: "/opt/homebrew/bin/ngrok",
-            bucketName: Configuration.Sublimation.bucketName,
-            key: Configuration.Sublimation.key
-          )
-        )
-      }
-    #endif
+    guard let keyIdentifier = Environment.get("APNS_KEY_IDENTIFIER") else {
+      throw MissingConfigurationError(key: "APNS_KEY_IDENTIFIER")
+    }
 
+    guard let teamIdentifier = Environment.get("APNS_TEAM_IDENTIFIER") else {
+      throw MissingConfigurationError(key: "APNS_TEAM_IDENTIFIER")
+    }
+
+    try app.apns.containers.use(
+      .init(
+        authenticationMethod: .jwt(
+          // 3
+          privateKey: .init(pemRepresentation: appleECP8PrivateKey),
+          keyIdentifier: keyIdentifier,
+          teamIdentifier: teamIdentifier
+        ),
+        // 5
+        environment: .sandbox
+      ),
+      eventLoopGroupProvider: .createNew,
+      responseDecoder: .init(),
+      requestEncoder: .init(),
+      backgroundActivityLogger: app.logger, as: .default
+    )
+  }
+
+  fileprivate static func databases(_ app: Application) {
     app.databases.use(.postgres(
       hostname: Environment.get("DATABASE_HOST") ?? "localhost",
       username: Environment.get("DATABASE_USERNAME") ?? "floxbx", password: ""
     ), as: .psql)
 
-    app.migrations.add(CreateUserMigration())
-    app.migrations.add(CreateTodoMigration())
-    app.migrations.add(CreateUserTokenMigration())
-    app.migrations.add(CreateGroupSessionMigration())
+    app.databases.middleware.configure(notify: app.sendNotification(_:))
+  }
 
-    let userController = UserController()
-    let tokenController = UserTokenController()
-    let api = app.routes.grouped("api", "v1")
-    api.post("users", use: userController.create(from:))
-    api.post("tokens", use: tokenController.create(from:))
-    let bearer = api.grouped(UserToken.authenticator())
-    bearer.delete("tokens", use: tokenController.delete(from:))
-    bearer.get("tokens", use: tokenController.get(from:))
-    bearer.get("users", use: userController.get(from:))
-    try TodoController().boot(routes: bearer)
-    try GroupSessionController().boot(routes: bearer)
+  fileprivate static func sublimation(_ app: Application) {
+    if !app.environment.isRelease {
+      app.lifecycle.use(
+        SublimationLifecycleHandler(
+          ngrokPath:
+          Environment.get("NGROK_PATH") ?? "/opt/homebrew/bin/ngrok",
+          bucketName:
+          Environment.get("SUBLIMATION_BUCKET") ?? Configuration.Sublimation.bucketName,
+          key:
+          Environment.get("SUBLIMATION_KEY") ?? Configuration.Sublimation.key
+        )
+      )
+    }
+  }
+
+  public static func configure(_ app: Application) throws {
+    // uncomment to serve files from /Public folder
+    // app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
+
+    sublimation(app)
+    try apns(app)
+    databases(app)
+    app.migrations.configure()
+    try app.routes.register(collection: Routes())
     try app.autoMigrate().wait()
   }
 

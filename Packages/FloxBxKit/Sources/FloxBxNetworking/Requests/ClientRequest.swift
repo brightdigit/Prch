@@ -3,6 +3,8 @@ public protocol ClientRequest: ClientBaseRequest {
   associatedtype BodyType
 
   var body: BodyType { get }
+
+  func isValidStatusCode(_ statusCode: Int) -> Bool
 }
 
 extension ClientRequest {
@@ -12,5 +14,9 @@ extension ClientRequest {
     }
 
     return "/\(path)"
+  }
+
+  public func isValidStatusCode(_ statusCode: Int) -> Bool {
+    statusCode / 100 == 2
   }
 }

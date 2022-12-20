@@ -1,6 +1,24 @@
 {
   "pins" : [
     {
+      "identity" : "apns",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/vapor/apns.git",
+      "state" : {
+        "revision" : "3c9cfc4ae9c3cb8765ea4e99ca81688ab28d1493",
+        "version" : "4.0.0-beta.2"
+      }
+    },
+    {
+      "identity" : "apnswift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swift-server-community/APNSwift.git",
+      "state" : {
+        "revision" : "4626afb4057e0c35aae25febf6baee95e0ced0ef",
+        "version" : "5.0.0-beta.2"
+      }
+    },
+    {
       "identity" : "async-http-client",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/swift-server/async-http-client.git",
@@ -16,15 +34,6 @@
       "state" : {
         "revision" : "3be4b6418d1e8b835b0b1a1bee06b249faa4da5f",
         "version" : "1.14.0"
-      }
-    },
-    {
-      "identity" : "canary",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/brightdigit/Canary.git",
-      "state" : {
-        "revision" : "b2ce0bcfc25123e72a343fda894fa1c15d7c04ba",
-        "version" : "0.2.1"
       }
     },
     {
@@ -70,15 +79,6 @@
       "state" : {
         "revision" : "0d55c35e788451ee27222783c7d363cb88092fab",
         "version" : "4.5.2"
-      }
-    },
-    {
-      "identity" : "plcrashreporter",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/microsoft/plcrashreporter.git",
-      "state" : {
-        "revision" : "b1a342da19ed9b3af61ea2efa7656c2af30aeb7c",
-        "version" : "1.11.0"
       }
     },
     {
@@ -136,15 +136,6 @@
       }
     },
     {
-      "identity" : "sentry-cocoa",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/getsentry/sentry-cocoa.git",
-      "state" : {
-        "revision" : "9cc3b7374bf96db5898562938c00a4f9f11023e7",
-        "version" : "7.31.2"
-      }
-    },
-    {
       "identity" : "sql-kit",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/sql-kit.git",
@@ -158,8 +149,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/brightdigit/Sublimation.git",
       "state" : {
-        "revision" : "145f5d1b72e955b7142e7d4954f63a9646f5c8f5",
-        "version" : "0.1.2"
+        "revision" : "bfe3319cb4a9364f7bde923c9378eea88eb45a65",
+        "version" : "0.1.3"
       }
     },
     {

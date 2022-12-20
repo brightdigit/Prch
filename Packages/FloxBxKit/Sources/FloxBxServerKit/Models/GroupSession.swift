@@ -1,29 +1,10 @@
+import FloxBxDatabase
+import FloxBxModels
 import Fluent
 import Vapor
 
-internal final class GroupSession: Model, Content {
-  internal enum FieldKeys {
-    internal static let userID: FieldKey = "userID"
-  }
-
-  internal static let schema = "GroupSessions"
-
-  @ID(key: .id)
-  internal var id: UUID?
-
-  @Parent(key: FieldKeys.userID)
-  internal var user: User
-
-  internal init() {}
-
-  internal init(userID: UUID, id: UUID? = nil) {
-    self.id = id
-    $user.id = userID
-  }
-}
-
 extension GroupSession {
-  internal static func user(
+  static func user(
     forGroupSessionWithID groupSessionID: UUID?,
     otherwise user: User,
     on database: Database,
@@ -44,7 +25,7 @@ extension GroupSession {
     return userF
   }
 
-  internal static func user(
+  static func user(
     fromRequest request: Request,
     otherwise user: User
   ) -> EventLoopFuture<User> {
@@ -57,5 +38,12 @@ extension GroupSession {
       on: database,
       eventLoop: eventLoop
     )
+  }
+
+  static func user(
+    fromRequest request: Request,
+    otherwise user: User
+  ) async throws -> User {
+    try await self.user(fromRequest: request, otherwise: user).get()
   }
 }

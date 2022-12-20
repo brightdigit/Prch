@@ -4,7 +4,8 @@ import Foundation
   import FoundationNetworking
 #endif
 
-internal enum RequestError: Error {
+public enum RequestError: Error {
   case missingData
   case invalidResponse(URLResponse?)
+  case invalidStatusCode(Int)
 }

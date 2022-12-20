@@ -4,14 +4,10 @@ import FloxBxModels
 import FloxBxNetworking
 import Sublimation
 
-enum DeveloperServerError: Error {
-  case noServer
-  case sublimationError(Error)
-}
-
-#if canImport(Combine) && canImport(SwiftUI)
+#if canImport(Combine) && canImport(SwiftUI) && canImport(UserNotifications)
   import Combine
   import SwiftUI
+  import UserNotifications
 
   internal class ApplicationObject: ObservableObject {
     @Published internal private(set) var shareplayObject: SharePlayObject<
@@ -20,6 +16,8 @@ enum DeveloperServerError: Error {
 
     private var cancellables = [AnyCancellable]()
 
+    private let mobileDevicePublisher: AnyPublisher<CreateMobileDeviceRequestContent?, Never>
+    @AppStorage("MobileDeviceRegistrationID") private var mobileDeviceRegistrationID: String?
     @Published internal private(set) var requiresAuthentication: Bool
     @Published internal private(set) var latestError: Error?
     @Published internal private(set) var token: String?
@@ -36,7 +34,11 @@ enum DeveloperServerError: Error {
       )
     #endif
 
-    internal init(_ items: [TodoContentItem] = []) {
+    internal init(
+      mobileDevicePublisher: AnyPublisher<CreateMobileDeviceRequestContent?, Never>,
+      _ items: [TodoContentItem] = []
+    ) {
+      self.mobileDevicePublisher = mobileDevicePublisher
       if #available(iOS 15, macOS 12, *) {
         #if canImport(GroupActivities)
           self.shareplayObject = .init(FloxBxActivity.self)
@@ -48,7 +50,7 @@ enum DeveloperServerError: Error {
       }
       requiresAuthentication = true
       let authenticated = $token.map { $0 == nil }
-      authenticated.receive(on: DispatchQueue.main).assign(to: &$requiresAuthentication)
+      authenticated.print().receive(on: DispatchQueue.main).assign(to: &$requiresAuthentication)
 
       let groupSessionIDPub = shareplayObject.$groupActivityID
 
@@ -147,16 +149,64 @@ enum DeveloperServerError: Error {
     #endif
 
     internal func begin() {
-      #if DEBUG
-        Task {
+      Task {
+        #if DEBUG
           self.service = await developerService()
+        #endif
 
-          setupCredentials()
+        self.mobileDevicePublisher.flatMap { content in
+          Future { () -> UUID? in
+            let id = self.mobileDeviceRegistrationID.flatMap(UUID.init(uuidString:))
+            switch (content, id) {
+            case let (.some(content), .some(id)):
+              do {
+                try await self.service.request(PatchMobileDeviceRequest(id: id, body: .init(createContent: content)))
+              } catch let RequestError.invalidStatusCode(statusCode) where statusCode == 404 {
+                return try await self.service.request(CreateMobileDeviceRequest(body: content)).id
+              } catch {
+                throw error
+              }
+              return id
+
+            case let (.some(content), .none):
+              return try await self.service.request(CreateMobileDeviceRequest(body: content)).id
+
+            case (nil, let .some(id)):
+              try await self.service.request(DeleteMobileDeviceRequest(id: id))
+              return nil
+
+            case (nil, nil):
+              debugPrint("ERROR: invalid state")
+              return nil
+            }
+          }
         }
-      #else
+        .replaceError(with: nil)
+        .compactMap { $0?.uuidString }
+        .receive(on: DispatchQueue.main)
+        .sink { id in
+          self.mobileDeviceRegistrationID = id
+        }.store(in: &self.cancellables)
+        let isNotificationAuthorizationGrantedResult = await Result {
+          try await UNUserNotificationCenter.current()
+            .requestAuthorization(options: [.sound, .badge, .alert])
+        }
+        // UNUserNotificationCenter.current().notificationSettings()
+        Task { @MainActor in
+          switch isNotificationAuthorizationGrantedResult {
+          case .success(true):
+            await AppInterfaceObject.sharedInterface.registerForRemoteNotifications()
+
+          case .success(false):
+            await AppInterfaceObject.sharedInterface.unregisterForRemoteNotifications()
+
+          case let .failure(error):
+            debugPrint(error)
+          }
+        }
 
         setupCredentials()
-      #endif
+      }
     }
 
     internal func saveItem(_ item: TodoContentItem, onlyNew: Bool = false) {
@@ -168,7 +218,7 @@ enum DeveloperServerError: Error {
         return
       }
 
-      let content = CreateTodoRequestContent(title: item.title)
+      let content = CreateTodoRequestContent(title: item.title, tags: item.tags)
       let request = UpsertTodoRequest(
         groupActivityID: shareplayObject.groupActivityID,
         itemID: item.serverID,

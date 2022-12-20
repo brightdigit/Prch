@@ -1,6 +1,10 @@
 import Fluent
 
 internal struct CreateUserMigration: Migration {
+  var name: String {
+    "FloxBxServerKit.CreateUserMigration"
+  }
+
   internal func prepare(on database: Database) -> EventLoopFuture<Void> {
     database.schema(User.schema)
       .id()

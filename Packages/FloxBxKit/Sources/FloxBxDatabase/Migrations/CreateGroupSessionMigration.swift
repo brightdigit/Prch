@@ -1,6 +1,10 @@
 import Fluent
 
 internal struct CreateGroupSessionMigration: Migration {
+  var name: String {
+    "FloxBxServerKit.CreateGroupSessionMigration"
+  }
+
   internal func prepare(on database: Database) -> EventLoopFuture<Void> {
     database.schema(GroupSession.schema)
       .id()

@@ -10,4 +10,5 @@ import FloxBxUI
 
 @main
 struct FloxBxApp: Application {
+   @ApplicationDelegateAdaptor var appDelegate: AppDelegate
 }

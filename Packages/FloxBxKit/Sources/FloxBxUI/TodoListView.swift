@@ -1,4 +1,5 @@
 #if canImport(SwiftUI)
+  import Combine
   import SwiftUI
 
   internal struct TodoListView: View {
@@ -35,7 +36,7 @@
             }
 
             Button {
-              self.object.addItem(.init(title: "New Item"))
+              self.object.addItem(.init(title: "New Item", tags: []))
             } label: {
               Image(systemName: "plus.circle.fill")
             }
@@ -55,8 +56,8 @@
   private struct TodoList_Previews: PreviewProvider {
     // swiftlint:disable:next strict_fileprivate
     fileprivate static var previews: some View {
-      TodoListView().environmentObject(ApplicationObject([
-        .init(title: "Do Stuff")
+      TodoListView().environmentObject(ApplicationObject(mobileDevicePublisher: .init(Just(.init(model: "", operatingSystem: "", topic: ""))), [
+        .init(title: "Do Stuff", tags: ["things", "places"])
       ]))
     }
   }

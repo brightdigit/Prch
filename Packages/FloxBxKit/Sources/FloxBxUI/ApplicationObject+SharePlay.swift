@@ -46,12 +46,12 @@ import Foundation
           DispatchQueue.main.async {
             self.updateItem(
               at: index,
-              with: self.items[index].updatingTitle(content.title)
+              with: self.items[index].updatingTitle(content.title, tags: content.tags)
             )
           }
         } else {
           DispatchQueue.main.async {
-            self.addItem(.init(title: content.title, serverID: id))
+            self.addItem(.init(title: content.title, tags: content.tags, serverID: id))
           }
         }
 
