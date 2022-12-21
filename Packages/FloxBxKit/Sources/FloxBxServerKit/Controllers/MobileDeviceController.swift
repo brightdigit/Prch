@@ -4,26 +4,6 @@ import Foundation
 import RouteGroups
 import Vapor
 
-extension MobileDevice {
-  convenience init(content: CreateMobileDeviceRequestContent) {
-    self.init(
-      model: content.model,
-      operatingSystem: content.operatingSystem,
-      topic: content.topic,
-      deviceToken: content.deviceToken
-    )
-  }
-
-  func patch(content: PatchMobileDeviceRequestContent) {
-    deviceToken = content.deviceToken ?? deviceToken
-    operatingSystem = content.operatingSystem ?? operatingSystem
-    model = content.model ?? model
-    topic = content.topic ?? topic
-  }
-}
-
-extension CreateMobileDeviceResponseContent: Content {}
-
 struct MobileDeviceController: RouteGroupCollection {
   var routeGroups: [RouteGroupKey: RouteGroups.RouteCollectionBuilder] {
     [
