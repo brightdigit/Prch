@@ -12,10 +12,10 @@ internal final class TodoTag: Model {
   internal var id: UUID?
 
   @Parent(key: FieldKeys.todoID)
-  var todo: Todo
+  internal var todo: Todo
 
   @Parent(key: FieldKeys.tag)
-  var tag: Tag
+  internal var tag: Tag
 
   internal init() {}
 }

@@ -13,10 +13,10 @@ internal final class UserSubscription: Model {
   internal var id: UUID?
 
   @Parent(key: FieldKeys.userID)
-  var user: User
+  internal var user: User
 
   @Parent(key: FieldKeys.tag)
-  var tag: Tag
+  internal var tag: Tag
 
   internal init() {}
 }

@@ -2,22 +2,29 @@ import FloxBxModels
 import FluentKit
 import Foundation
 
-protocol SendsNotifications {
+internal protocol SendsNotifications {
   associatedtype PayloadModelType: PayloadModel
 
+  // swiftlint:disable line_length
   // swiftformat:disable:next all
   var sendNotification: (PayloadNotification<PayloadModelType>) async throws -> UUID? { get }
+  // swiftlint:enable line_length
 }
 
 extension SendsNotifications {
-  func sentNotification(basedOn deviceNotification: DeviceNotification<PayloadModelType>) async throws -> Notification? {
-    guard let id = try await sendNotification(deviceNotification.payloadNotification) else {
+  internal func sentNotification(
+    basedOn deviceNotification: DeviceNotification<PayloadModelType>
+  ) async throws -> Notification? {
+    guard let sentNotificationID =
+      try await sendNotification(deviceNotification.payloadNotification) else {
       return nil
     }
-    return Notification(id: id, deviceNotification: deviceNotification)
+    return Notification(id: sentNotificationID, deviceNotification: deviceNotification)
   }
 
-  func sendNotifications(_ notifications: [DeviceNotification<PayloadModelType>]) async throws -> [Notification] {
+  internal func sendNotifications(
+    _ notifications: [DeviceNotification<PayloadModelType>]
+  ) async throws -> [Notification] {
     try await withThrowingTaskGroup(of: Notification?.self) { group -> [Notification] in
       for deviceNotification in notifications {
         group.addTask { () -> Notification? in
@@ -33,13 +40,17 @@ extension SendsNotifications {
     }
   }
 
-  func sendPayload(_ payload: PayloadModelType, to devices: [MobileDevice], on db: Database) async throws {
+  internal func sendPayload(
+    _ payload: PayloadModelType,
+    to devices: [MobileDevice],
+    on database: Database
+  ) async throws {
     let notifications = devices.compactMap {
       DeviceNotification(device: $0, payload: payload)
     }
 
     let models = try await sendNotifications(notifications)
 
-    try await models.create(on: db)
+    try await models.create(on: database)
   }
 }

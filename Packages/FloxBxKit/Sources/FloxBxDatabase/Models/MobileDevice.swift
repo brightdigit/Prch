@@ -32,7 +32,13 @@ public final class MobileDevice: Model {
 
   public init() {}
 
-  public init(id: UUID? = nil, model: String, operatingSystem: String, topic: String, deviceToken: Data? = nil) {
+  public init(
+    id: UUID? = nil,
+    model: String,
+    operatingSystem: String,
+    topic: String,
+    deviceToken: Data? = nil
+  ) {
     self.id = id
     self.model = model
     self.operatingSystem = operatingSystem

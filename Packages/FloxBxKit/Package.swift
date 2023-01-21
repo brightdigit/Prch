@@ -26,7 +26,10 @@ let package = Package(
     .package(url: "https://github.com/vapor/apns.git", from: "4.0.0-beta.2")
   ],
   targets: [
-    .target(name: "RouteGroups", dependencies: [.product(name: "Vapor", package: "vapor")]),
+    .target(
+      name: "RouteGroups",
+      dependencies: [.product(name: "Vapor", package: "vapor")]
+    ),
     .executableTarget(
       name: "fbd",
       dependencies: ["FloxBxServerKit"]

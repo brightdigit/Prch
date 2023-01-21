@@ -2,10 +2,10 @@ import FloxBxDatabase
 import RouteGroups
 import Vapor
 
-struct Routes: GroupCollection {
-  typealias RouteGroupKeyType = RouteGroupKey
+internal struct Routes: GroupCollection {
+  internal typealias RouteGroupKeyType = RouteGroupKey
 
-  func groupBuilder(routes: RoutesBuilder) -> GroupBuilder<RouteGroupKey> {
+  internal func groupBuilder(routes: RoutesBuilder) -> GroupBuilder<RouteGroupKey> {
     let api = routes.grouped("api", "v1")
     let bearer = api.grouped(UserToken.authenticator())
 
@@ -15,7 +15,7 @@ struct Routes: GroupCollection {
     ])
   }
 
-  func boot(groups: GroupBuilder<RouteGroupKey>) throws {
+  internal func boot(groups: GroupBuilder<RouteGroupKey>) throws {
     try groups.register(collection: UserTokenController())
     try groups.register(collection: UserController())
     try groups.register(collection: TodoController())

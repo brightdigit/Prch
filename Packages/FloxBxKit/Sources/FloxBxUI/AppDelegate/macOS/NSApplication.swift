@@ -1,11 +1,9 @@
 #if os(macOS) && canImport(SwiftUI)
   import AppKit
   import SwiftUI
-  extension ProcessInfo: Device {
-    public var systemVersion: String {
-      operatingSystemVersionString
-    }
-  }
+
+  public typealias ApplicationDelegateAdaptor = NSApplicationDelegateAdaptor
+  public typealias AppInterfaceObject = NSApplication
 
   extension NSApplication: AppInterface {
     public static var sharedInterface: AppInterface {
@@ -16,7 +14,4 @@
       ProcessInfo.processInfo
     }
   }
-
-  public typealias ApplicationDelegateAdaptor = NSApplicationDelegateAdaptor
-  public typealias AppInterfaceObject = NSApplication
 #endif

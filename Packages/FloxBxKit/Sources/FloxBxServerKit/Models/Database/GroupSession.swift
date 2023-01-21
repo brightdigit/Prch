@@ -4,7 +4,7 @@ import Fluent
 import Vapor
 
 extension GroupSession {
-  static func user(
+  internal static func user(
     forGroupSessionWithID groupSessionID: UUID?,
     otherwise user: User,
     on database: Database,
@@ -25,7 +25,7 @@ extension GroupSession {
     return userF
   }
 
-  static func user(
+  internal static func user(
     fromRequest request: Request,
     otherwise user: User
   ) -> EventLoopFuture<User> {
@@ -40,7 +40,7 @@ extension GroupSession {
     )
   }
 
-  static func user(
+  internal static func user(
     fromRequest request: Request,
     otherwise user: User
   ) async throws -> User {

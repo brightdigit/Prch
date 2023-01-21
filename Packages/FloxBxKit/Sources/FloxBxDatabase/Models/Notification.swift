@@ -38,7 +38,14 @@ public final class Notification: Model {
 }
 
 extension Notification {
-  convenience init<PayloadType: PayloadModel>(id: UUID, deviceNotification: DeviceNotification<PayloadType>) {
-    self.init(id: id, mobileDeviceID: deviceNotification.deviceID, payload: deviceNotification.payloadNotification.payload.asModel())
+  internal convenience init<PayloadType: PayloadModel>(
+    id: UUID,
+    deviceNotification: DeviceNotification<PayloadType>
+  ) {
+    self.init(
+      id: id,
+      mobileDeviceID: deviceNotification.deviceID,
+      payload: deviceNotification.payloadNotification.payload.asModel()
+    )
   }
 }

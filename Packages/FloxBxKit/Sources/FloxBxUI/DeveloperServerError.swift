@@ -1,6 +1,6 @@
 #if DEBUG
 
-  enum DeveloperServerError: Error {
+  internal enum DeveloperServerError: Error {
     case noServer
     case sublimationError(Error)
   }

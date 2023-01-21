@@ -21,7 +21,7 @@ public struct Server {
     self.init(env: env)
   }
 
-  static func apns(_ app: Application) throws {
+  private static func apns(_ app: Application) throws {
     guard let appleECP8PrivateKey = Environment.get("APNS_PRIVATE_KEY") else {
       throw MissingConfigurationError(key: "APNS_PRIVATE_KEY")
     }
@@ -52,7 +52,7 @@ public struct Server {
     )
   }
 
-  fileprivate static func databases(_ app: Application) {
+  private static func databases(_ app: Application) {
     app.databases.use(.postgres(
       hostname: Environment.get("DATABASE_HOST") ?? "localhost",
       username: Environment.get("DATABASE_USERNAME") ?? "floxbx", password: ""
@@ -61,7 +61,7 @@ public struct Server {
     app.databases.middleware.configure(notify: app.sendNotification(_:))
   }
 
-  fileprivate static func sublimation(_ app: Application) {
+  private static func sublimation(_ app: Application) {
     if !app.environment.isRelease {
       app.lifecycle.use(
         SublimationLifecycleHandler(

@@ -11,13 +11,12 @@ import Foundation
 #endif
 
 public struct UserSubscriptionRequest: ClientBodyRequest {
-  public let body: UserSubscriptionRequestContent
-
   public typealias BodyType = UserSubscriptionRequestContent
-
   public static var requiresCredentials: Bool {
     true
   }
+
+  public let body: UserSubscriptionRequestContent
 
   public var path: String
 

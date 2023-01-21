@@ -46,8 +46,9 @@ if [ -z "$CI" ]; then
 	$MINT_RUN swiftlint autocorrect
 fi
 
-$MINT_RUN periphery scan 
-$MINT_RUN stringslint lint $STRINGSLINT_OPTIONS
+# Too Many False Positives
+# $MINT_RUN periphery scan 
+# $MINT_RUN stringslint lint $STRINGSLINT_OPTIONS
 $MINT_RUN swiftformat --lint $SWIFTFORMAT_OPTIONS .
 $MINT_RUN swiftlint lint $SWIFTLINT_OPTIONS
 

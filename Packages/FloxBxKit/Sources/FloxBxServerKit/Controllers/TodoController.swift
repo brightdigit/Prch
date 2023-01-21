@@ -5,7 +5,7 @@ import RouteGroups
 import Vapor
 
 internal struct TodoController: RouteGroupCollection {
-  var routeGroups: [RouteGroupKey: RouteCollectionBuilder] {
+  internal var routeGroups: [RouteGroupKey: RouteCollectionBuilder] {
     [
       .bearer: { bearer in
         let todos = bearer.grouped("todos")
@@ -28,7 +28,7 @@ internal struct TodoController: RouteGroupCollection {
     ]
   }
 
-  internal func index(
+  private func index(
     from request: Request
   ) throws -> EventLoopFuture<[CreateTodoResponseContent]> {
     let user = try request.auth.require(User.self)
@@ -41,20 +41,23 @@ internal struct TodoController: RouteGroupCollection {
     .flatMapEachThrowing(CreateTodoResponseContent.init(todoItemWithLoadedTags:))
   }
 
-  internal func create(
+  private func create(
     from request: Request
   ) async throws -> CreateTodoResponseContent {
     let authUser = try request.auth.require(User.self)
     let content = try request.content.decode(CreateTodoRequestContent.self)
     let todo = Todo(title: content.title)
-    async let user = try await GroupSession.user(fromRequest: request, otherwise: authUser)
+    async let user = try await GroupSession.user(
+      fromRequest: request,
+      otherwise: authUser
+    )
     async let tags = Tag.findOrCreate(tagValues: content.tags, on: request.db)
     try await user.$items.create(todo, on: request.db)
     try await todo.$tags.attach(tags, on: request.db)
     return try await CreateTodoResponseContent(todoItem: todo, tags: tags)
   }
 
-  internal func update(
+  private func update(
     from request: Request
   ) async throws -> CreateTodoResponseContent {
     let authUser = try request.auth.require(User.self)
@@ -62,7 +65,11 @@ internal struct TodoController: RouteGroupCollection {
     let content = try request.content.decode(CreateTodoRequestContent.self)
     let user = try await GroupSession.user(fromRequest: request, otherwise: authUser)
 
-    let todo = try await user.$items.query(on: request.db).filter(\.$id == todoID).first().unwrap(orError: Abort(.notFound)).get()
+    let todo = try await user.$items.query(on: request.db)
+      .filter(\.$id == todoID)
+      .first()
+      .unwrap(orError: Abort(.notFound))
+      .get()
     async let tags = Tag.findOrCreate(tagValues: content.tags, on: request.db)
 
     try await todo.$tags.detachAll(on: request.db).get()
@@ -73,7 +80,7 @@ internal struct TodoController: RouteGroupCollection {
     return try await CreateTodoResponseContent(todoItem: todo, tags: tags)
   }
 
-  internal func delete(from request: Request) async throws -> HTTPStatus {
+  private func delete(from request: Request) async throws -> HTTPStatus {
     let authUser = try request.auth.require(User.self)
     let todoID: UUID = try request.parameters.require("todoID", as: UUID.self)
     let user = try await GroupSession.user(fromRequest: request, otherwise: authUser)

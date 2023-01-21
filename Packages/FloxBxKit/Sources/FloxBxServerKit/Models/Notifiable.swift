@@ -3,7 +3,7 @@ import FloxBxModels
 import Foundation
 
 extension Notifiable {
-  var alertNotification: APNSAlertNotification<PayloadType> {
+  internal var alertNotification: APNSAlertNotification<PayloadType> {
     .init(
       alert: .init(title: .raw(title)),
       expiration: .immediately,

@@ -1,18 +1,13 @@
 import Foundation
 
 public struct TagPayload: Codable, NotificationContent {
-  public init(action: TagPayload.Action, name: String) {
-    self.name = name
-    self.action = action
-  }
-
-  public let name: String
-  public let action: Action
-
   public enum Action: String, Codable {
     case added
     case removed
   }
+
+  public let name: String
+  public let action: Action
 
   public var title: String {
     switch action {
@@ -22,5 +17,10 @@ public struct TagPayload: Codable, NotificationContent {
 
       return "Todo Item tagged #\(name) Removed"
     }
+  }
+
+  public init(action: TagPayload.Action, name: String) {
+    self.name = name
+    self.action = action
   }
 }

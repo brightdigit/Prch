@@ -1,7 +1,7 @@
 import Fluent
 
 internal struct CreateUserMigration: Migration {
-  var name: String {
+  internal var name: String {
     "FloxBxServerKit.CreateUserMigration"
   }
 

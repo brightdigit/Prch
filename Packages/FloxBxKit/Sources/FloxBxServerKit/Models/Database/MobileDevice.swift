@@ -3,7 +3,7 @@ import FloxBxModels
 import Foundation
 
 extension MobileDevice {
-  convenience init(content: CreateMobileDeviceRequestContent) {
+  internal convenience init(content: CreateMobileDeviceRequestContent) {
     self.init(
       model: content.model,
       operatingSystem: content.operatingSystem,
@@ -12,7 +12,7 @@ extension MobileDevice {
     )
   }
 
-  func patch(content: PatchMobileDeviceRequestContent) {
+  internal func patch(content: PatchMobileDeviceRequestContent) {
     deviceToken = content.deviceToken ?? deviceToken
     operatingSystem = content.operatingSystem ?? operatingSystem
     model = content.model ?? model

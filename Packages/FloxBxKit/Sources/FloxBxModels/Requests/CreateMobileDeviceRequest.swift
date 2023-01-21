@@ -13,17 +13,13 @@ import Foundation
 public struct CreateMobileDeviceRequest: ClientBodySuccessRequest {
   public typealias SuccessType = CreateMobileDeviceResponseContent
 
-  public init(body: CreateMobileDeviceRequestContent) {
-    self.body = body
-  }
-
-  public let body: CreateMobileDeviceRequestContent
-
   public typealias BodyType = CreateMobileDeviceRequestContent
 
   public static var requiresCredentials: Bool {
     true
   }
+
+  public let body: CreateMobileDeviceRequestContent
 
   public var path: String {
     "api/v1/device/mobile"
@@ -39,5 +35,9 @@ public struct CreateMobileDeviceRequest: ClientBodySuccessRequest {
 
   public var headers: [String: String] {
     [:]
+  }
+
+  public init(body: CreateMobileDeviceRequestContent) {
+    self.body = body
   }
 }

@@ -14,15 +14,27 @@ public struct TodoContentItem: Identifiable, Codable {
     clientID
   }
 
-  public init(title: String, tags: [String], clientID: UUID = .init(), serverID: UUID? = nil) {
+  public init(
+    title: String,
+    tags: [String],
+    clientID: UUID = .init(),
+    serverID: UUID? = nil
+  ) {
     self.clientID = clientID
     self.serverID = serverID
     self.title = title
     self.tags = tags
   }
 
-  public init(content: CreateTodoResponseContent) {
-    self.init(title: content.title, tags: content.tags, clientID: content.id, serverID: content.id)
+  public init(
+    content: CreateTodoResponseContent
+  ) {
+    self.init(
+      title: content.title,
+      tags: content.tags,
+      clientID: content.id,
+      serverID: content.id
+    )
   }
 }
 

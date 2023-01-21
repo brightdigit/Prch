@@ -27,8 +27,6 @@
               #if canImport(GroupActivities)
                 if #available(iOS 15, macOS 12, *) {
                   object.requestSharing()
-                } else {
-                  // Fallback on earlier versions
                 }
               #endif
             } label: {
@@ -42,9 +40,7 @@
             }
 
             #if os(iOS)
-
               EditButton()
-
             #endif
           }
         }
@@ -56,9 +52,16 @@
   private struct TodoList_Previews: PreviewProvider {
     // swiftlint:disable:next strict_fileprivate
     fileprivate static var previews: some View {
-      TodoListView().environmentObject(ApplicationObject(mobileDevicePublisher: .init(Just(.init(model: "", operatingSystem: "", topic: ""))), [
-        .init(title: "Do Stuff", tags: ["things", "places"])
-      ]))
+      TodoListView().environmentObject(
+        ApplicationObject(
+          mobileDevicePublisher: .init(
+            Just(.init(model: "", operatingSystem: "", topic: ""))
+          ),
+          [
+            .init(title: "Do Stuff", tags: ["things", "places"])
+          ]
+        )
+      )
     }
   }
 #endif

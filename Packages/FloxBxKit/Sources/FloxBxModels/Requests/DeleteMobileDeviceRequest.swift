@@ -11,10 +11,6 @@ import Foundation
 #endif
 
 public struct DeleteMobileDeviceRequest: ClientVoidRequest {
-  public init(id: UUID) {
-    self.id = id
-  }
-
   public static var requiresCredentials: Bool {
     true
   }
@@ -36,4 +32,8 @@ public struct DeleteMobileDeviceRequest: ClientVoidRequest {
   }
 
   public let id: UUID
+
+  public init(id: UUID) {
+    self.id = id
+  }
 }

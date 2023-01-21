@@ -8,16 +8,16 @@ public class ServiceImpl<
   CoderType: Coder,
   SessionType: Session,
   RequestBuilderType: RequestBuilder
->: Service where
+>: Service, HeaderProvider where
   SessionType.SessionRequestType == RequestBuilderType.SessionRequestType,
   RequestBuilderType.SessionRequestType.DataType == CoderType.DataType,
   SessionType.SessionResponseType.DataType == CoderType.DataType {
   private let baseURLComponents: URLComponents
-  private let credentialsContainer: CredentialsContainer
+  public let credentialsContainer: CredentialsContainer
   private let coder: CoderType
   private let session: SessionType
-  private let builder: RequestBuilderType
-  private let headers: [String: String]
+  public let builder: RequestBuilderType
+  public let headers: [String: String]
 
   internal init(
     baseURLComponents: URLComponents,
@@ -42,23 +42,15 @@ public class ServiceImpl<
     RequestType.BodyType: Encodable,
     RequestType.SuccessType: Decodable {
     let sessionRequest: SessionType.SessionRequestType
-    let creds: Credentials?
+
+    let headers: [String: String]
     do {
-      creds = try credentialsContainer.fetch()
+      headers = try self.headers(withCredentials: RequestType.requiresCredentials)
     } catch {
       completed(.failure(error))
       return
     }
-    let authorizationHeaders: [String: String]
-    if let creds = creds, RequestType.requiresCredentials {
-      authorizationHeaders = builder.headers(basedOnCredentials: creds)
-    } else {
-      authorizationHeaders = [:]
-    }
 
-    let headers = self.headers.merging(authorizationHeaders) { _, rhs in
-      rhs
-    }
     do {
       sessionRequest = try builder.build(
         request: request,
@@ -69,6 +61,7 @@ public class ServiceImpl<
     } catch {
       return
     }
+
     session.request(sessionRequest) { result in
       let decodedResult: Result<RequestType.SuccessType, Error> = result.flatMap { data in
         guard request.isValidStatusCode(data.statusCode) else {
@@ -93,23 +86,15 @@ public class ServiceImpl<
     RequestType.BodyType: Encodable,
     RequestType.SuccessType == Void {
     let sessionRequest: SessionType.SessionRequestType
-    let creds: Credentials?
+
+    let headers: [String: String]
     do {
-      creds = try credentialsContainer.fetch()
+      headers = try self.headers(withCredentials: RequestType.requiresCredentials)
     } catch {
       completed(error)
       return
     }
-    let authorizationHeaders: [String: String]
-    if let creds = creds, RequestType.requiresCredentials {
-      authorizationHeaders = builder.headers(basedOnCredentials: creds)
-    } else {
-      authorizationHeaders = [:]
-    }
 
-    let headers = self.headers.merging(authorizationHeaders) { _, rhs in
-      rhs
-    }
     do {
       sessionRequest = try builder.build(
         request: request,
@@ -126,7 +111,8 @@ public class ServiceImpl<
           return .failure(RequestError.invalidStatusCode(response.statusCode))
         }
         return .success(())
-      }.asError()
+      }
+      .asError()
       completed(error)
     }
   }
@@ -139,22 +125,12 @@ public class ServiceImpl<
     RequestType.BodyType == Void,
     RequestType.SuccessType: Decodable {
     let sessionRequest: SessionType.SessionRequestType
-    let creds: Credentials?
+    let headers: [String: String]
     do {
-      creds = try credentialsContainer.fetch()
+      headers = try self.headers(withCredentials: RequestType.requiresCredentials)
     } catch {
       completed(.failure(error))
       return
-    }
-    let authorizationHeaders: [String: String]
-    if let creds = creds, RequestType.requiresCredentials {
-      authorizationHeaders = builder.headers(basedOnCredentials: creds)
-    } else {
-      authorizationHeaders = [:]
-    }
-
-    let headers = self.headers.merging(authorizationHeaders) { _, rhs in
-      rhs
     }
     do {
       sessionRequest = try builder.build(
@@ -169,7 +145,8 @@ public class ServiceImpl<
     session.request(sessionRequest) { result in
       let decodedResult: Result<RequestType.SuccessType, Error> = result.flatMap { data in
         guard request.isValidStatusCode(data.statusCode) else {
-          return Result<RequestType.SuccessType, Error>.failure(RequestError.invalidStatusCode(data.statusCode))
+          return Result<RequestType.SuccessType, Error>
+            .failure(RequestError.invalidStatusCode(data.statusCode))
         }
         guard let bodyData = data.data else {
           return Result<RequestType.SuccessType, Error>.failure(RequestError.missingData)
@@ -191,22 +168,12 @@ public class ServiceImpl<
     RequestType.BodyType == Void,
     RequestType.SuccessType == Void {
     let sessionRequest: SessionType.SessionRequestType
-    let creds: Credentials?
+    let headers: [String: String]
     do {
-      creds = try credentialsContainer.fetch()
+      headers = try self.headers(withCredentials: RequestType.requiresCredentials)
     } catch {
       completed(error)
       return
-    }
-    let authorizationHeaders: [String: String]
-    if let creds = creds, RequestType.requiresCredentials {
-      authorizationHeaders = builder.headers(basedOnCredentials: creds)
-    } else {
-      authorizationHeaders = [:]
-    }
-
-    let headers = self.headers.merging(authorizationHeaders) { _, rhs in
-      rhs
     }
     do {
       sessionRequest = try builder.build(
@@ -224,7 +191,8 @@ public class ServiceImpl<
           return .failure(RequestError.invalidStatusCode(response.statusCode))
         }
         return .success(())
-      }.asError()
+      }
+      .asError()
       completed(error)
     }
   }
@@ -255,8 +223,14 @@ public class ServiceImpl<
       RequestBuilderType == URLRequestBuilder,
       SessionType == URLSession,
       CoderType == JSONCoder {
+      guard let baseURLComponents = URLComponents(
+        url: baseURL,
+        resolvingAgainstBaseURL: false
+      ) else {
+        preconditionFailure("Invalid baseURL: \(baseURL)")
+      }
       self.init(
-        baseURLComponents: URLComponents(url: baseURL, resolvingAgainstBaseURL: false)!,
+        baseURLComponents: baseURLComponents,
         coder: coder,
         session: session,
         builder: .init(),

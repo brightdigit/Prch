@@ -4,8 +4,11 @@ import Foundation
 import RouteGroups
 import Vapor
 
-struct MobileDeviceController: RouteGroupCollection {
-  var routeGroups: [RouteGroupKey: RouteGroups.RouteCollectionBuilder] {
+@available(iOS 15, *)
+internal struct MobileDeviceController: RouteGroupCollection {
+  internal typealias RouteGroupKeyType = RouteGroupKey
+
+  internal var routeGroups: [RouteGroupKey: RouteGroups.RouteCollectionBuilder] {
     [
       .bearer: { bearer in
         bearer.post("device", "mobile", use: self.create(from:))
@@ -15,9 +18,9 @@ struct MobileDeviceController: RouteGroupCollection {
     ]
   }
 
-  typealias RouteGroupKeyType = RouteGroupKey
-
-  func create(from request: Request) async throws -> CreateMobileDeviceResponseContent {
+  private func create(
+    from request: Request
+  ) async throws -> CreateMobileDeviceResponseContent {
     let user = try request.auth.require(User.self)
     let content = try request.content.decode(CreateMobileDeviceRequestContent.self)
     let device = MobileDevice(content: content)
@@ -25,11 +28,16 @@ struct MobileDeviceController: RouteGroupCollection {
     return try .init(id: device.requireID())
   }
 
-  func patch(from request: Request) async throws -> HTTPStatus {
+  private func patch(
+    from request: Request
+  ) async throws -> HTTPStatus {
     let user = try request.auth.require(User.self)
     let deviceID = try request.parameters.require("deviceID", as: UUID.self)
-    let content: PatchMobileDeviceRequestContent = try request.content.decode(PatchMobileDeviceRequestContent.self)
-    let device = try await user.$mobileDevices.query(on: request.db).filter(.id, .equality(inverse: false), deviceID).first()
+    let content: PatchMobileDeviceRequestContent = try request.content
+      .decode(PatchMobileDeviceRequestContent.self)
+    let device = try await user.$mobileDevices.query(on: request.db)
+      .filter(.id, .equality(inverse: false), deviceID)
+      .first()
 
     guard let device = device else {
       throw Abort(.notFound)
@@ -42,10 +50,14 @@ struct MobileDeviceController: RouteGroupCollection {
     return .noContent
   }
 
-  func delete(from request: Request) async throws -> HTTPStatus {
+  private func delete(
+    from request: Request
+  ) async throws -> HTTPStatus {
     let user = try request.auth.require(User.self)
     let deviceID: UUID = try request.parameters.require("deviceID")
-    let device = try await user.$mobileDevices.query(on: request.db).filter(.id, .equality(inverse: false), deviceID).first()
+    let device = try await user.$mobileDevices.query(on: request.db)
+      .filter(.id, .equality(inverse: false), deviceID)
+      .first()
 
     guard let device = device else {
       throw Abort(.notFound)
