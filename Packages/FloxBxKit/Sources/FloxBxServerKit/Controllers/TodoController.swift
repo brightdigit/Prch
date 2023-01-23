@@ -4,6 +4,7 @@ import Fluent
 import RouteGroups
 import Vapor
 
+@available(iOS 15, *)
 internal struct TodoController: RouteGroupCollection {
   internal var routeGroups: [RouteGroupKey: RouteCollectionBuilder] {
     [

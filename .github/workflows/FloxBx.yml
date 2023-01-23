@@ -118,7 +118,7 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
-        if: startsWith(matrix.xcode,'/Applications/Xcode_14')
+        if: startsWith(matrix.xcode,'/Applications/Xcode_14.1')
       # - name: Set Lint Strictness
       #   run: echo "LINT_MODE=STRICT" >> $GITHUB_ENV
       #   if: ${{ github.head_ref == 'main' }}
@@ -133,12 +133,12 @@ jobs:
         run: |
           brew update
           brew install mint
-        if: startsWith(matrix.xcode,'/Applications/Xcode_14')
+        if: startsWith(matrix.xcode,'/Applications/Xcode_14.1')
       - name: Build
         run: swift build
       - name: Lint
         run: ./scripts/lint.sh 
-        if: startsWith(matrix.xcode,'/Applications/Xcode_14')
+        if: startsWith(matrix.xcode,'/Applications/Xcode_14.1')
       - name: Dump PIF
         run: |
           swift package dump-pif > /dev/null
