@@ -1,9 +1,25 @@
+import FloxBxDatabase
 import FloxBxModels
 import Fluent
+import RouteGroups
 import Vapor
 
-internal struct UserTokenController: RouteCollection {
-  internal func create(
+internal struct UserTokenController: RouteGroupCollection {
+  internal typealias RouteGroupKeyType = RouteGroupKey
+
+  internal var routeGroups: [RouteGroupKey: RouteCollectionBuilder] {
+    [
+      .bearer: { bearer in
+        bearer.get("tokens", use: self.get(from:))
+        bearer.delete("tokens", use: self.delete(from:))
+      },
+      .publicAPI: { api in
+        api.post("tokens", use: self.create(from:))
+      }
+    ]
+  }
+
+  private func create(
     from request: Request
   ) -> EventLoopFuture<CreateTokenResponseContent> {
     let createTokenRequestContent: CreateTokenRequestContent
@@ -33,7 +49,7 @@ internal struct UserTokenController: RouteCollection {
       }
   }
 
-  internal func get(
+  private func get(
     from request: Request
   ) -> EventLoopFuture<CreateTokenResponseContent> {
     let userToken: UserToken
@@ -65,7 +81,7 @@ internal struct UserTokenController: RouteCollection {
     }
   }
 
-  internal func delete(from request: Request) -> EventLoopFuture<HTTPResponseStatus> {
+  private func delete(from request: Request) -> EventLoopFuture<HTTPResponseStatus> {
     let userToken: UserToken
     do {
       userToken = try request.auth.require(UserToken.self)
@@ -77,12 +93,5 @@ internal struct UserTokenController: RouteCollection {
       request.auth.logout(UserToken.self)
       return .noContent
     }
-  }
-
-  internal func boot(routes: RoutesBuilder) throws {
-    routes.post("tokens", use: create(from:))
-    let tokenProtected = routes.grouped(UserToken.authenticator())
-    tokenProtected.delete("tokens", use: delete(from:))
-    tokenProtected.get("tokens", use: get(from:))
   }
 }

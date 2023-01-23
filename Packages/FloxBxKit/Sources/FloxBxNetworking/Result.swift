@@ -1,4 +1,17 @@
 extension Result {
+  public init(
+    _ asyncFunc: @escaping () async throws -> Success
+  ) async where Failure == Error {
+    let success: Success
+    do {
+      success = try await asyncFunc()
+    } catch {
+      self = .failure(error)
+      return
+    }
+    self = .success(success)
+  }
+
   public func tryMap<NewSuccess>(
     _ transform: @escaping (Success) throws -> (NewSuccess)
   ) -> Result<NewSuccess, Error> {
@@ -24,17 +37,5 @@ extension Result {
       return nil
     }
     return error
-  }
-
-  public func transform<NewSuccess>(
-    _ transform: @autoclosure () -> NewSuccess
-  ) -> Result<NewSuccess, Failure> {
-    map { _ in
-      transform()
-    }
-  }
-
-  public func asVoid() -> Result<Void, Failure> {
-    transform(())
   }
 }

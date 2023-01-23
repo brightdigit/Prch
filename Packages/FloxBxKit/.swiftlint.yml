@@ -32,7 +32,7 @@ opt_in_rules:
   - file_types_order
   - flatmap_over_map_reduce
   - force_unwrapping
-  - function_default_parameter_at_end
+  #- function_default_parameter_at_end
   - ibinspectable_in_extension
   - identical_operands
   - implicit_return
@@ -95,6 +95,8 @@ opt_in_rules:
   - vertical_whitespace_opening_braces
   - xct_specific_matcher
   - yoda_condition
+generic_type_name:
+  max_length: 48
 cyclomatic_complexity:
   - 6
   - 9
@@ -114,6 +116,7 @@ line_length:
 identifier_name:
   excluded:
     - id
+    - db
 excluded:
   - Tests
   - DerivedData

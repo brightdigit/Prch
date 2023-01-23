@@ -1,9 +1,22 @@
+import FloxBxDatabase
 import FloxBxModels
 import Fluent
+import RouteGroups
 import Vapor
 
-internal struct UserController: RouteCollection {
-  internal func create(
+internal struct UserController: RouteGroupCollection {
+  internal typealias RouteGroupKeyType = RouteGroupKey
+
+  internal var routeGroups: [RouteGroupKey: RouteCollectionBuilder] {
+    [
+      .publicAPI: { routes in
+        routes.post("users", use: create(from:))
+        routes.get("users", use: get(from:))
+      }
+    ]
+  }
+
+  private func create(
     from request: Request
   ) -> EventLoopFuture<CreateUserResponseContent> {
     let createUserRequestContent: CreateUserRequestContent
@@ -24,14 +37,14 @@ internal struct UserController: RouteCollection {
     }
   }
 
-  internal func get(from request: Request) throws -> GetUserResponseContent {
+  private func get(
+    from request: Request
+  ) throws -> EventLoopFuture<GetUserResponseContent> {
     let user = try request.auth.require(User.self)
     let username = user.email
     let id = try user.requireID()
-    return GetUserResponseContent(id: id, username: username)
-  }
-
-  internal func boot(routes: RoutesBuilder) throws {
-    routes.post("users", use: create(from:))
+    return user.$tags.get(on: request.db).map { tags in
+      GetUserResponseContent(id: id, username: username, tags: tags.compactMap { $0.id })
+    }
   }
 }

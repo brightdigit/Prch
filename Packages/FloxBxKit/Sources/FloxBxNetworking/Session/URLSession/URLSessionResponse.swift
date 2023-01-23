@@ -19,6 +19,7 @@ public struct URLSessionResponse: SessionResponse {
     guard let httpURLResponse = urlResponse as? HTTPURLResponse else {
       return nil
     }
+    print("status code:", httpURLResponse.statusCode)
     self.httpURLResponse = httpURLResponse
     self.data = data
   }

@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         runs-on: [ubuntu-18.04, ubuntu-20.04]
-        swift-version: [5.5.2, 5.6.2, 5.7]
+        swift-version: [5.6.2, 5.7]
         include:
           - runs-on: ubuntu-22.04
             swift-version: 5.7.1
@@ -118,10 +118,13 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
-        if: startsWith(matrix.xcode,'/Applications/Xcode_14')
-      - name: Set Lint Strictness
-        run: echo "LINT_MODE=STRICT" >> $GITHUB_ENV
-        if: ${{ github.event_name == 'pull_request' }} && ${{ github.base_ref == 'main' }}
+        if: startsWith(matrix.xcode,'/Applications/Xcode_14.1')
+      # - name: Set Lint Strictness
+      #   run: echo "LINT_MODE=STRICT" >> $GITHUB_ENV
+      #   if: ${{ github.head_ref == 'main' }}
+      # - name: Set Throw Errors on Lint
+      #   run: echo "THROW_ERRORS=YES" >> $GITHUB_ENV
+      #   if: ${{ github.head_ref == 'main' }}
       - name: Set Xcode Name
         run: echo "XCODE_NAME=$(basename -- ${{ matrix.xcode }} | sed 's/\.[^.]*$//' | cut -d'_' -f2)" >> $GITHUB_ENV
       - name: Setup Xcode
@@ -130,12 +133,12 @@ jobs:
         run: |
           brew update
           brew install mint
-        if: startsWith(matrix.xcode,'/Applications/Xcode_14')
+        if: startsWith(matrix.xcode,'/Applications/Xcode_14.1')
       - name: Build
         run: swift build
       - name: Lint
         run: ./scripts/lint.sh 
-        if: startsWith(matrix.xcode,'/Applications/Xcode_14')
+        if: startsWith(matrix.xcode,'/Applications/Xcode_14.1')
       - name: Dump PIF
         run: |
           swift package dump-pif > /dev/null

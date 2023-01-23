@@ -22,7 +22,9 @@ public struct URLRequestBuilder: RequestBuilder {
     componenents.path = request.actualPath
     componenents.queryItems = request.parameters.map(URLQueryItem.init)
 
-    let url = componenents.url!
+    guard let url = componenents.url else {
+      preconditionFailure()
+    }
     var urlRequest = URLRequest(url: url)
     urlRequest.httpMethod = request.method.rawValue
 
@@ -48,7 +50,9 @@ public struct URLRequestBuilder: RequestBuilder {
     componenents.path = "/\(request.path)"
     componenents.queryItems = request.parameters.map(URLQueryItem.init)
 
-    let url = componenents.url!
+    guard let url = componenents.url else {
+      preconditionFailure()
+    }
     var urlRequest = URLRequest(url: url)
     urlRequest.httpMethod = request.method.rawValue
 
