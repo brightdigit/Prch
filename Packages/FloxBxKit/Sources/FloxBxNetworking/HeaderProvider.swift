@@ -1,15 +1,14 @@
-import FloxBxAuth
-
 internal protocol HeaderProvider {
+  associatedtype AuthorizationType: AuthorizationContainer
   associatedtype RequestBuilderType: RequestBuilder
-  var credentialsContainer: CredentialsContainer { get }
+  var credentialsContainer: AuthorizationType { get }
   var builder: RequestBuilderType { get }
   var headers: [String: String] { get }
 }
 
 extension HeaderProvider {
   public static func headers(
-    withCredentials credentialsContainer: CredentialsContainer?,
+    withCredentials credentialsContainer: AuthorizationType?,
     from builder: RequestBuilderType,
     mergedWith headers: [String: String]
   ) throws -> [String: String] {

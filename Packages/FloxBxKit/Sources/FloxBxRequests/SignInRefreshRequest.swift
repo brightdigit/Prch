@@ -1,3 +1,4 @@
+import FloxBxModels
 import FloxBxNetworking
 
 public struct SignInRefreshRequest: ClientSuccessRequest {

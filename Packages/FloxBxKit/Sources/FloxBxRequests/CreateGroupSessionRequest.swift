@@ -1,16 +1,16 @@
+import FloxBxModels
 import FloxBxNetworking
 import Foundation
 
-// periphery:ignore
-public struct GetUserRequest: ClientSuccessRequest {
-  public typealias SuccessType = GetUserResponseContent
+public struct CreateGroupSessionRequest: ClientSuccessRequest {
+  public typealias SuccessType = CreateGroupSessionResponseContent
 
   public static var requiresCredentials: Bool {
     true
   }
 
   public var path: String {
-    "api/v1/users"
+    "api/v1/group-sessions"
   }
 
   public var parameters: [String: String] {
@@ -18,10 +18,12 @@ public struct GetUserRequest: ClientSuccessRequest {
   }
 
   public var method: RequestMethod {
-    .GET
+    .POST
   }
 
   public var headers: [String: String] {
     [:]
   }
+
+  public init() {}
 }

@@ -1,9 +1,9 @@
 import APNS
 import FloxBxDatabase
-import enum FloxBxModels.Configuration
 import protocol FloxBxModels.Notifiable
 import struct FloxBxModels.PayloadNotification
 import struct FloxBxModels.TagPayload
+import enum FloxBxUtilities.Configuration
 import FluentPostgresDriver
 import SublimationVapor
 import Vapor

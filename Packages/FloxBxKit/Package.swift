@@ -35,17 +35,24 @@ let package = Package(
       dependencies: ["FloxBxServerKit"]
     ),
     .target(
-      name: "FloxBxModels",
-      dependencies: ["FloxBxNetworking"]
+      name: "FloxBxUtilities"
+    ),
+    .target(
+      name: "FloxBxModels"
+    ),
+    .target(
+      name: "FloxBxRequests",
+      dependencies: ["FloxBxNetworking", "FloxBxModels"]
     ),
     .target(
       name: "FloxBxDatabase",
-      dependencies: ["FloxBxModels", .product(name: "Fluent", package: "fluent")]
+      dependencies: ["FloxBxUtilities", .product(name: "Fluent", package: "fluent")]
     ),
-    .target(name: "FloxBxNetworking", dependencies: ["FloxBxAuth"]),
+    .target(name: "FloxBxNetworking"),
     .target(name: "FloxBxUI", dependencies: [
       .product(name: "Sublimation", package: "Sublimation"),
-      "FloxBxModels",
+      "FloxBxRequests",
+      "FloxBxUtilities",
       "FloxBxAuth",
       "FloxBxGroupActivities"
     ]),

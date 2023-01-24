@@ -2,10 +2,6 @@ import FloxBxModels
 import Fluent
 import Foundation
 
-public enum Payload: Codable {
-  case tag(TagPayload)
-}
-
 public final class Notification: Model {
   internal enum FieldKeys {
     internal static let mobileDeviceID: FieldKey = "mobileDeviceID"

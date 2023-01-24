@@ -1,4 +1,3 @@
-import FloxBxAuth
 import Foundation
 #if canImport(FoundationNetworking)
   import FoundationNetworking
@@ -7,24 +6,25 @@ import Foundation
 public class ServiceImpl<
   CoderType: Coder,
   SessionType: Session,
-  RequestBuilderType: RequestBuilder
+  RequestBuilderType: RequestBuilder,
+  AuthorizationContainerType: AuthorizationContainer
 >: Service, HeaderProvider where
   SessionType.SessionRequestType == RequestBuilderType.SessionRequestType,
   RequestBuilderType.SessionRequestType.DataType == CoderType.DataType,
   SessionType.SessionResponseType.DataType == CoderType.DataType {
   private let baseURLComponents: URLComponents
-  public let credentialsContainer: CredentialsContainer
+  public let credentialsContainer: AuthorizationContainerType
   private let coder: CoderType
   private let session: SessionType
   public let builder: RequestBuilderType
   public let headers: [String: String]
 
-  internal init(
+  public init(
     baseURLComponents: URLComponents,
     coder: CoderType,
     session: SessionType,
     builder: RequestBuilderType,
-    credentialsContainer: CredentialsContainer,
+    credentialsContainer: AuthorizationContainerType,
     headers: [String: String]
   ) {
     self.baseURLComponents = baseURLComponents
@@ -196,51 +196,4 @@ public class ServiceImpl<
       completed(error)
     }
   }
-
-  public func save(credentials: Credentials) throws {
-    try credentialsContainer.save(credentials: credentials)
-  }
-
-  public func resetCredentials() throws -> Credentials.ResetResult {
-    try credentialsContainer.reset()
-  }
-
-  public func fetchCredentials() throws -> Credentials? {
-    try credentialsContainer.fetch()
-  }
 }
-
-#if canImport(Security)
-  extension ServiceImpl {
-    public convenience init(
-      baseURL: URL,
-      accessGroup: String,
-      serviceName: String,
-      headers: [String: String] = ["Content-Type": "application/json; charset=utf-8"],
-      coder: JSONCoder = .init(encoder: JSONEncoder(), decoder: JSONDecoder()),
-      session: URLSession = .shared
-    ) where
-      RequestBuilderType == URLRequestBuilder,
-      SessionType == URLSession,
-      CoderType == JSONCoder {
-      guard let baseURLComponents = URLComponents(
-        url: baseURL,
-        resolvingAgainstBaseURL: false
-      ) else {
-        preconditionFailure("Invalid baseURL: \(baseURL)")
-      }
-      self.init(
-        baseURLComponents: baseURLComponents,
-        coder: coder,
-        session: session,
-        builder: .init(),
-        credentialsContainer:
-        KeychainContainer(
-          accessGroup: accessGroup,
-          serviceName: serviceName
-        ),
-        headers: headers
-      )
-    }
-  }
-#endif

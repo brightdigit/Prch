@@ -9,6 +9,8 @@
   import FloxBxGroupActivities
   import FloxBxModels
   import FloxBxNetworking
+  import FloxBxRequests
+  import FloxBxUtilities
 
   extension ApplicationObject {
     #if DEBUG
@@ -26,7 +28,7 @@
         }
       }
 
-      private func developerService(fallbackURL: URL) async -> Service {
+      private func developerService(fallbackURL: URL) async -> CredentialsService {
         let baseURL: URL
         do {
           baseURL = try await Self.fetchBaseURL()
@@ -35,7 +37,7 @@
           onError(error)
           baseURL = fallbackURL
         }
-        return ServiceImpl(
+        return ServiceImpl<JSONCoder, URLSession, URLRequestBuilder, KeychainContainer>(
           baseURL: baseURL,
           accessGroup: Configuration.accessGroup,
           serviceName: Configuration.serviceName

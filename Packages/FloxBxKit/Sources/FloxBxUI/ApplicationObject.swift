@@ -10,6 +10,9 @@ import Sublimation
   import UserNotifications
 
   internal class ApplicationObject: ObservableObject {
+    internal typealias CredentialsService =
+      ServiceImpl<JSONCoder, URLSession, URLRequestBuilder, KeychainContainer>
+
     @Published internal private(set) var shareplayObject: SharePlayObject<
       TodoListDelta, GroupActivityConfiguration, UUID
     >
@@ -28,7 +31,7 @@ import Sublimation
 
     #if DEBUG
       // swiftlint:disable:next implicitly_unwrapped_optional
-      internal var service: Service!
+      internal var service: CredentialsService!
     #else
       internal let service: Service = ServiceImpl(
         baseURL: Configuration.productionBaseURL,
@@ -96,4 +99,5 @@ import Sublimation
       mobileDeviceRegistrationID = updateMobileDeviceRegistrationID
     }
   }
+
 #endif

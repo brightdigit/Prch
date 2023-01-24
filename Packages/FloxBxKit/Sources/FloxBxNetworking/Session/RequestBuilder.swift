@@ -1,4 +1,3 @@
-import FloxBxAuth
 import Foundation
 
 #if canImport(FoundationNetworking)
@@ -24,5 +23,8 @@ public protocol RequestBuilder {
   ) throws -> SessionRequestType
     where CoderType.DataType == SessionRequestType.DataType,
     BodyRequestType.BodyType == Void
-  func headers(basedOnCredentials credentials: Credentials) -> [String: String]
+
+  func headers<AuthorizationType: Authorization>(
+    basedOnCredentials credentials: AuthorizationType
+  ) -> [String: String]
 }

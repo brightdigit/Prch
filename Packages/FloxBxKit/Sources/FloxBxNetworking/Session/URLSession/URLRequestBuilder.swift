@@ -1,4 +1,3 @@
-import FloxBxAuth
 import Foundation
 
 #if canImport(FoundationNetworking)
@@ -66,10 +65,9 @@ public struct URLRequestBuilder: RequestBuilder {
     return urlRequest
   }
 
-  public func headers(basedOnCredentials credentials: Credentials) -> [String: String] {
-    guard let token = credentials.token else {
-      return [:]
-    }
-    return ["Authorization": "Bearer \(token)"]
+  public func headers<AuthorizationType>(
+    basedOnCredentials credentials: AuthorizationType
+  ) -> [String: String] where AuthorizationType: Authorization {
+    credentials.httpHeaders
   }
 }

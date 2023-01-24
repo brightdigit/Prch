@@ -1,3 +1,4 @@
+import FloxBxModels
 import FloxBxNetworking
 import Foundation
 public struct GetTodoListRequest: ClientSuccessRequest {
