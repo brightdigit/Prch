@@ -1,8 +1,10 @@
 #if canImport(SwiftUI)
+  import FelinePine
   import FloxBxGroupActivities
+  import FloxBxLogging
   import SwiftUI
 
-  internal struct ContentView: View {
+  internal struct ContentView: View, LoggerCategorized {
     @EnvironmentObject private var object: ApplicationObject
 
     #if canImport(GroupActivities)

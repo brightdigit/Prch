@@ -1,5 +1,7 @@
+import FelinePine
 import FloxBxAuth
 import FloxBxGroupActivities
+import FloxBxLogging
 import FloxBxModels
 import FloxBxNetworking
 import Sublimation
@@ -9,9 +11,15 @@ import Sublimation
   import SwiftUI
   import UserNotifications
 
-  internal class ApplicationObject: ObservableObject {
+  internal class ApplicationObject: ObservableObject, LoggerCategorized {
+    internal typealias LoggersType = FloxBxLogging.Loggers
+
     internal typealias CredentialsService =
       ServiceImpl<JSONCoder, URLSession, URLRequestBuilder, KeychainContainer>
+
+    internal static var loggingCategory: LoggerCategory {
+      LoggerCategory.reactive
+    }
 
     @Published internal private(set) var shareplayObject: SharePlayObject<
       TodoListDelta, GroupActivityConfiguration, UUID

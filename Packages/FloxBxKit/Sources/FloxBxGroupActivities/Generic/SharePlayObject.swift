@@ -1,5 +1,7 @@
 #if canImport(Combine)
   import Combine
+  import FelinePine
+  import FloxBxLogging
   import Foundation
 
   #if canImport(GroupActivities)
@@ -122,6 +124,7 @@
               groupSession.activeParticipants
             )
 
+            Self.logger.debug("New participants: \(newParticipants)")
             Task {
               do {
                 try await messenger.send(self.listDeltas, to: .only(newParticipants))
@@ -197,6 +200,7 @@
     #endif
 
     public func send(_ deltas: [DeltaType]) {
+      Self.logger.debug("Receiving deltas: \(deltas)")
       #if canImport(GroupActivities)
         if #available(iOS 15, macOS 12, *) {
           if let groupSessionMessenger = self.groupSessionMessenger {
@@ -214,6 +218,14 @@
       DispatchQueue.main.async {
         self.listDeltas.append(delta)
       }
+    }
+  }
+
+  extension SharePlayObject: LoggerCategorized {
+    public typealias LoggersType = FloxBxLogging.Loggers
+
+    public static var loggingCategory: FloxBxLogging.LoggerCategory {
+      .shareplay
     }
   }
 #endif

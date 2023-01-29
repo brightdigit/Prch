@@ -8,6 +8,7 @@ import FluentPostgresDriver
 import SublimationVapor
 import Vapor
 
+@available(iOS 15, *)
 public struct Server {
   private let env: Environment
 

@@ -1,4 +1,6 @@
 #if canImport(Security)
+  import FelinePine
+  import FloxBxLogging
   import Foundation
   import Security
 
@@ -6,6 +8,8 @@
     import FoundationNetworking
   #endif
 
+  // swiftlint:disable:next line_length todo
+  // TODO: Add support for types and labels -- https://medium.com/macoclock/retrieve-multiple-values-from-keychain-77641248f4a1
   public struct KeychainContainer: CredentialsContainer {
     internal let accessGroup: String
     internal let serviceName: String
@@ -153,6 +157,14 @@
       if let token = credentials.token {
         try upsertAccount(credentials.username, andToken: token)
       }
+    }
+  }
+
+  extension KeychainContainer: LoggerCategorized {
+    public typealias LoggersType = FloxBxLogging.Loggers
+
+    public static var loggingCategory: FloxBxLogging.LoggerCategory {
+      .keychain
     }
   }
 #endif

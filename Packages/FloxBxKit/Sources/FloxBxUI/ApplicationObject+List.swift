@@ -32,7 +32,7 @@
         let baseURL: URL
         do {
           baseURL = try await Self.fetchBaseURL()
-          debugPrint("Found BaseURL: \(baseURL)")
+          Self.logger.debug("Found service url: \(baseURL)")
         } catch {
           onError(error)
           baseURL = fallbackURL
@@ -110,7 +110,7 @@
         return nil
 
       case (nil, nil):
-        debugPrint("ERROR: invalid state")
+        Self.logger.error("Invalid Mobile Device State")
         return nil
       }
     }

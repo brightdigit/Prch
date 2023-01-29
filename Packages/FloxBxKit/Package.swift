@@ -26,6 +26,13 @@ let package = Package(
     .package(url: "https://github.com/vapor/apns.git", from: "4.0.0-beta.2")
   ],
   targets: [
+    .target(name: "FelinePine"),
+    .target(name: "FloxBxUtilities"),
+    .target(name: "FloxBxModels"),
+    .target(name: "FloxBxLogging", dependencies: ["FelinePine"]),
+    .target(name: "FloxBxNetworking", dependencies: ["FloxBxLogging"]),
+    .target(name: "FloxBxGroupActivities", dependencies: ["FloxBxLogging"]),
+    .target(name: "FloxBxAuth", dependencies: ["FloxBxLogging"]),
     .target(
       name: "RouteGroups",
       dependencies: [.product(name: "Vapor", package: "vapor")]
@@ -35,12 +42,6 @@ let package = Package(
       dependencies: ["FloxBxServerKit"]
     ),
     .target(
-      name: "FloxBxUtilities"
-    ),
-    .target(
-      name: "FloxBxModels"
-    ),
-    .target(
       name: "FloxBxRequests",
       dependencies: ["FloxBxNetworking", "FloxBxModels"]
     ),
@@ -48,7 +49,6 @@ let package = Package(
       name: "FloxBxDatabase",
       dependencies: ["FloxBxUtilities", .product(name: "Fluent", package: "fluent")]
     ),
-    .target(name: "FloxBxNetworking"),
     .target(name: "FloxBxUI", dependencies: [
       .product(name: "Sublimation", package: "Sublimation"),
       "FloxBxRequests",
@@ -56,8 +56,6 @@ let package = Package(
       "FloxBxAuth",
       "FloxBxGroupActivities"
     ]),
-    .target(name: "FloxBxGroupActivities"),
-    .target(name: "FloxBxAuth"),
     .target(
       name: "FloxBxServerKit",
       dependencies: [
@@ -65,7 +63,7 @@ let package = Package(
         .product(name: "Vapor", package: "vapor"),
         .product(name: "SublimationVapor", package: "Sublimation"),
         .product(name: "APNS", package: "apns"),
-        "FloxBxModels", "FloxBxDatabase", "RouteGroups"
+        "FloxBxModels", "FloxBxDatabase", "RouteGroups", "FloxBxLogging"
       ],
       swiftSettings: [
         .unsafeFlags(["-cross-module-optimization"], .when(configuration: .release))
