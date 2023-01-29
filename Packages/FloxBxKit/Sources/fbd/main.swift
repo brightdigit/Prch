@@ -1,3 +1,5 @@
 import FloxBxServerKit
 
-try Server().start()
+if #available(iOS 15, *) {
+  try Server().start()
+} 
