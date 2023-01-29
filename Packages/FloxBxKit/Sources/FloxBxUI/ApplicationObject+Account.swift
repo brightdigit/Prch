@@ -141,4 +141,14 @@ extension ApplicationObject {
       beginRefreshToken(credentials, createToken)
     }
   }
+
+  private func authenticationComplete(
+    withUser username: String?,
+    andToken token: String?
+  ) {
+    Task { @MainActor in
+      self.username = username
+      self.token = token
+    }
+  }
 }

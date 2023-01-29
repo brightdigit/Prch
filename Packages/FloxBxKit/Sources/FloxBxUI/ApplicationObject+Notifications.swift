@@ -1,3 +1,4 @@
+import Combine
 import FloxBxModels
 import FloxBxNetworking
 import FloxBxRequests
@@ -5,7 +6,25 @@ import Foundation
 import UserNotifications
 
 extension ApplicationObject {
-  internal func upsertMobileDevice(
+  internal func setupNotifications() async {
+    mobileDevicePublisher.flatMap { content in
+      Future { [self] () -> UUID? in
+        try await upsertMobileDevice(basedOn: content)
+      }
+    }
+    .replaceError(with: nil)
+    .compactMap { $0?.uuidString }
+    .receive(on: DispatchQueue.main)
+    .sink(receiveValue: updateMobileDeviceRegistrationID)
+    .store(in: &cancellables)
+
+    await updateRegistrationUpdateWith(
+      UNUserNotificationCenter.current(),
+      using: await AppInterfaceObject.sharedInterface
+    )
+  }
+
+  private func upsertMobileDevice(
     basedOn content: CreateMobileDeviceRequestContent?
   ) async throws -> UUID? {
     let id = mobileDeviceRegistrationID.flatMap(UUID.init(uuidString:))
@@ -35,7 +54,7 @@ extension ApplicationObject {
     }
   }
 
-  internal func updateRegistrationUpdateWith(
+  private func updateRegistrationUpdateWith(
     _ notificationCenter: UNUserNotificationCenter,
     using sharedInterace: @escaping @autoclosure () async -> AppInterface
   ) async {

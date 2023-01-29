@@ -2,7 +2,7 @@ import Foundation
 
 public enum TodoListDelta: Codable {
   case upsert(UUID, ItemContent)
-  case remove([UUID])
+  case remove(Set<UUID>)
 
   public struct ItemContent: Codable {
     public init(title: String, tags: [String]) {

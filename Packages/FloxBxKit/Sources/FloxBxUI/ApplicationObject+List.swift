@@ -29,34 +29,6 @@
       }
     }
 
-    internal func begin() {
-      Task {
-        #if DEBUG
-          self.service = await developerService(
-            fallbackURL: Configuration.productionBaseURL
-          )
-        #endif
-
-        self.mobileDevicePublisher.flatMap { content in
-          Future { [self] () -> UUID? in
-            try await upsertMobileDevice(basedOn: content)
-          }
-        }
-        .replaceError(with: nil)
-        .compactMap { $0?.uuidString }
-        .receive(on: DispatchQueue.main)
-        .sink(receiveValue: self.updateMobileDeviceRegistrationID)
-        .store(in: &self.cancellables)
-
-        await updateRegistrationUpdateWith(
-          UNUserNotificationCenter.current(),
-          using: await AppInterfaceObject.sharedInterface
-        )
-
-        setupCredentials()
-      }
-    }
-
     internal func saveItem(_ item: TodoContentItem, onlyNew: Bool = false) {
       guard let index = items.firstIndex(where: { $0.id == item.id }) else {
         return
@@ -78,7 +50,7 @@
         case let .success(todoItem):
 
           DispatchQueue.main.async {
-            self.addDelta(.upsert(todoItem.id, content))
+            // self.addDelta(.upsert(todoItem.id, content))
 
             self.items[index] = .init(content: todoItem)
           }
@@ -107,7 +79,8 @@
         return
       }
 
-      addDelta(.remove(Array(deletedIds)))
+      addDelta(.remove(deletedIds))
+      // addDelta(.remove(Array(deletedIds)))
 
       let group = DispatchGroup()
 

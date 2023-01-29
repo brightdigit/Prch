@@ -6,6 +6,10 @@ import Foundation
   import GroupActivities
 
   extension ApplicationObject {
+//    internal func addDelta(_ delta: TodoListDelta) {
+//      shareplayObject.send([delta])
+//    }
+
     @available(iOS 15, macOS 12, *)
     internal func requestSharing() {
       Task {

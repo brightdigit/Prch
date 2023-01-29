@@ -4,6 +4,7 @@ import FloxBxGroupActivities
 import FloxBxLogging
 import FloxBxModels
 import FloxBxNetworking
+import FloxBxUtilities
 import Sublimation
 
 #if canImport(Combine) && canImport(SwiftUI) && canImport(UserNotifications)
@@ -11,6 +12,7 @@ import Sublimation
   import SwiftUI
   import UserNotifications
 
+  @available(*, deprecated)
   internal class ApplicationObject: ObservableObject, LoggerCategorized {
     internal typealias LoggersType = FloxBxLogging.Loggers
 
@@ -33,8 +35,8 @@ import Sublimation
     internal private(set) var mobileDeviceRegistrationID: String?
     @Published internal var requiresAuthentication: Bool
     @Published internal private(set) var latestError: Error?
-    @Published internal private(set) var token: String?
-    @Published internal private(set) var username: String?
+    @Published internal var token: String?
+    @Published internal var username: String?
     @Published internal var items = [TodoContentItem]()
 
     #if DEBUG
@@ -85,19 +87,27 @@ import Sublimation
       self.items = items
     }
 
-    internal func onError(_ error: Error) {
-      Task { @MainActor in
-        self.latestError = error
+    private func setupServices() async {
+      service = await developerService(
+        fallbackURL: Configuration.productionBaseURL
+      )
+    }
+
+    internal func begin() {
+      Task {
+        #if DEBUG
+          await setupServices()
+        #endif
+
+        await setupNotifications()
+
+        setupCredentials()
       }
     }
 
-    internal func authenticationComplete(
-      withUser username: String?,
-      andToken token: String?
-    ) {
+    internal func onError(_ error: Error) {
       Task { @MainActor in
-        self.username = username
-        self.token = token
+        self.latestError = error
       }
     }
 
