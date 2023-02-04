@@ -2,7 +2,10 @@
   import SwiftUI
 
   internal struct LoginView: View {
+    @available(*, deprecated)
     @EnvironmentObject private var object: ApplicationObject
+    
+    @StateObject var authorization  = AuthorizationObject()
     @State private var emailAddress: String = ""
     @State private var password: String = ""
     #if os(watchOS)
@@ -34,7 +37,7 @@
     private var formButtons: some View {
       HStack {
         Button(action: {
-          self.object.beginSignIn(
+          self.authorization.beginSignIn(
             withCredentials: .init(
               username: self.emailAddress,
               password: self.password
@@ -46,7 +49,7 @@
         Spacer()
         Button(
           action: {
-            self.object.beginSignup(
+            self.authorization.beginSignup(
               withCredentials: .init(
                 username: self.emailAddress,
                 password: self.password
@@ -98,7 +101,7 @@
         Text("Sign up new account or sign in existing?")
         Spacer()
         Button("Sign Up") {
-          self.object
+          self.authorization
             .beginSignup(
               withCredentials: .init(
                 username: self.emailAddress,
@@ -107,7 +110,7 @@
             )
         }
         Button("Sign In") {
-          self.object.beginSignIn(
+          self.authorization.beginSignIn(
             withCredentials: .init(
               username: self.emailAddress,
               password: self.password

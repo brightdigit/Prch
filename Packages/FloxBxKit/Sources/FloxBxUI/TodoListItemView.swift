@@ -2,7 +2,10 @@
   import FloxBxModels
   import SwiftUI
   internal struct TodoListItemView: View {
+    
+      @available(*, deprecated)
     @EnvironmentObject private var object: ApplicationObject
+    @StateObject private var itemObject: TodoContentItemObject = TodoContentItemObject()
     @State private var text: String
     private let item: TodoContentItem
 

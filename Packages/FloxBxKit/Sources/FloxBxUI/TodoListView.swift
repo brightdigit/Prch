@@ -3,8 +3,12 @@
   import SwiftUI
 
   internal struct TodoListView: View {
+    
+      @available(*, deprecated)
     @EnvironmentObject private var object: ApplicationObject
 
+    @StateObject private var listObject = TodoListObject()
+    
     internal var body: some View {
       List {
         ForEach(self.object.items) { item in

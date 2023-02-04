@@ -5,7 +5,14 @@
   import SwiftUI
 
   internal struct ContentView: View, LoggerCategorized {
+    @available(*, deprecated)
     @EnvironmentObject private var object: ApplicationObject
+
+    @StateObject private var shareplayObject = SharePlayObject<
+      TodoListDelta, GroupActivityConfiguration, UUID
+    >()
+
+    @StateObject private var services = ServicesObject()
 
     #if canImport(GroupActivities)
       @State private var activity: ActivityIdentifiableContainer<UUID>?
@@ -28,7 +35,7 @@
           if #available(iOS 15.0, watchOS 8.0, macOS 12, *) {
             #if canImport(GroupActivities)
               innerView.task {
-                await self.object.shareplayObject
+                await self.shareplayObject
                   .listenForSessions(forActivity: FloxBxActivity.self)
               }
             #else
@@ -42,9 +49,9 @@
       .sheet(isPresented: self.$shouldDisplayLoginView, content: {
         LoginView()
       })
-      .onReceive(self.object.$requiresAuthentication) { requiresAuthentication in
+      .onReceive(self.services.$account) { account in
         DispatchQueue.main.async {
-          self.shouldDisplayLoginView = requiresAuthentication
+          self.shouldDisplayLoginView = account == nil
         }
       }
     }
@@ -59,21 +66,21 @@
               activity: activity.getGroupActivity()
             )
           }
-          .onReceive(self.object.shareplayObject.$activity, perform: { activity in
+          .onReceive(self.shareplayObject.$activity, perform: { activity in
             self.activity = activity
           })
           .onAppear(perform: {
-            self.object.begin()
+            self.services.begin()
           })
 
         #else
           mainView.onAppear(perform: {
-            self.object.begin()
+            self.services.begin()
           })
         #endif
       } else {
         mainView.onAppear(perform: {
-          self.object.begin()
+          self.services.begin()
         })
       }
     }
