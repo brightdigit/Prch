@@ -7,7 +7,13 @@
 
 import Foundation
 import Combine
+import FloxBxNetworking
 
 class TodoListObject : ObservableObject {
+  let groupActivityID : UUID?
+  let service: any Service
   
+  init() {
+    fatalError()
+  }
 }
