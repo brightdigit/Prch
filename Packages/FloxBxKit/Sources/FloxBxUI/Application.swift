@@ -10,9 +10,7 @@
   extension Application {
     public var body: some Scene {
       WindowGroup {
-        ContentView().environmentObject(ApplicationObject(
-          mobileDevicePublisher: self.appDelegate.$mobileDevice.eraseToAnyPublisher()
-        ))
+        ContentView()
       }
     }
   }

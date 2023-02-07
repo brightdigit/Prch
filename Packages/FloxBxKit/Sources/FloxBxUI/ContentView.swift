@@ -3,16 +3,21 @@
   import FloxBxGroupActivities
   import FloxBxLogging
   import SwiftUI
+import FloxBxNetworking
 
-  internal struct ContentView: View, LoggerCategorized {
-    @available(*, deprecated)
-    @EnvironmentObject private var object: ApplicationObject
+internal struct ContentView: View, LoggerCategorized {
+  internal init(services: any Service) {
+    self._services = .init(wrappedValue: .init(service: services))
+  }
+  
+//    @available(*, deprecated)
+//    @EnvironmentObject private var object: ApplicationObject
 
     @StateObject private var shareplayObject = SharePlayObject<
       TodoListDelta, GroupActivityConfiguration, UUID
     >()
 
-    @StateObject private var services = ServicesObject()
+    @StateObject private var services : ServicesObject
 
     #if canImport(GroupActivities)
       @State private var activity: ActivityIdentifiableContainer<UUID>?
@@ -21,7 +26,7 @@
     @State private var shouldDisplayLoginView: Bool = false
 
     private var innerView: some View {
-      let view = TodoListView()
+      let view = TodoListView(groupActivityID: shareplayObject.groupActivityID, service: services.service)
       #if os(macOS)
         return view.frame(width: 500, height: 500)
       #else
@@ -84,13 +89,11 @@
         })
       }
     }
-
-    internal init() {}
   }
 
-  private struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-      ContentView()
-    }
-  }
+//  private struct ContentView_Previews: PreviewProvider {
+//    static var previews: some View {
+//      ContentView()
+//    }
+//  }
 #endif
