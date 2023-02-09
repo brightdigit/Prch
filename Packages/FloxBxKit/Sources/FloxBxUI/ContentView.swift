@@ -6,8 +6,7 @@
 import FloxBxNetworking
 
 internal struct ContentView: View, LoggerCategorized {
-  internal init(services: any Service) {
-    self._services = .init(wrappedValue: .init(service: services))
+  internal init() {
   }
   
 //    @available(*, deprecated)
@@ -17,7 +16,7 @@ internal struct ContentView: View, LoggerCategorized {
       TodoListDelta, GroupActivityConfiguration, UUID
     >()
 
-    @StateObject private var services : ServicesObject
+    @StateObject private var services = ServicesObject()
 
     #if canImport(GroupActivities)
       @State private var activity: ActivityIdentifiableContainer<UUID>?
@@ -26,12 +25,18 @@ internal struct ContentView: View, LoggerCategorized {
     @State private var shouldDisplayLoginView: Bool = false
 
     private var innerView: some View {
-      let view = TodoListView(groupActivityID: shareplayObject.groupActivityID, service: services.service)
-      #if os(macOS)
-        return view.frame(width: 500, height: 500)
-      #else
-        return view
-      #endif
+      Group{
+        if let service = services.service {
+          
+#if os(macOS)
+          TodoListView(groupActivityID: shareplayObject.groupActivityID, service: service).frame(width: 500, height: 500)
+#else
+          TodoListView(groupActivityID: shareplayObject.groupActivityID, service: service)
+#endif
+        } else {
+          ProgressView()
+        }
+      }
     }
 
     private var mainView: some View {

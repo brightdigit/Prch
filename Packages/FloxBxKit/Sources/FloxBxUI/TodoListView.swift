@@ -22,7 +22,7 @@ import FloxBxModels
           TodoListItemView(item: item, groupActivityID: listObject.groupActivityID, service: listObject.service).onAppear {
             self.listObject.saveItem(item, onlyNew: true)
           }
-        }.onDelete(perform: listObject.deleteItems(atIndexSet:))
+        }.onDelete(perform: listObject.beginDeleteItems(atIndexSet:))
       }
 
       .toolbar(content: {
