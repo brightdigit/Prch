@@ -17,6 +17,8 @@ internal struct ContentView: View, LoggerCategorized {
     >()
 
     @StateObject private var services = ServicesObject()
+  
+  @StateObject private var authorization = AuthorizationObject()
 
     #if canImport(GroupActivities)
       @State private var activity: ActivityIdentifiableContainer<UUID>?
@@ -29,15 +31,33 @@ internal struct ContentView: View, LoggerCategorized {
         if let service = services.service {
           
 #if os(macOS)
-          TodoListView(groupActivityID: shareplayObject.groupActivityID, service: service).frame(width: 500, height: 500)
+          TodoListView(
+            groupActivityID: shareplayObject.groupActivityID,
+            service: service,
+            onLogout: self.logout,
+            requestSharing: self.requestSharing
+          ).frame(width: 500, height: 500)
 #else
-          TodoListView(groupActivityID: shareplayObject.groupActivityID, service: service)
+          TodoListView(
+            groupActivityID: shareplayObject.groupActivityID,
+            service: service,
+            onLogout: self.logout,
+            requestSharing: self.requestSharing
+          )
 #endif
         } else {
           ProgressView()
         }
       }
     }
+  
+  func logout () {
+    
+  }
+  
+  func requestSharing () {
+    
+  }
 
     private var mainView: some View {
       TabView {
@@ -59,7 +79,7 @@ internal struct ContentView: View, LoggerCategorized {
       .sheet(isPresented: self.$shouldDisplayLoginView, content: {
         LoginView()
       })
-      .onReceive(self.services.$account) { account in
+      .onReceive(self.authorization.$account) { account in
         DispatchQueue.main.async {
           self.shouldDisplayLoginView = account == nil
         }

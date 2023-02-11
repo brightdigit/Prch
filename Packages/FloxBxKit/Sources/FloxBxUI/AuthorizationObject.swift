@@ -9,6 +9,7 @@ import Combine
 import FloxBxAuth
 
 class AuthorizationObject: ObservableObject {
+  @Published var account: Account?
   internal func beginSignup(withCredentials credentials: Credentials) {
   }
   

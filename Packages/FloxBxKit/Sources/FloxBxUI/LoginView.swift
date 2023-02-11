@@ -2,8 +2,7 @@
   import SwiftUI
 
   internal struct LoginView: View {
-    @available(*, deprecated)
-    @EnvironmentObject private var object: ApplicationObject
+
     
     @StateObject var authorization  = AuthorizationObject()
     @State private var emailAddress: String = ""

@@ -137,16 +137,16 @@ class TodoListObject : ObservableObject {
       }
     }
   }
-  
-  func logout () {
-    
-  }
+//
+//  func logout () {
+//
+//  }
   
   func addItem(_ item: TodoContentItem) {
     self.actionSubject.send(.append(item))
   }
   
-  func requestSharing() {
-    
-  }
+//  func requestSharing() {
+//    
+//  }
 }

@@ -9,10 +9,15 @@ import FloxBxModels
 //      @available(*, deprecated)
 //    @EnvironmentObject private var object: ApplicationObject
 
+    //@StateObject private var servicesObject : ServicesObject
+    let onLogout : () -> Void
+    let requestSharing : () -> Void
     @StateObject private var listObject : TodoListObject
     
-    init (groupActivityID: UUID?, service: any Service, items: [TodoContentItem] = [], isLoaded: Bool? = nil) {
+    init (groupActivityID: UUID?, service: any Service, items: [TodoContentItem] = [], isLoaded: Bool? = nil, onLogout: @escaping () -> Void, requestSharing : @escaping () -> Void) {
       let isLoaded = isLoaded ?? !items.isEmpty
+      self.onLogout = onLogout
+      self.requestSharing = requestSharing
       self._listObject = StateObject(wrappedValue: .init(groupActivityID: groupActivityID, service: service, isLoaded: isLoaded))
     }
     
@@ -29,7 +34,7 @@ import FloxBxModels
         ToolbarItemGroup {
           HStack {
             Button {
-              self.listObject.logout()
+              self.onLogout()
             } label: {
               Image(systemName: "person.crop.circle.fill.badge.xmark")
             }
@@ -37,7 +42,7 @@ import FloxBxModels
             Button {
               #if canImport(GroupActivities)
                 if #available(iOS 15, macOS 12, *) {
-                  listObject.requestSharing()
+                  self.requestSharing()
                 }
               #endif
             } label: {

@@ -12,12 +12,12 @@ struct Account {
 
 internal class ServicesObject: ObservableObject, LoggerCategorized {
   internal init() {
-    self.account = account
+    //self.account = account
     self.service = service
   }
   
-  @Published var account: Account?
-  @Published var service: (any Service)?
+  //@Published var account: Account?
+  @Published var service: (any AuthorizedService)?
   @Published var error : Error?
   
   typealias LoggersType = FloxBxLogging.Loggers
@@ -44,6 +44,19 @@ internal class ServicesObject: ObservableObject, LoggerCategorized {
 #endif
   }
   
+//  func logout () {
+//    guard let service = self.service else {
+//      assertionFailure("Service is not available.")
+//      return
+//    }
+//    
+//    do {
+//      try service.resetCredentials()
+//    } catch {
+//      self.error = error
+//    }
+//  }
+  
 #if DEBUG
   private static func fetchBaseURL() async throws -> URL {
     do {
@@ -59,7 +72,7 @@ internal class ServicesObject: ObservableObject, LoggerCategorized {
     }
   }
 
-  internal func developerService(fallbackURL: URL) async -> any Service {
+  internal func developerService(fallbackURL: URL) async -> any AuthorizedService {
     let baseURL: URL
     do {
       baseURL = try await Self.fetchBaseURL()
