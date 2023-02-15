@@ -14,7 +14,7 @@ import FloxBxModels
     let requestSharing : () -> Void
     @StateObject private var listObject : TodoListObject
     
-    init (groupActivityID: UUID?, service: any Service, items: [TodoContentItem] = [], isLoaded: Bool? = nil, onLogout: @escaping () -> Void, requestSharing : @escaping () -> Void) {
+    init (groupActivityID: UUID?, service: any AuthorizedService, items: [TodoContentItem] = [], isLoaded: Bool? = nil, onLogout: @escaping () -> Void, requestSharing : @escaping () -> Void) {
       let isLoaded = isLoaded ?? !items.isEmpty
       self.onLogout = onLogout
       self.requestSharing = requestSharing

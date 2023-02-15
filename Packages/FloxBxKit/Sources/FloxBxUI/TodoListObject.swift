@@ -18,12 +18,14 @@ enum TodoListAction {
 }
 
 class TodoListObject : ObservableObject {
-  internal init(groupActivityID: UUID?, service: any Service, items: [TodoContentItem] = [], isLoaded: Bool = false, lastErrror: Error? = nil) {
+  internal init(groupActivityID: UUID?, service: any AuthorizedService, items: [TodoContentItem] = [], isLoaded: Bool = false, lastErrror: Error? = nil) {
     self.groupActivityID = groupActivityID
     self.service = service
     self.items = items
     self.isLoaded = isLoaded
     self.lastErrror = lastErrror
+    
+    assert(((try? service.fetchCredentials()) != nil))
   }
   
   let groupActivityID : UUID?

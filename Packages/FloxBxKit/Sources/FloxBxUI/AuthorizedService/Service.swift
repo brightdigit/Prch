@@ -29,3 +29,11 @@ extension AuthorizedService
 extension ServiceImpl : AuthorizedService where AuthorizationContainerType: CredentialsContainer {
   
 }
+
+extension AuthorizedService {
+  func verifyLogin () async throws {
+    if let credentials = try self.fetchCredentials() {
+      #error("fix re-login")
+    }
+  }
+}

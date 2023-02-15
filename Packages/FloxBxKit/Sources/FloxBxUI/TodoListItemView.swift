@@ -6,7 +6,7 @@ import FloxBxNetworking
     
       @available(*, deprecated)
     @EnvironmentObject private var object: ApplicationObject
-    @StateObject private var itemObject: TodoContentItemObject
+    @StateObject private var itemObject: TodoObject
     
     //@State private var text: String
     //private let item: TodoContentItem

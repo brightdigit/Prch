@@ -18,7 +18,6 @@ internal struct ContentView: View, LoggerCategorized {
 
     @StateObject private var services = ServicesObject()
   
-  @StateObject private var authorization = AuthorizationObject()
 
     #if canImport(GroupActivities)
       @State private var activity: ActivityIdentifiableContainer<UUID>?
@@ -77,13 +76,12 @@ internal struct ContentView: View, LoggerCategorized {
         }
       }
       .sheet(isPresented: self.$shouldDisplayLoginView, content: {
-        LoginView()
-      })
-      .onReceive(self.authorization.$account) { account in
-        DispatchQueue.main.async {
-          self.shouldDisplayLoginView = account == nil
+        if let services = self.services.service {
+          LoginView(service: services)
+        } else {
+          ProgressView()
         }
-      }
+      })
     }
 
     internal var body: some View {

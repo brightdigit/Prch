@@ -14,6 +14,10 @@ internal class ServicesObject: ObservableObject, LoggerCategorized {
   internal init() {
     //self.account = account
     self.service = service
+    
+    self.$service.compactMap{$0}.map { service in
+      service
+    }
   }
   
   //@Published var account: Account?
@@ -37,10 +41,10 @@ internal class ServicesObject: ObservableObject, LoggerCategorized {
     }
 #else
     self.service = ServiceImpl(
-    baseURL: Configuration.productionBaseURL,
-    accessGroup: Configuration.accessGroup,
-    serviceName: Configuration.serviceName
-  )
+      baseURL: Configuration.productionBaseURL,
+      accessGroup: Configuration.accessGroup,
+      serviceName: Configuration.serviceName
+    )
 #endif
   }
   
