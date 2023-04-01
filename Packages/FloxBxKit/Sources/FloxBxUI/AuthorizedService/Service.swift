@@ -33,7 +33,7 @@ extension ServiceImpl : AuthorizedService where AuthorizationContainerType: Cred
 extension AuthorizedService {
   func verifyLogin () async throws {
     if let credentials = try self.fetchCredentials() {
-      #error("fix re-login")
+      //#error("fix re-login")
     }
   }
 }

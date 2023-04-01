@@ -8,8 +8,7 @@
     import FoundationNetworking
   #endif
 
-  // swiftlint:disable:next line_length todo
-  // TODO: Add support for types and labels -- https://medium.com/macoclock/retrieve-multiple-values-from-keychain-77641248f4a1
+  @available(*, deprecated, message: "Use StealthyStash")
   public struct KeychainContainer: CredentialsContainer {
     internal let accessGroup: String
     internal let serviceName: String

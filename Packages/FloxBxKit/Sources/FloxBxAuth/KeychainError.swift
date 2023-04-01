@@ -9,7 +9,7 @@ import Foundation
 #else
   public typealias OSStatus = Int32
 #endif
-
+@available(*, deprecated, message: "Use StealthyStash")
 internal enum KeychainError: Error {
   case unexpectedPasswordData
   case noPassword
