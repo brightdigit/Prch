@@ -33,7 +33,7 @@ let package = Package(
     .target(name: "FloxBxLogging", dependencies: ["FelinePine"]),
     .target(name: "FloxBxNetworking", dependencies: ["FloxBxLogging"]),
     .target(name: "FloxBxGroupActivities", dependencies: ["FloxBxLogging"]),
-    .target(name: "FloxBxAuth", dependencies: ["FloxBxLogging"]),
+    .target(name: "FloxBxAuth", dependencies: ["FloxBxLogging", "StealthyStash"]),
     .target(
       name: "RouteGroups",
       dependencies: [.product(name: "Vapor", package: "vapor")]
@@ -55,8 +55,7 @@ let package = Package(
       "FloxBxRequests",
       "FloxBxUtilities",
       "FloxBxAuth",
-      "FloxBxGroupActivities",
-      "StealthyStash"
+      "FloxBxGroupActivities"
     ]),
     .target(
       name: "FloxBxServerKit",
