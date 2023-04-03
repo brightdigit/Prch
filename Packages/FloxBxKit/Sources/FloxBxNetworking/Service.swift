@@ -4,6 +4,7 @@ public protocol Service {
   associatedtype AuthorizationContainerType: AuthorizationContainer
 
   var credentialsContainer: AuthorizationContainerType { get }
+  @available(*, deprecated)
   func beginRequest<RequestType: ClientRequest>(
     _ request: RequestType,
     _ completed: @escaping (Result<RequestType.SuccessType, Error>
@@ -12,6 +13,7 @@ public protocol Service {
     RequestType.SuccessType: Decodable,
     RequestType.BodyType == Void
 
+  @available(*, deprecated)
   func beginRequest<RequestType: ClientRequest>(
     _ request: RequestType,
     _ completed: @escaping (Error?) -> Void
@@ -19,6 +21,7 @@ public protocol Service {
     RequestType.SuccessType == Void,
     RequestType.BodyType == Void
 
+  @available(*, deprecated)
   func beginRequest<RequestType: ClientRequest>(
     _ request: RequestType,
     _ completed: @escaping (Result<RequestType.SuccessType, Error>) -> Void
@@ -26,56 +29,64 @@ public protocol Service {
     RequestType.SuccessType: Decodable,
     RequestType.BodyType: Encodable
 
+  @available(*, deprecated)
   func beginRequest<RequestType: ClientRequest>(
     _ request: RequestType,
     _ completed: @escaping (Error?) -> Void
   ) where
     RequestType.SuccessType == Void,
     RequestType.BodyType: Encodable
-}
-
-extension Service {
-  public func request<RequestType: ClientRequest>(
+  
+  func request<RequestType: ClientRequest>(
     _ request: RequestType
   ) async throws -> RequestType.SuccessType
-    where RequestType.SuccessType: Decodable, RequestType.BodyType: Encodable {
-    try await withCheckedThrowingContinuation { continuation in
-      self.beginRequest(request) { result in
-        continuation.resume(with: result)
-      }
-    }
-  }
-
-  public func request<RequestType: ClientRequest>(
+    where RequestType.SuccessType: Decodable, RequestType.BodyType: Encodable
+  // {
+//    try await withCheckedThrowingContinuation { continuation in
+//      self.beginRequest(request) { result in
+//        continuation.resume(with: result)
+//      }
+//    }
+//  }
+  
+  
+  func request<RequestType: ClientRequest>(
     _ request: RequestType
   ) async throws -> RequestType.SuccessType
-    where RequestType.SuccessType: Decodable, RequestType.BodyType == Void {
-    try await withCheckedThrowingContinuation { continuation in
-      self.beginRequest(request) { result in
-        continuation.resume(with: result)
-      }
-    }
-  }
 
-  public func request<RequestType: ClientRequest>(
+  func request<RequestType: ClientRequest>(
+    _ request: RequestType
+  ) async throws -> RequestType.SuccessType
+    where RequestType.SuccessType: Decodable, RequestType.BodyType == Void
+      //{
+//    try await withCheckedThrowingContinuation { continuation in
+//      self.beginRequest(request) { result in
+//        continuation.resume(with: result)
+//      }
+//    }
+//  }
+
+  func request<RequestType: ClientRequest>(
     _ request: RequestType
   ) async throws
-    where RequestType.SuccessType == Void, RequestType.BodyType: Encodable {
-    try await withCheckedThrowingContinuation { continuation in
-      self.beginRequest(request) { error in
-        continuation.resume(with: error)
-      }
-    }
-  }
+    where RequestType.SuccessType == Void, RequestType.BodyType: Encodable
+      //{
+//    try await withCheckedThrowingContinuation { continuation in
+//      self.beginRequest(request) { error in
+//        continuation.resume(with: error)
+//      }
+//    }
+//  }
 
-  public func request<RequestType: ClientRequest>(
+  func request<RequestType: ClientRequest>(
     _ request: RequestType
   ) async throws
-    where RequestType.SuccessType == Void, RequestType.BodyType == Void {
-    try await withCheckedThrowingContinuation { continuation in
-      self.beginRequest(request) { error in
-        continuation.resume(with: error)
-      }
-    }
-  }
+    where RequestType.SuccessType == Void, RequestType.BodyType == Void
+      //{
+//    try await withCheckedThrowingContinuation { continuation in
+//      self.beginRequest(request) { error in
+//        continuation.resume(with: error)
+//      }
+//    }
+//  }
 }

@@ -14,7 +14,27 @@ public class ServiceImpl<
 >: Service, HeaderProvider, LoggerCategorized where
   SessionType.SessionRequestType == RequestBuilderType.SessionRequestType,
   RequestBuilderType.SessionRequestType.DataType == CoderType.DataType,
-  SessionType.SessionResponseType.DataType == CoderType.DataType {
+SessionType.SessionResponseType.DataType == CoderType.DataType {
+  public func request<RequestType>(_ request: RequestType) async throws -> RequestType.SuccessType where RequestType : ClientRequest {
+    
+      fatalError()
+  }
+  
+  public func request<RequestType>(_ request: RequestType) async throws where RequestType : ClientRequest, RequestType.BodyType == (), RequestType.SuccessType == () {
+    
+      fatalError()
+  }
+  
+  public func request<RequestType>(_ request: RequestType) async throws -> RequestType.SuccessType where RequestType : ClientRequest, RequestType.BodyType : Encodable, RequestType.SuccessType : Decodable {
+    
+      fatalError()
+  }
+  
+  public func request<RequestType>(_ request: RequestType) async throws where RequestType : ClientRequest, RequestType.BodyType : Encodable, RequestType.SuccessType == () {
+    
+      fatalError()
+  }
+  
   public typealias LoggersType = FloxBxLogging.Loggers
 
   public static var loggingCategory: FloxBxLogging.LoggerCategory {
@@ -54,7 +74,8 @@ public class ServiceImpl<
 
     let headers: [String: String]
     do {
-      headers = try self.headers(withCredentials: RequestType.requiresCredentials)
+      fatalError()
+      //headers = try self.headers(withCredentials: RequestType.requiresCredentials)
     } catch {
       completed(.failure(error))
       return
@@ -99,7 +120,8 @@ public class ServiceImpl<
 
     let headers: [String: String]
     do {
-      headers = try self.headers(withCredentials: RequestType.requiresCredentials)
+      fatalError()
+      //headers = try self.headers(withCredentials: RequestType.requiresCredentials)
     } catch {
       completed(error)
       return
@@ -139,7 +161,8 @@ public class ServiceImpl<
     let sessionRequest: SessionType.SessionRequestType
     let headers: [String: String]
     do {
-      headers = try self.headers(withCredentials: RequestType.requiresCredentials)
+      fatalError()
+      //headers = try self.headers(withCredentials: RequestType.requiresCredentials)
 
       sessionRequest = try builder.build(
         request: request,
@@ -181,7 +204,8 @@ public class ServiceImpl<
     let sessionRequest: SessionType.SessionRequestType
     let headers: [String: String]
     do {
-      headers = try self.headers(withCredentials: RequestType.requiresCredentials)
+      fatalError()
+      //headers = try self.headers(withCredentials: RequestType.requiresCredentials)
     } catch {
       completed(error)
       return

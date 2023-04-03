@@ -1,3 +1,19 @@
+//protocol ContentDecodable {
+//  
+//}
+//
+//protocol ContentEncodable {
+//  
+//}
+//
+//extension Encodable : ContentEncodable {
+//  
+//}
+//
+//extension Decodable : ContentDecodable {
+//  
+//}
+
 public protocol ClientRequest: ClientBaseRequest {
   associatedtype SuccessType
   associatedtype BodyType
