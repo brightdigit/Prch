@@ -2,7 +2,12 @@ import FloxBxAuth
 import FloxBxNetworking
 import StealthyStash
 
+public protocol CredentialsContainer {
+  var credentials : Credentials? { set get }
+}
+
 public protocol AuthorizedService : Service {
+  
   func upsert(credentials newCredentials: Credentials, from oldCredentials: Credentials?) throws
 
   func delete(credentials: Credentials) throws
@@ -31,14 +36,34 @@ extension AuthorizedService
   }
 }
 
-extension ServiceImpl : AuthorizedService where AuthorizationContainerType: StealthyRepository {
+extension AuthorizedService where Self : CredentialsContainer, Self.AuthorizationContainerType.AuthorizationType == Credentials {
+  public func upsert(credentials newCredentials: Credentials) throws {
+    try self.upsert(credentials: newCredentials, from: self.credentials)
+  }
   
-}
-
-extension AuthorizedService {
-  func verifyLogin () async throws {
-    if let credentials = try await self.fetchCredentials() {
-      //#error("fix re-login")
+  public func clearCredentials () throws {
+    guard let credentials = self.credentials else {
+      return
     }
+    try self.delete(credentials: credentials)
+  }
+  
+  public mutating func refreshCredentials() async throws ->  FloxBxAuth.Credentials? {
+    let credentials = try await credentialsContainer.fetch()
+    self.credentials = credentials
+    return credentials
   }
 }
+
+extension ServiceImpl : AuthorizedService, CredentialsContainer where AuthorizationContainerType: StealthyRepository {
+  
+  
+}
+//
+//extension AuthorizedService {
+//  func verifyLogin () async throws {
+//    if let credentials = try await self.fetchCredentials() {
+//      //#error("fix re-login")
+//    }
+//  }
+//}

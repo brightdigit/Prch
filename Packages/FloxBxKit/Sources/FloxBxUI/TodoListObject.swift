@@ -25,7 +25,7 @@ class TodoListObject : ObservableObject {
     self.isLoaded = isLoaded
     self.lastErrror = lastErrror
     
-    assert(((try? service.fetchCredentials()) != nil))
+    //assert(((try? service.fetchCredentials()) != nil))
   }
   
   let groupActivityID : UUID?

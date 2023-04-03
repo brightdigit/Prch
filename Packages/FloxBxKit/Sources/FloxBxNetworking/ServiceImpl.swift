@@ -1,4 +1,5 @@
 import FelinePine
+import FloxBxAuth
 import FloxBxLogging
 import Foundation
 
@@ -15,6 +16,8 @@ public class ServiceImpl<
   SessionType.SessionRequestType == RequestBuilderType.SessionRequestType,
   RequestBuilderType.SessionRequestType.DataType == CoderType.DataType,
 SessionType.SessionResponseType.DataType == CoderType.DataType {
+  
+  public var credentials : Credentials?
   public func request<RequestType>(_ request: RequestType) async throws -> RequestType.SuccessType where RequestType : ClientRequest {
     
       fatalError()

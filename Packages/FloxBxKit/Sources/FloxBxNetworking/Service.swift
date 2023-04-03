@@ -1,5 +1,18 @@
 import Foundation
 
+public protocol ContentEncodable {
+  
+}
+
+public protocol ContentDecodable {
+  
+}
+
+extension ContentEncodable where Self : Encodable {
+  
+}
+
+
 public protocol Service {
   associatedtype AuthorizationContainerType: AuthorizationContainer
 
@@ -40,7 +53,7 @@ public protocol Service {
   func request<RequestType: ClientRequest>(
     _ request: RequestType
   ) async throws -> RequestType.SuccessType
-    where RequestType.SuccessType: Decodable, RequestType.BodyType: Encodable
+    where RequestType.SuccessType: ContentDecodable, RequestType.BodyType: ContentEncodable
   // {
 //    try await withCheckedThrowingContinuation { continuation in
 //      self.beginRequest(request) { result in
