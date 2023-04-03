@@ -3,11 +3,11 @@ import FloxBxRequests
 import Foundation
 
 extension ApplicationObject {
-  internal func setupCredentials() async {
+  internal func setupCredentials() {
     let credentials: Credentials?
     let error: Error?
     do {
-      credentials = try await service.fetchCredentials()
+      credentials = try service.fetchCredentials()
       error = nil
     } catch let caughtError {
       error = caughtError
@@ -40,7 +40,7 @@ extension ApplicationObject {
         credentials.withToken(content.token)
       }
       .tryMap { creds -> Credentials in
-        try self.service.upsert(credentials: credentials, from: nil)
+        try self.service.save(credentials: creds)
         return creds
       }
 
@@ -56,7 +56,7 @@ extension ApplicationObject {
 
   private func saveCredentials(_ newCreds: Credentials) {
     do {
-      try service?.upsert(credentials: newCreds)
+      try service.save(credentials: newCreds)
     } catch {
       onError(error)
       return
@@ -66,7 +66,7 @@ extension ApplicationObject {
 
   internal func logout() {
     do {
-      try service.clearCredentials()
+      try service.resetCredentials()
     } catch {
       onError(error)
       return

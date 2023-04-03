@@ -1,8 +1,4 @@
-import StealthyStash
-
-public struct Credentials : StealthyModel {
-  public typealias QueryBuilder = CompositeCredentialsQueryBuilder
-  
+public struct Credentials {
   public let username: String
   public let password: String
   public let token: String?

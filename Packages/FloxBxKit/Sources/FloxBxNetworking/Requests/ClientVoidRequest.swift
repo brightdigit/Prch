@@ -1,4 +1,3 @@
-@available(*, deprecated)
 public protocol ClientVoidRequest: ClientRequest
   where BodyType == Void, SuccessType == Void {}
 

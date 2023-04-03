@@ -1,5 +1,4 @@
 import FelinePine
-import FloxBxAuth
 import FloxBxLogging
 import Foundation
 
@@ -15,29 +14,7 @@ public class ServiceImpl<
 >: Service, HeaderProvider, LoggerCategorized where
   SessionType.SessionRequestType == RequestBuilderType.SessionRequestType,
   RequestBuilderType.SessionRequestType.DataType == CoderType.DataType,
-SessionType.SessionResponseType.DataType == CoderType.DataType {
-  
-  public var credentials : Credentials?
-  public func request<RequestType>(_ request: RequestType) async throws -> RequestType.SuccessType where RequestType : ClientRequest {
-    
-      fatalError()
-  }
-  
-  public func request<RequestType>(_ request: RequestType) async throws where RequestType : ClientRequest, RequestType.BodyType == (), RequestType.SuccessType == () {
-    
-      fatalError()
-  }
-  
-  public func request<RequestType>(_ request: RequestType) async throws -> RequestType.SuccessType where RequestType : ClientRequest, RequestType.BodyType : Encodable, RequestType.SuccessType : Decodable {
-    
-      fatalError()
-  }
-  
-  public func request<RequestType>(_ request: RequestType) async throws where RequestType : ClientRequest, RequestType.BodyType : Encodable, RequestType.SuccessType == () {
-    
-      fatalError()
-  }
-  
+  SessionType.SessionResponseType.DataType == CoderType.DataType {
   public typealias LoggersType = FloxBxLogging.Loggers
 
   public static var loggingCategory: FloxBxLogging.LoggerCategory {
@@ -77,8 +54,7 @@ SessionType.SessionResponseType.DataType == CoderType.DataType {
 
     let headers: [String: String]
     do {
-      fatalError()
-      //headers = try self.headers(withCredentials: RequestType.requiresCredentials)
+      headers = try self.headers(withCredentials: RequestType.requiresCredentials)
     } catch {
       completed(.failure(error))
       return
@@ -123,8 +99,7 @@ SessionType.SessionResponseType.DataType == CoderType.DataType {
 
     let headers: [String: String]
     do {
-      fatalError()
-      //headers = try self.headers(withCredentials: RequestType.requiresCredentials)
+      headers = try self.headers(withCredentials: RequestType.requiresCredentials)
     } catch {
       completed(error)
       return
@@ -164,8 +139,7 @@ SessionType.SessionResponseType.DataType == CoderType.DataType {
     let sessionRequest: SessionType.SessionRequestType
     let headers: [String: String]
     do {
-      fatalError()
-      //headers = try self.headers(withCredentials: RequestType.requiresCredentials)
+      headers = try self.headers(withCredentials: RequestType.requiresCredentials)
 
       sessionRequest = try builder.build(
         request: request,
@@ -207,8 +181,7 @@ SessionType.SessionResponseType.DataType == CoderType.DataType {
     let sessionRequest: SessionType.SessionRequestType
     let headers: [String: String]
     do {
-      fatalError()
-      //headers = try self.headers(withCredentials: RequestType.requiresCredentials)
+      headers = try self.headers(withCredentials: RequestType.requiresCredentials)
     } catch {
       completed(error)
       return

@@ -6,7 +6,6 @@ import FloxBxModels
 import FloxBxNetworking
 import FloxBxUtilities
 import Sublimation
-import StealthyStash
 
 #if canImport(Combine) && canImport(SwiftUI) && canImport(UserNotifications)
   import Combine
@@ -18,7 +17,7 @@ import StealthyStash
     internal typealias LoggersType = FloxBxLogging.Loggers
 
     internal typealias CredentialsService =
-      ServiceImpl<JSONCoder, URLSession, URLRequestBuilder, KeychainRepository>
+      ServiceImpl<JSONCoder, URLSession, URLRequestBuilder, KeychainContainer>
 
     internal static var loggingCategory: LoggerCategory {
       LoggerCategory.reactive
@@ -102,7 +101,7 @@ import StealthyStash
 
         await setupNotifications()
 
-        await setupCredentials()
+        setupCredentials()
       }
     }
 

@@ -1,8 +1,8 @@
 import Foundation
 
 // swiftlint:disable:next file_types_order
-@available(*, deprecated, message: "Use StealthyStash")
 extension Credentials {
+  @available(*, deprecated)
   public struct ResetResult: OptionSet {
     public init(rawValue: Int) {
       self.rawValue = rawValue

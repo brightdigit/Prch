@@ -1,69 +1,39 @@
 import FloxBxAuth
 import FloxBxNetworking
-import StealthyStash
-
-public protocol CredentialsContainer {
-  var credentials : Credentials? { set get }
-}
 
 public protocol AuthorizedService : Service {
-  
-  func upsert(credentials newCredentials: Credentials, from oldCredentials: Credentials?) throws
+  func save(credentials: Credentials) throws
 
-  func delete(credentials: Credentials) throws
-//  @discardableResult
-//  func resetCredentials() throws -> Credentials.ResetResult
+  @discardableResult
+  func resetCredentials() throws -> Credentials.ResetResult
 
-  func fetchCredentials() async throws -> Credentials?
+  func fetchCredentials() throws -> Credentials?
 }
 
 extension AuthorizedService
-  where AuthorizationContainerType: StealthyRepository {
-  public func upsert(credentials newCredentials: Credentials, from oldCredentials: Credentials?) throws {
-    if let oldCredentials {
-      try self.credentialsContainer.update(from: oldCredentials, to: newCredentials)
-    } else {
-      try self.credentialsContainer.create(newCredentials)
+  where AuthorizationContainerType: CredentialsContainer {
+  public func save(credentials:  FloxBxAuth.Credentials) throws {
+    try credentialsContainer.save(credentials: credentials)
+  }
+
+  @discardableResult
+  public func resetCredentials() throws ->  FloxBxAuth.Credentials.ResetResult {
+    try credentialsContainer.reset()
+  }
+
+  public func fetchCredentials() throws ->  FloxBxAuth.Credentials? {
+    try credentialsContainer.fetch()
+  }
+}
+
+extension ServiceImpl : AuthorizedService where AuthorizationContainerType: CredentialsContainer {
+  
+}
+
+extension AuthorizedService {
+  func verifyLogin () async throws {
+    if let credentials = try self.fetchCredentials() {
+      //#error("fix re-login")
     }
   }
-
-  public func delete(credentials: Credentials) throws {
-    try self.credentialsContainer.delete(credentials)
-  }
-
-  public func fetchCredentials() async throws ->  FloxBxAuth.Credentials? {
-    try await credentialsContainer.fetch()
-  }
 }
-
-extension AuthorizedService where Self : CredentialsContainer, Self.AuthorizationContainerType.AuthorizationType == Credentials {
-  public func upsert(credentials newCredentials: Credentials) throws {
-    try self.upsert(credentials: newCredentials, from: self.credentials)
-  }
-  
-  public func clearCredentials () throws {
-    guard let credentials = self.credentials else {
-      return
-    }
-    try self.delete(credentials: credentials)
-  }
-  
-  public mutating func refreshCredentials() async throws ->  FloxBxAuth.Credentials? {
-    let credentials = try await credentialsContainer.fetch()
-    self.credentials = credentials
-    return credentials
-  }
-}
-
-extension ServiceImpl : AuthorizedService, CredentialsContainer where AuthorizationContainerType: StealthyRepository {
-  
-  
-}
-//
-//extension AuthorizedService {
-//  func verifyLogin () async throws {
-//    if let credentials = try await self.fetchCredentials() {
-//      //#error("fix re-login")
-//    }
-//  }
-//}

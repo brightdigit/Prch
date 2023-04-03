@@ -3,7 +3,6 @@ import FloxBxNetworking
 import FloxBxUtilities
 import Foundation
 import Sublimation
-import StealthyStash
 
 extension ApplicationObject {
   #if DEBUG
@@ -30,7 +29,7 @@ extension ApplicationObject {
         onError(error)
         baseURL = fallbackURL
       }
-      return ServiceImpl<JSONCoder, URLSession, URLRequestBuilder, KeychainRepository>(
+      return ServiceImpl<JSONCoder, URLSession, URLRequestBuilder, KeychainContainer>(
         baseURL: baseURL,
         accessGroup: Configuration.accessGroup,
         serviceName: Configuration.serviceName
