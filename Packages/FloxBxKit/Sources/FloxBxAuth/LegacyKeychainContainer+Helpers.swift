@@ -6,7 +6,7 @@
     import FoundationNetworking
   #endif
 
-  extension KeychainContainer {
+  extension LegacyKeychainContainer {
     internal var tokenAccountQuery: CFDictionary {
       [
         kSecClass as String: kSecClassGenericPassword,

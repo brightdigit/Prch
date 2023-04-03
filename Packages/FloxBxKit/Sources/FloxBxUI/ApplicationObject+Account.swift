@@ -4,25 +4,27 @@ import Foundation
 
 extension ApplicationObject {
   internal func setupCredentials() {
-    let credentials: Credentials?
-    let error: Error?
-    do {
-      credentials = try service.fetchCredentials()
-      error = nil
-    } catch let caughtError {
-      error = caughtError
-      credentials = nil
-    }
-
-    if let error = error {
-      onError(error)
-    }
-
-    if let credentials = credentials {
-      beginSignIn(withCredentials: credentials)
-    } else {
-      DispatchQueue.main.async {
-        self.requiresAuthentication = true
+    Task {
+      let credentials: Credentials?
+      let error: Error?
+      do {
+        credentials = try await service.fetchCredentials()
+        error = nil
+      } catch let caughtError {
+        error = caughtError
+        credentials = nil
+      }
+      
+      if let error = error {
+        onError(error)
+      }
+      
+      if let credentials = credentials {
+        beginSignIn(withCredentials: credentials)
+      } else {
+        Task{ @MainActor in
+          self.requiresAuthentication = true
+        }
       }
     }
   }

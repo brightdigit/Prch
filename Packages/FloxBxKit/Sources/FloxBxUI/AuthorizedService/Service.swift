@@ -4,10 +4,9 @@ import FloxBxNetworking
 public protocol AuthorizedService : Service {
   func save(credentials: Credentials) throws
 
-  @discardableResult
-  func resetCredentials() throws -> Credentials.ResetResult
+  func resetCredentials() throws
 
-  func fetchCredentials() throws -> Credentials?
+  func fetchCredentials() async throws -> Credentials?
 }
 
 extension AuthorizedService
@@ -16,24 +15,23 @@ extension AuthorizedService
     try credentialsContainer.save(credentials: credentials)
   }
 
-  @discardableResult
-  public func resetCredentials() throws ->  FloxBxAuth.Credentials.ResetResult {
+  public func resetCredentials() throws {
     try credentialsContainer.reset()
   }
 
-  public func fetchCredentials() throws ->  FloxBxAuth.Credentials? {
-    try credentialsContainer.fetch()
+  public func fetchCredentials() async throws ->  FloxBxAuth.Credentials? {
+    try await credentialsContainer.fetch()
   }
 }
 
-extension ServiceImpl : AuthorizedService where AuthorizationContainerType: CredentialsContainer {
+extension ServiceImpl : AuthorizedService where AuthorizationContainerType == CredentialsContainer {
+
+  
   
 }
 
 extension AuthorizedService {
   func verifyLogin () async throws {
-    if let credentials = try self.fetchCredentials() {
-      //#error("fix re-login")
-    }
+    #error("fix re-login")
   }
 }

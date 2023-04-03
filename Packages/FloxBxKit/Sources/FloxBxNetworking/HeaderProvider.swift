@@ -11,8 +11,8 @@ extension HeaderProvider {
     withCredentials credentialsContainer: AuthorizationType?,
     from builder: RequestBuilderType,
     mergedWith headers: [String: String]
-  ) throws -> [String: String] {
-    let creds = try credentialsContainer?.fetch()
+  ) async throws -> [String: String] {
+    let creds = try await credentialsContainer?.fetch()
 
     let authorizationHeaders: [String: String]
     if let creds = creds {
@@ -28,8 +28,8 @@ extension HeaderProvider {
 
   public func headers(
     withCredentials requiresCredentials: Bool
-  ) throws -> [String: String] {
-    try Self.headers(
+  ) async throws -> [String: String] {
+    try await Self.headers(
       withCredentials: requiresCredentials ? credentialsContainer : nil,
       from: builder,
       mergedWith: headers

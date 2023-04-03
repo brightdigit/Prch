@@ -3,14 +3,14 @@
   import FloxBxLogging
   import Foundation
   import Security
+  import StealthyStash
 
   #if canImport(FoundationNetworking)
     import FoundationNetworking
   #endif
 
-  // swiftlint:disable:next line_length todo
-  // TODO: Add support for types and labels -- https://medium.com/macoclock/retrieve-multiple-values-from-keychain-77641248f4a1
-  public struct KeychainContainer: CredentialsContainer {
+  @available(*, deprecated)
+  public struct LegacyKeychainContainer: LegacyCredentialsContainer {
     internal let accessGroup: String
     internal let serviceName: String
 
@@ -160,7 +160,7 @@
     }
   }
 
-  extension KeychainContainer: LoggerCategorized {
+  extension LegacyKeychainContainer: LoggerCategorized {
     public typealias LoggersType = FloxBxLogging.Loggers
 
     public static var loggingCategory: FloxBxLogging.LoggerCategory {

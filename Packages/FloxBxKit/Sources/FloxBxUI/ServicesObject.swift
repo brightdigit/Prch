@@ -87,7 +87,7 @@ internal class ServicesObject: ObservableObject, LoggerCategorized {
       }
       baseURL = fallbackURL
     }
-    return ServiceImpl<JSONCoder, URLSession, URLRequestBuilder, KeychainContainer>(
+    return ServiceImpl<JSONCoder, URLSession, URLRequestBuilder, CredentialsContainer>(
       baseURL: baseURL,
       accessGroup: Configuration.accessGroup,
       serviceName: Configuration.serviceName

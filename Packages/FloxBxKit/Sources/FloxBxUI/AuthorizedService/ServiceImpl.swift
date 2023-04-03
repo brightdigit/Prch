@@ -1,6 +1,7 @@
 import FloxBxAuth
 import FloxBxNetworking
 import Foundation
+import StealthyStash
 
 #if canImport(Security)
 
@@ -16,24 +17,21 @@ import Foundation
       RequestBuilderType == URLRequestBuilder,
       SessionType == URLSession,
       CoderType == JSONCoder,
-      AuthorizationContainerType == KeychainContainer {
+      AuthorizationContainerType == CredentialsContainer {
       guard let baseURLComponents = URLComponents(
         url: baseURL,
         resolvingAgainstBaseURL: false
-      ) else {
+      ), let host = baseURL.host ?? baseURLComponents.host else {
         preconditionFailure("Invalid baseURL: \(baseURL)")
       }
 
+      let repository = KeychainRepository(defaultServiceName: serviceName, defaultServerName: host, defaultAccessGroup: accessGroup)
       self.init(
         baseURLComponents: baseURLComponents,
         coder: coder,
         session: session,
         builder: .init(),
-        credentialsContainer:
-        KeychainContainer(
-          accessGroup: accessGroup,
-          serviceName: serviceName
-        ),
+        credentialsContainer: CredentialsContainer(repository: repository),
         headers: headers
       )
     }
