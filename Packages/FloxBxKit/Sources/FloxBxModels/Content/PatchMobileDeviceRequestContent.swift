@@ -1,5 +1,6 @@
 import Foundation
-public struct PatchMobileDeviceRequestContent: Codable {
+import FloxBxModeling
+public struct PatchMobileDeviceRequestContent: Content, Codable {
   public let model: String?
   public let operatingSystem: String?
   public let topic: String?

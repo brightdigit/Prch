@@ -2,6 +2,7 @@ import FloxBxAuth
 import FloxBxNetworking
 import Foundation
 import StealthyStash
+import FloxBxModeling
 
 #if canImport(Security)
 

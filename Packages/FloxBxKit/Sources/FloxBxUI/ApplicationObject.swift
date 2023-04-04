@@ -5,6 +5,7 @@ import FloxBxLogging
 import FloxBxModels
 import FloxBxNetworking
 import FloxBxUtilities
+import FloxBxModeling
 import Sublimation
 
 #if canImport(Combine) && canImport(SwiftUI) && canImport(UserNotifications)

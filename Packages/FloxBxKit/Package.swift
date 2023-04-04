@@ -29,7 +29,8 @@ let package = Package(
   targets: [
     .target(name: "FelinePine"),
     .target(name: "FloxBxUtilities"),
-    .target(name: "FloxBxModels", dependencies: ["FloxBxUtilities"]),
+    .target(name: "FloxBxModeling"),
+    .target(name: "FloxBxModels", dependencies: ["FloxBxUtilities", "FloxBxModeling"]),
     .target(name: "FloxBxLogging", dependencies: ["FelinePine"]),
     .target(name: "FloxBxNetworking", dependencies: ["FloxBxLogging"]),
     .target(name: "FloxBxGroupActivities", dependencies: ["FloxBxLogging"]),
@@ -44,7 +45,7 @@ let package = Package(
     ),
     .target(
       name: "FloxBxRequests",
-      dependencies: ["FloxBxNetworking", "FloxBxModels"]
+      dependencies: ["FloxBxNetworking", "FloxBxModels", "FloxBxModeling"]
     ),
     .target(
       name: "FloxBxDatabase",

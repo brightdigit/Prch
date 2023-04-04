@@ -6,6 +6,7 @@ import Foundation
 #endif
 
 public struct PatchMobileDeviceRequest: ClientBodyRequest {
+  
   public typealias BodyType = PatchMobileDeviceRequestContent
 
   public static var requiresCredentials: Bool {

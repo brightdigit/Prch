@@ -1,4 +1,5 @@
 import FelinePine
+import FloxBxModeling
 import FloxBxLogging
 import Foundation
 
@@ -76,7 +77,7 @@ SessionType.SessionResponseType.DataType == CoderType.DataType {
       return try .init(decoded: decoded)
     }
     
-    guard let value = Empty() as? RequestType.SuccessType else {
+    guard let value = Empty.value as? RequestType.SuccessType else {
       throw RequestError.missingData
     }
     

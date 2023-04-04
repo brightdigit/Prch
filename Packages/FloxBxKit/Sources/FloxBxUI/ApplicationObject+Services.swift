@@ -1,6 +1,7 @@
 import FloxBxAuth
 import FloxBxNetworking
 import FloxBxUtilities
+import FloxBxModeling
 import Foundation
 import Sublimation
 

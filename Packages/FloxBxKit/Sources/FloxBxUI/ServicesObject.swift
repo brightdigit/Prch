@@ -4,6 +4,7 @@ import Sublimation
 import FloxBxUtilities
 import FloxBxNetworking
 import FloxBxLogging
+import FloxBxModeling
 import Foundation
 
 struct Account {
