@@ -4,7 +4,21 @@ import Foundation
   import FoundationNetworking
 #endif
 
+enum CoderError : Error {
+  case missingData
+  case missingDecoding
+}
+
+public struct Empty {
+  static let value = Empty()
+  
+  internal init () {}
+}
 public struct JSONCoder: Coder {
+
+  
+  
+  
   public typealias DataType = Data
 
   private let encoder: JSONEncoder

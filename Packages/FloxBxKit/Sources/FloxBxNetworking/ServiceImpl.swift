@@ -14,7 +14,8 @@ public class ServiceImpl<
 >: Service, HeaderProvider, LoggerCategorized where
   SessionType.SessionRequestType == RequestBuilderType.SessionRequestType,
   RequestBuilderType.SessionRequestType.DataType == CoderType.DataType,
-  SessionType.SessionResponseType.DataType == CoderType.DataType {
+SessionType.SessionResponseType.DataType == CoderType.DataType {
+  
   public typealias LoggersType = FloxBxLogging.Loggers
 
   public static var loggingCategory: FloxBxLogging.LoggerCategory {
@@ -43,171 +44,212 @@ public class ServiceImpl<
     self.credentialsContainer = credentialsContainer
     self.headers = headers
   }
-
-  public func beginRequest<RequestType>(
-    _ request: RequestType,
-    _ completed: @escaping (Result<RequestType.SuccessType, Error>) -> Void
-  ) where RequestType: ClientRequest,
-    RequestType.BodyType: Encodable,
-    RequestType.SuccessType: Decodable {
+  
+  
+  public func request<RequestType>(_ request: RequestType) async throws -> RequestType.SuccessType where RequestType : ClientRequest {
     let sessionRequest: SessionType.SessionRequestType
 
-    let headers: [String: String]
-    do {
-      headers = try self.headers(withCredentials: RequestType.requiresCredentials)
-    } catch {
-      completed(.failure(error))
-      return
-    }
+    let headers = try await self.headers(withCredentials: RequestType.requiresCredentials)
 
-    do {
+    
       sessionRequest = try builder.build(
         request: request,
         withBaseURL: baseURLComponents,
         withHeaders: headers,
         withEncoder: coder
       )
-    } catch {
-      Self.logger.error("Error building request: \(error.localizedDescription)")
-      return
-    }
-
-    session.request(sessionRequest) { result in
-      let decodedResult: Result<RequestType.SuccessType, Error> = result.flatMap { data in
+    
+    
+    let data = try await session.request(sessionRequest)
+    
+    
         guard request.isValidStatusCode(data.statusCode) else {
-          return Result.failure(RequestError.invalidStatusCode(data.statusCode))
+          throw RequestError.invalidStatusCode(data.statusCode)
         }
         guard let bodyData = data.data else {
-          return Result<RequestType.SuccessType, Error>.failure(RequestError.missingData)
+          throw RequestError.missingData
         }
-
-        return Result {
-          try self.coder.decode(RequestType.SuccessType.self, from: bodyData)
-        }
-      }
-      completed(decodedResult)
+    
+    if let decodable = RequestType.SuccessType.decodable {
+      
+      let decoded = try self.coder.decode(decodable, from: bodyData)
+      return try .init(decoded: decoded)
     }
+    
+    guard let value = Empty() as? RequestType.SuccessType else {
+      throw RequestError.missingData
+    }
+    
+    return value
+   
+    
+      
+  }
+
+  public func beginRequest<RequestType>(
+    _ request: RequestType,
+    _ completed: @escaping (Result<RequestType.SuccessType, Error>) -> Void
+  ) where RequestType: LegacyClientRequest,
+    RequestType.BodyType: Encodable,
+    RequestType.SuccessType: Decodable {
+    let sessionRequest: SessionType.SessionRequestType
+
+//    let headers: [String: String]
+//    do {
+//      headers = try self.headers(withCredentials: RequestType.requiresCredentials)
+//    } catch {
+//      completed(.failure(error))
+//      return
+//    }
+//
+//    do {
+//      sessionRequest = try builder.build(
+//        request: request,
+//        withBaseURL: baseURLComponents,
+//        withHeaders: headers,
+//        withEncoder: coder
+//      )
+//    } catch {
+//      Self.logger.error("Error building request: \(error.localizedDescription)")
+//      return
+//    }
+//
+//    session.request(sessionRequest) { result in
+//      let decodedResult: Result<RequestType.SuccessType, Error> = result.flatMap { data in
+//        guard request.isValidStatusCode(data.statusCode) else {
+//          return Result.failure(RequestError.invalidStatusCode(data.statusCode))
+//        }
+//        guard let bodyData = data.data else {
+//          return Result<RequestType.SuccessType, Error>.failure(RequestError.missingData)
+//        }
+//
+//        return Result {
+//          try self.coder.decode(RequestType.SuccessType.self, from: bodyData)
+//        }
+//      }
+//      completed(decodedResult)
+//    }
   }
 
   public func beginRequest<RequestType>(
     _ request: RequestType,
     _ completed: @escaping (Error?) -> Void
-  ) where RequestType: ClientRequest,
+  ) where RequestType: LegacyClientRequest,
     RequestType.BodyType: Encodable,
     RequestType.SuccessType == Void {
     let sessionRequest: SessionType.SessionRequestType
 
-    let headers: [String: String]
-    do {
-      headers = try self.headers(withCredentials: RequestType.requiresCredentials)
-    } catch {
-      completed(error)
-      return
-    }
-
-    do {
-      sessionRequest = try builder.build(
-        request: request,
-        withBaseURL: baseURLComponents,
-        withHeaders: headers,
-        withEncoder: coder
-      )
-    } catch {
-      Self.logger.error("Error building request: \(error.localizedDescription)")
-      return
-    }
-
-    session.request(sessionRequest) { result in
-      let error = result.flatMap { response -> Result<Void, Error> in
-        guard request.isValidStatusCode(response.statusCode) else {
-          return .failure(RequestError.invalidStatusCode(response.statusCode))
-        }
-        return .success(())
-      }
-      .asError()
-      completed(error)
-    }
+//    let headers: [String: String]
+//    do {
+//      headers = try self.headers(withCredentials: RequestType.requiresCredentials)
+//    } catch {
+//      completed(error)
+//      return
+//    }
+//
+//    do {
+//      sessionRequest = try builder.build(
+//        request: request,
+//        withBaseURL: baseURLComponents,
+//        withHeaders: headers,
+//        withEncoder: coder
+//      )
+//    } catch {
+//      Self.logger.error("Error building request: \(error.localizedDescription)")
+//      return
+//    }
+//
+//    session.request(sessionRequest) { result in
+//      let error = result.flatMap { response -> Result<Void, Error> in
+//        guard request.isValidStatusCode(response.statusCode) else {
+//          return .failure(RequestError.invalidStatusCode(response.statusCode))
+//        }
+//        return .success(())
+//      }
+//      .asError()
+//      completed(error)
+//    }
   }
 
   public func beginRequest<RequestType>(
     _ request: RequestType,
     _ completed: @escaping (Result<RequestType.SuccessType, Error>) -> Void
   ) where
-    RequestType: ClientRequest,
+    RequestType: LegacyClientRequest,
     RequestType.BodyType == Void,
     RequestType.SuccessType: Decodable {
     let sessionRequest: SessionType.SessionRequestType
-    let headers: [String: String]
-    do {
-      headers = try self.headers(withCredentials: RequestType.requiresCredentials)
-
-      sessionRequest = try builder.build(
-        request: request,
-        withBaseURL: baseURLComponents,
-        withHeaders: headers,
-        withEncoder: coder
-      )
-    } catch {
-      Self.logger.error("Error building request: \(error.localizedDescription)")
-      completed(.failure(error))
-      return
-    }
-
-    session.request(sessionRequest) { result in
-      let decodedResult: Result<RequestType.SuccessType, Error> = result.flatMap { data in
-        guard request.isValidStatusCode(data.statusCode) else {
-          return Result<RequestType.SuccessType, Error>
-            .failure(RequestError.invalidStatusCode(data.statusCode))
-        }
-        guard let bodyData = data.data else {
-          return Result<RequestType.SuccessType, Error>.failure(RequestError.missingData)
-        }
-
-        return Result {
-          try self.coder.decode(RequestType.SuccessType.self, from: bodyData)
-        }
-      }
-      completed(decodedResult)
-    }
+//    let headers: [String: String]
+//    do {
+//      headers = try self.headers(withCredentials: RequestType.requiresCredentials)
+//
+//      sessionRequest = try builder.build(
+//        request: request,
+//        withBaseURL: baseURLComponents,
+//        withHeaders: headers,
+//        withEncoder: coder
+//      )
+//    } catch {
+//      Self.logger.error("Error building request: \(error.localizedDescription)")
+//      completed(.failure(error))
+//      return
+//    }
+//
+//    session.request(sessionRequest) { result in
+//      let decodedResult: Result<RequestType.SuccessType, Error> = result.flatMap { data in
+//        guard request.isValidStatusCode(data.statusCode) else {
+//          return Result<RequestType.SuccessType, Error>
+//            .failure(RequestError.invalidStatusCode(data.statusCode))
+//        }
+//        guard let bodyData = data.data else {
+//          return Result<RequestType.SuccessType, Error>.failure(RequestError.missingData)
+//        }
+//
+//        return Result {
+//          try self.coder.decode(RequestType.SuccessType.self, from: bodyData)
+//        }
+//      }
+//      completed(decodedResult)
+//    }
   }
 
   public func beginRequest<RequestType>(
     _ request: RequestType,
     _ completed: @escaping (Error?) -> Void
   ) where
-    RequestType: ClientRequest,
+    RequestType: LegacyClientRequest,
     RequestType.BodyType == Void,
     RequestType.SuccessType == Void {
     let sessionRequest: SessionType.SessionRequestType
-    let headers: [String: String]
-    do {
-      headers = try self.headers(withCredentials: RequestType.requiresCredentials)
-    } catch {
-      completed(error)
-      return
-    }
-
-    do {
-      sessionRequest = try builder.build(
-        request: request,
-        withBaseURL: baseURLComponents,
-        withHeaders: headers,
-        withEncoder: coder
-      )
-    } catch {
-      Self.logger.error("Error building request: \(error.localizedDescription)")
-      return
-    }
-
-    session.request(sessionRequest) { result in
-      let error = result.flatMap { response -> Result<Void, Error> in
-        guard request.isValidStatusCode(response.statusCode) else {
-          return .failure(RequestError.invalidStatusCode(response.statusCode))
-        }
-        return .success(())
-      }
-      .asError()
-      completed(error)
-    }
+//    let headers: [String: String]
+//    do {
+//      headers = try self.headers(withCredentials: RequestType.requiresCredentials)
+//    } catch {
+//      completed(error)
+//      return
+//    }
+//
+//    do {
+//      sessionRequest = try builder.build(
+//        request: request,
+//        withBaseURL: baseURLComponents,
+//        withHeaders: headers,
+//        withEncoder: coder
+//      )
+//    } catch {
+//      Self.logger.error("Error building request: \(error.localizedDescription)")
+//      return
+//    }
+//
+//    session.request(sessionRequest) { result in
+//      let error = result.flatMap { response -> Result<Void, Error> in
+//        guard request.isValidStatusCode(response.statusCode) else {
+//          return .failure(RequestError.invalidStatusCode(response.statusCode))
+//        }
+//        return .success(())
+//      }
+//      .asError()
+//      completed(error)
+//    }
   }
 }

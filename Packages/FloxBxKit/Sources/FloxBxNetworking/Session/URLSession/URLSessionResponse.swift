@@ -14,13 +14,22 @@ public struct URLSessionResponse: SessionResponse {
   public var statusCode: Int {
     httpURLResponse.statusCode
   }
+  
 
   internal init?(urlResponse: URLResponse?, data: Data?) {
     guard let httpURLResponse = urlResponse as? HTTPURLResponse else {
       return nil
     }
-    print("status code:", httpURLResponse.statusCode)
     self.httpURLResponse = httpURLResponse
     self.data = data
+  }
+
+
+}
+
+extension URLSessionResponse {
+  
+  internal init?(_ tuple: (Data, URLResponse)) {
+    self.init(urlResponse: tuple.1, data: tuple.0)
   }
 }

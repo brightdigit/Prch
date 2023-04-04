@@ -1,4 +1,4 @@
-public protocol ClientVoidRequest: ClientRequest
+public protocol ClientVoidRequest: LegacyClientRequest
   where BodyType == Void, SuccessType == Void {}
 
 extension ClientVoidRequest {

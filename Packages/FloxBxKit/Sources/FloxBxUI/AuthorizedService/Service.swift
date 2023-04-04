@@ -32,6 +32,6 @@ extension ServiceImpl : AuthorizedService where AuthorizationContainerType == Cr
 
 extension AuthorizedService {
   func verifyLogin () async throws {
-    #error("fix re-login")
+   // #error("fix re-login")
   }
 }

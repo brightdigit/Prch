@@ -1,4 +1,4 @@
-public protocol ClientSuccessRequest: ClientRequest
+public protocol ClientSuccessRequest: LegacyClientRequest
   where SuccessType: Codable, BodyType == Void {}
 
 extension ClientSuccessRequest {
