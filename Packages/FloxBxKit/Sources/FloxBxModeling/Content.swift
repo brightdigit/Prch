@@ -31,3 +31,20 @@ extension Decodable where Self : ContentDecodable, DecodableType == Self {
     self = decoded
   }
 }
+
+extension Array : ContentDecodable where Element : ContentDecodable, Element.DecodableType == Element {
+  public static var decodable: Array<Element.DecodableType>.Type? {
+    return Self.self
+  }
+  
+  public init(decoded: Array<Element.DecodableType>?) throws {
+    guard let decoded = decoded else {
+      throw CoderError.missingData
+    }
+    self = decoded
+  }
+  
+  public typealias DecodableType = Array<Element.DecodableType>
+  
+  
+}

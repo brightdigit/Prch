@@ -4,8 +4,6 @@
 import FloxBxNetworking
   internal struct TodoListItemView: View {
     
-      @available(*, deprecated)
-    @EnvironmentObject private var object: ApplicationObject
     @StateObject private var itemObject: TodoObject
     
     //@State private var text: String

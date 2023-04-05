@@ -1,7 +1,8 @@
 import Foundation
+import FloxBxModeling
 import FloxBxUtilities
 
-public struct CreateTodoRequestContent: Codable {
+public struct CreateTodoRequestContent: Codable, Content {
   public let title: String
   public let tags: [String]
 

@@ -1,11 +1,11 @@
 import FloxBxModels
 import FloxBxNetworking
 import Foundation
+
 public struct GetTodoListRequest: ClientSuccessRequest {
   public typealias SuccessType = [CreateTodoResponseContent]
 
-  public typealias BodyType = Void
-
+  
   public static var requiresCredentials: Bool {
     true
   }

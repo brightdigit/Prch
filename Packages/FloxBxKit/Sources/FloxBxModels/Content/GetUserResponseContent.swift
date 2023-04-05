@@ -1,6 +1,7 @@
 import Foundation
+import FloxBxModeling
 
-public struct GetUserResponseContent: Codable {
+public struct GetUserResponseContent: Codable, Content {
   private let id: UUID
   private let username: String
   private let tags: [String]

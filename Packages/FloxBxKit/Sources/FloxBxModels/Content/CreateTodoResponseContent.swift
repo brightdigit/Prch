@@ -1,6 +1,7 @@
 import Foundation
+import FloxBxModeling
 
-public struct CreateTodoResponseContent: Codable {
+public struct CreateTodoResponseContent: Codable, Content {
   public let id: UUID
   public let title: String
   public let tags: [String]

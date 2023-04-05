@@ -1,8 +1,9 @@
-public protocol ClientVoidRequest: LegacyClientRequest
-  where BodyType == Void, SuccessType == Void {}
+import FloxBxModeling
+public protocol ClientVoidRequest: ClientRequest
+  where BodyType == Empty, SuccessType == Empty {}
 
 extension ClientVoidRequest {
   public var body: BodyType {
-    ()
+    return .value
   }
 }

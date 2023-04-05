@@ -1,4 +1,5 @@
-public struct CreateTokenResponseContent: Codable {
+import FloxBxModeling
+public struct CreateTokenResponseContent: Codable, Content {
   public let token: String
 
   public init(token: String) {
