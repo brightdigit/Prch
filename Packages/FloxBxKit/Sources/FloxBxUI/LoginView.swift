@@ -2,12 +2,13 @@
   import SwiftUI
 
 internal struct LoginView: View {
-  internal init (service : any AuthorizedService ) {
+  internal init(service: any AuthorizedService, completed: @escaping () -> Void) {
+    self.completed = completed
     self._authorization = .init(wrappedValue: .init(service: service))
   }
   
 
-    
+  let completed : () -> Void
     @StateObject var authorization  : AuthorizationObject
     @State private var emailAddress: String = ""
     @State private var password: String = ""
@@ -83,7 +84,9 @@ internal struct LoginView: View {
           formButtons
         #endif
         Spacer()
-      }.padding().frame(maxWidth: 300, maxHeight: 500)
+      }.padding().frame(maxWidth: 300, maxHeight: 500).onReceive(self.authorization.compeletedSubject) {
+        self.completed()
+      }
     }
 
     internal var body: some View {

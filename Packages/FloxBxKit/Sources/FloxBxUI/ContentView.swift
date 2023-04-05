@@ -51,7 +51,7 @@ internal struct ContentView: View, LoggerCategorized {
     }
   
   func logout () {
-    
+    self.services.logout()
   }
   
   func requestSharing () {
@@ -77,11 +77,18 @@ internal struct ContentView: View, LoggerCategorized {
       }
       .sheet(isPresented: self.$shouldDisplayLoginView, content: {
         if let services = self.services.service {
-          LoginView(service: services)
+          LoginView(service: services) {
+            Task { @MainActor in
+              self.shouldDisplayLoginView = false
+            }
+          }
         } else {
           ProgressView()
         }
       })
+      .onReceive(self.services.$requireAuthentication) { requiresAuthentication in
+        self.shouldDisplayLoginView = requiresAuthentication
+      }
     }
 
     internal var body: some View {

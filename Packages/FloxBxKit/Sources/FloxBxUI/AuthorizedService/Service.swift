@@ -1,5 +1,6 @@
 import FloxBxAuth
 import FloxBxNetworking
+import FloxBxRequests
 
 public protocol AuthorizedService : Service {
   func save(credentials: Credentials) throws
@@ -31,7 +32,27 @@ extension ServiceImpl : AuthorizedService where AuthorizationContainerType == Cr
 }
 
 extension AuthorizedService {
-  func verifyLogin () async throws {
-   // #error("fix re-login")
+  func verifyLogin () async throws -> Bool {
+    guard let credentials = try await self.fetchCredentials() else {
+      return false
+    }
+    
+    let newToken : String
+    do {
+      let tokenContainer = try await self.request(SignInRefreshRequest())
+      newToken = tokenContainer.token
+    } catch {
+      newToken = try await self.request(
+        SignInCreateRequest(
+          body: .DecodableType(
+            emailAddress: credentials.username,
+            password: credentials.password
+          )
+        )
+      ).token
+    }
+    
+    try self.save(credentials: credentials.withToken(newToken))
+    return true
   }
 }
