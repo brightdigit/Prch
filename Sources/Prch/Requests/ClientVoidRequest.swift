@@ -1,4 +1,4 @@
-import FloxBxModeling
+import PrchModel
 public protocol ClientVoidRequest: ClientRequest
   where BodyType == Empty, SuccessType == Empty {}
 

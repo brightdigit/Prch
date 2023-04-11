@@ -1,4 +1,4 @@
-import FloxBxModeling
+import PrchModel
 import Foundation
 
 #if canImport(FoundationNetworking)
