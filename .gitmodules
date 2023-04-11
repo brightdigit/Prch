@@ -1,4 +1,0 @@
-[submodule "Packages/FloxBxKit/Packages/StealthyStash"]
-	path = Packages/FloxBxKit/Packages/StealthyStash
-	url = git@github.com:brightdigit/StealthyStash.git
-	branch = floxbx
