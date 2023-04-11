@@ -21,7 +21,7 @@ internal class ServicesObject: ObservableObject, LoggerCategorized {
       Future{
         try await service.verifyLogin()
       }
-    }.switchToLatest().map{!$0}.replaceError(with: false).assign(to: &self.$requireAuthentication)
+    }.switchToLatest().map{!$0}.replaceError(with: false).receive(on: DispatchQueue.main).assign(to: &self.$requireAuthentication)
   }
   
 //  internal init() {
