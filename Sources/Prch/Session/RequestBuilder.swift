@@ -1,5 +1,5 @@
 import Foundation
-import FloxBxModeling
+import PrchModel
 
 #if canImport(FoundationNetworking)
   import FoundationNetworking

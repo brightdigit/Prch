@@ -1,4 +1,4 @@
-import FloxBxModeling
+import PrchModel
 
 public protocol ClientRequest: ClientBaseRequest {
   associatedtype SuccessType : ContentDecodable

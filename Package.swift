@@ -8,19 +8,19 @@ let package = Package(
   platforms: [.macOS(.v12), .iOS(.v14), .watchOS(.v7)],
   products: [
     .library(
-      name: "FloxBxNetworking",
-      targets: ["FloxBxNetworking"]
+      name: "Prch",
+      targets: ["Prch"]
     ),
     .library(
-      name: "FloxBxModeling",
-      targets: ["FloxBxModeling"]
+      name: "PrchModel",
+      targets: ["PrchModel"]
     ),
   ],
   dependencies: [
     // Dependencies declare other packages that this package depends on.
   ],
   targets: [
-    .target(name: "FloxBxNetworking", dependencies: ["FloxBxModeling"]),
-    .target(name: "FloxBxModeling", dependencies: [])
+    .target(name: "Prch", dependencies: ["PrchModel"]),
+    .target(name: "PrchModel", dependencies: [])
   ]
 )
