@@ -5,33 +5,42 @@ import Foundation
 import FoundationNetworking
 #endif
 
-//struct SimpleCreds {
-//  let userName : String
-//  let password : String
-//  let token : String?
-//  
-//  
-//  var httpHeaders : [String : String] {
-//    fatalError()
-//  }
-//}
-//
-//class SimpleCredContainer {
-//  func fetch() async throws -> SimpleCreds? {
-//    fatalError()
-//  }
-//}
+protocol GenericRequest {
+  var path : String { get }
+  var parameters : [String : String] { get }
+  var method : String { get }
+  var headers : [String : String] { get }
+  var body : Data? { get }
+  var requiresCredentials : Bool { get }
+}
 
-//struct SimpleRequest {
-//  let path : String
-//  let parameters : [String : String]
-//  let method : String
-//  let headers : [String : String]
-//  let body : Data?
-//  let requiresCredentials : Bool
-//}
+struct SimpleCreds {
+  let userName : String
+  let password : String
+  let token : String?
+  
+  
+  var httpHeaders : [String : String] {
+    fatalError()
+  }
+}
 
-class GenericService {
+class SimpleCredContainer {
+  func fetch() async throws -> SimpleCreds? {
+    fatalError()
+  }
+}
+
+struct SimpleRequest {
+  let path : String
+  let parameters : [String : String]
+  let method : String
+  let headers : [String : String]
+  let body : Data?
+  let requiresCredentials : Bool
+}
+
+class SimpleService {
   internal init(baseURLComponents: URLComponents, credentialsContainer: SimpleCredContainer, session: URLSession, headers: [String : String]) {
     self.baseURLComponents = baseURLComponents
     self.credentialsContainer = credentialsContainer
@@ -63,9 +72,9 @@ class GenericService {
     }
   }
   
-  private func build(request: SimpleRequest,
-                     withBaseURL baseURLComponents: URLComponents,
-                     withHeaders headers: [String : String]
+  private func build<RequestType : GenericRequest>(request: RequestType,
+                                                   withBaseURL baseURLComponents: URLComponents,
+                                                   withHeaders headers: [String : String]
   ) throws -> URLRequest  {
     var componenents = baseURLComponents
     componenents.path = "/\(request.path)"
@@ -92,15 +101,20 @@ class GenericService {
     return urlRequest
   }
   
-  public func request(_ request: SimpleRequest) async throws -> Data? {
+  func request<
+    RequestType : GenericRequest,
+    SuccessType: Decodable
+  >(
+    _ request: RequestType
+  ) async throws -> SuccessType {
     let sessionRequest: URLRequest
     let credetials = request.requiresCredentials ? credentialsContainer : nil
     
     let headers = try await Self.headers(
-          withCredentials: credetials,
-          mergedWith: headers
-        )
-  
+      withCredentials: credetials,
+      mergedWith: headers
+    )
+    
     sessionRequest = try self.build(
       request: request,
       withBaseURL: baseURLComponents,
@@ -108,14 +122,13 @@ class GenericService {
     )
     
     let (data, urlResponse) = try await session.data(for: sessionRequest)
-    
     guard let response = urlResponse as? HTTPURLResponse else {
       throw RequestError.invalidResponse(urlResponse)
     }
-    
     guard response.statusCode / 100 == 2 else {
       throw RequestError.invalidStatusCode(response.statusCode)
     }
-    return data
+    
+    return try JSONDecoder().decode(SuccessType.self, from: data)
   }
 }
