@@ -5,33 +5,33 @@ import Foundation
 import FoundationNetworking
 #endif
 
-//struct SimpleCreds {
-//  let userName : String
-//  let password : String
-//  let token : String?
-//  
-//  
-//  var httpHeaders : [String : String] {
-//    fatalError()
-//  }
-//}
-//
-//class SimpleCredContainer {
-//  func fetch() async throws -> SimpleCreds? {
-//    fatalError()
-//  }
-//}
+struct SimpleCreds {
+  let userName : String
+  let password : String
+  let token : String?
+  
+  
+  var httpHeaders : [String : String] {
+    fatalError()
+  }
+}
 
-//struct SimpleRequest {
-//  let path : String
-//  let parameters : [String : String]
-//  let method : String
-//  let headers : [String : String]
-//  let body : Data?
-//  let requiresCredentials : Bool
-//}
+class SimpleCredContainer {
+  func fetch() async throws -> SimpleCreds? {
+    fatalError()
+  }
+}
 
-class GenericService {
+struct SimpleRequest {
+  let path : String
+  let parameters : [String : String]
+  let method : String
+  let headers : [String : String]
+  let body : Data?
+  let requiresCredentials : Bool
+}
+
+class SimpleService {
   internal init(baseURLComponents: URLComponents, credentialsContainer: SimpleCredContainer, session: URLSession, headers: [String : String]) {
     self.baseURLComponents = baseURLComponents
     self.credentialsContainer = credentialsContainer

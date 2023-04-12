@@ -6,6 +6,7 @@ import FoundationNetworking
 #endif
 
 protocol GenericRequest {
+  associatedtype SuccessType : Decodable
   var path : String { get }
   var parameters : [String : String] { get }
   var method : String { get }
@@ -14,33 +15,7 @@ protocol GenericRequest {
   var requiresCredentials : Bool { get }
 }
 
-struct SimpleCreds {
-  let userName : String
-  let password : String
-  let token : String?
-  
-  
-  var httpHeaders : [String : String] {
-    fatalError()
-  }
-}
-
-class SimpleCredContainer {
-  func fetch() async throws -> SimpleCreds? {
-    fatalError()
-  }
-}
-
-struct SimpleRequest {
-  let path : String
-  let parameters : [String : String]
-  let method : String
-  let headers : [String : String]
-  let body : Data?
-  let requiresCredentials : Bool
-}
-
-class SimpleService {
+class GenericService {
   internal init(baseURLComponents: URLComponents, credentialsContainer: SimpleCredContainer, session: URLSession, headers: [String : String]) {
     self.baseURLComponents = baseURLComponents
     self.credentialsContainer = credentialsContainer
@@ -73,8 +48,8 @@ class SimpleService {
   }
   
   private func build<RequestType : GenericRequest>(request: RequestType,
-                                                   withBaseURL baseURLComponents: URLComponents,
-                                                   withHeaders headers: [String : String]
+                     withBaseURL baseURLComponents: URLComponents,
+                     withHeaders headers: [String : String]
   ) throws -> URLRequest  {
     var componenents = baseURLComponents
     componenents.path = "/\(request.path)"
@@ -101,20 +76,17 @@ class SimpleService {
     return urlRequest
   }
   
-  func request<
-    RequestType : GenericRequest,
-    SuccessType: Decodable
-  >(
-    _ request: RequestType
-  ) async throws -> SuccessType {
+  func request<SuccessType : Decodable>(
+    _ request: some GenericRequest
+  ) async throws -> some Decodable {
     let sessionRequest: URLRequest
     let credetials = request.requiresCredentials ? credentialsContainer : nil
     
     let headers = try await Self.headers(
-      withCredentials: credetials,
-      mergedWith: headers
-    )
-    
+          withCredentials: credetials,
+          mergedWith: headers
+        )
+  
     sessionRequest = try self.build(
       request: request,
       withBaseURL: baseURLComponents,
@@ -129,6 +101,8 @@ class SimpleService {
       throw RequestError.invalidStatusCode(response.statusCode)
     }
     
-    return try JSONDecoder().decode(SuccessType.self, from: data)
+    let decoder = JSONDecoder()
+    let successType = type(of: request).SuccessType
+    return try decoder.decode(successType, from: data)
   }
 }
