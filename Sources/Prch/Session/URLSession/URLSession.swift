@@ -30,37 +30,10 @@ extension URLSession: Session {
   }
 
   public func request(_ request: URLRequest) async throws -> URLSessionResponse {
-    let tuple = try await data(for: request)
+    let tuple: (Data, URLResponse) = try await data(for: request)
     guard let response = URLSessionResponse(tuple) else {
       throw RequestError.invalidResponse(tuple.1)
     }
     return response
   }
 }
-
-#if canImport(FoundationNetworking)
-  extension URLSession {
-    func data(for request: URLRequest) async throws -> (Data, URLResponse) {
-      try await withCheckedThrowingContinuation { continuation in
-        let task = self.dataTask(with: request) { data, response, error in
-          let result: Result<(Data, URLResponse), Error>
-
-          switch (data, response, error) {
-          case let (_, _, .some(error)):
-            result = .failure(error)
-
-          case let (.some(data), .some(response), .none):
-            result = .success((data, response))
-
-          default:
-            assertionFailure("Invalid response")
-            result = .failure(RequestError.invalidResponse(nil))
-          }
-
-          continuation.resume(with: result)
-        }
-        task.resume()
-      }
-    }
-  }
-#endif
