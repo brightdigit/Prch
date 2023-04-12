@@ -1,3 +1,3 @@
-public protocol SessionRequest {
+public protocol SessionRequest<DataType> {
   associatedtype DataType
 }
