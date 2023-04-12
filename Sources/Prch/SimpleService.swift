@@ -16,7 +16,8 @@ struct SimpleCreds {
   }
 }
 
-class SimpleCredContainer {
+public class SimpleCredContainer {
+  public init () {}
   func fetch() async throws -> SimpleCreds? {
     fatalError()
   }

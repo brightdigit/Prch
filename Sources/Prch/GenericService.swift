@@ -6,7 +6,7 @@ import FoundationNetworking
 #endif
 
 
-protocol GenericSessionResponse {
+public protocol GenericSessionResponse {
   var statusCode : Int { get }
   var data : Data { get }
 }
@@ -33,7 +33,7 @@ struct URLGenericSessionResponse : GenericSessionResponse {
 }
 
 
-protocol GenericSession {
+public protocol GenericSession<GenericSessionRequestType> {
   associatedtype GenericSessionRequestType
   func build<RequestType : GenericRequest>(
     request: RequestType,
@@ -46,9 +46,9 @@ protocol GenericSession {
 
 
 extension URLSession : GenericSession {
-  typealias GenericSessionRequestType = URLRequest
+  public typealias GenericSessionRequestType = URLRequest
   
-  func build<RequestType>(
+  public func build<RequestType>(
     request: RequestType,
     withBaseURL baseURLComponents: URLComponents,
     withHeaders headers: [String : String]
@@ -79,13 +79,13 @@ extension URLSession : GenericSession {
         return urlRequest
   }
   
-  func data(for request: GenericSessionRequestType) async throws -> GenericSessionResponse {
+  public func data(for request: GenericSessionRequestType) async throws -> GenericSessionResponse {
     let tuple : (Data, URLResponse) = try await self.data(for: request)
     return try URLGenericSessionResponse(tuple)
     
   }
 }
-protocol GenericRequest {
+public protocol GenericRequest {
   associatedtype SuccessType : Decodable
   var path : String { get }
   var parameters : [String : String] { get }
@@ -95,18 +95,23 @@ protocol GenericRequest {
   var requiresCredentials : Bool { get }
 }
 
-protocol GenericService {
+public protocol GenericService {
   func request<RequestType : GenericRequest>(
     _ request: RequestType
   ) async throws -> RequestType.SuccessType
 }
 
-class GenericServiceImpl<GenericSessionType: GenericSession> : GenericService {
+public class GenericServiceImpl<GenericRequestType> : GenericService {
 
   
  
 
-  internal init(baseURLComponents: URLComponents, credentialsContainer: SimpleCredContainer, session: GenericSessionType, headers: [String : String]) {
+  public  init(
+    baseURLComponents: URLComponents,
+    credentialsContainer: SimpleCredContainer = .init(),
+    session: any GenericSession<GenericRequestType>,
+    headers: [String : String] = [:]
+  ) {
     self.baseURLComponents = baseURLComponents
     self.credentialsContainer = credentialsContainer
     self.session = session
@@ -116,7 +121,7 @@ class GenericServiceImpl<GenericSessionType: GenericSession> : GenericService {
 
   private let baseURLComponents: URLComponents
   private let credentialsContainer: SimpleCredContainer
-  private let session: GenericSessionType
+  private let session: any GenericSession<GenericRequestType>
   private let headers: [String: String]
 
   private static func headers(
@@ -166,7 +171,7 @@ class GenericServiceImpl<GenericSessionType: GenericSession> : GenericService {
 //    return urlRequest
 //  }
 
-func request<RequestType>(_ request: RequestType) async throws -> RequestType.SuccessType where RequestType : GenericRequest {
+public func request<RequestType>(_ request: RequestType) async throws -> RequestType.SuccessType where RequestType : GenericRequest {
   
   let credetials = request.requiresCredentials ? credentialsContainer : nil
 
@@ -175,7 +180,6 @@ func request<RequestType>(_ request: RequestType) async throws -> RequestType.Su
         mergedWith: headers
       )
 
-  
   let sessionRequest = try self.session.build(
     request: request,
     withBaseURL: baseURLComponents,
