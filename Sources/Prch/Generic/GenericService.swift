@@ -64,12 +64,9 @@ class GenericService {
     return urlRequest
   }
 
-  func request<
-    RequestType: GenericRequest,
-    SuccessType: Decodable
-  >(
-    _ request: RequestType
-  ) async throws -> SuccessType {
+  func request<SuccessType: Decodable>(
+    _ request: some GenericRequest
+  ) async throws -> some Decodable {
     let sessionRequest: URLRequest
     let credetials = request.requiresCredentials ? credentialsContainer : nil
 
@@ -84,14 +81,16 @@ class GenericService {
       withHeaders: headers
     )
 
-    let (data, urlResponse) = try await session.data(for: sessionRequest)
-    guard let response = urlResponse as? HTTPURLResponse else {
-      throw RequestError.invalidResponse(urlResponse)
-    }
-    guard response.statusCode / 100 == 2 else {
-      throw RequestError.invalidStatusCode(response.statusCode)
+    let (data, response) = try await session.data(for: sessionRequest)
+
+    let statusCode = (response as? HTTPURLResponse)?.statusCode ?? -1
+
+    guard statusCode / 100 == 2 else {
+      throw RequestError.invalidStatusCode(statusCode)
     }
 
-    return try JSONDecoder().decode(SuccessType.self, from: data)
+    let decoder = JSONDecoder()
+    let successType = type(of: request).SuccessType
+    return try decoder.decode(successType, from: data)
   }
 }
