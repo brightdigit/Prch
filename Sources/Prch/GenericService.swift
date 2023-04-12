@@ -5,6 +5,86 @@ import Foundation
 import FoundationNetworking
 #endif
 
+
+protocol GenericSessionResponse {
+  var statusCode : Int { get }
+  var data : Data { get }
+}
+
+struct URLGenericSessionResponse : GenericSessionResponse {
+  internal init(httpURLResponse: HTTPURLResponse, data: Data) {
+    self.httpURLResponse = httpURLResponse
+    self.data = data
+  }
+  
+  internal init(_ tuple: (Data, URLResponse)) throws {
+    guard let response = tuple.1 as? HTTPURLResponse else {
+      throw RequestError.invalidResponse(tuple.1)
+    }
+    self.init(httpURLResponse: response, data: tuple.0)
+  }
+  
+  let httpURLResponse: HTTPURLResponse
+  let data: Data
+  
+  var statusCode: Int {
+    return httpURLResponse.statusCode
+  }
+}
+
+
+protocol GenericSession {
+  associatedtype GenericSessionRequestType
+  func build<RequestType : GenericRequest>(
+    request: RequestType,
+    withBaseURL baseURLComponents: URLComponents,
+    withHeaders headers: [String : String]
+  ) throws -> GenericSessionRequestType
+  
+  func data(for request: GenericSessionRequestType) async throws -> GenericSessionResponse
+}
+
+
+extension URLSession : GenericSession {
+  typealias GenericSessionRequestType = URLRequest
+  
+  func build<RequestType>(
+    request: RequestType,
+    withBaseURL baseURLComponents: URLComponents,
+    withHeaders headers: [String : String]
+  ) throws -> URLRequest
+  where RequestType : GenericRequest {
+        var componenents = baseURLComponents
+        componenents.path = "/\(request.path)"
+        componenents.queryItems = request.parameters.map(URLQueryItem.init)
+    
+        guard let url = componenents.url else {
+          preconditionFailure()
+        }
+    
+        var urlRequest = URLRequest(url: url)
+    
+        urlRequest.httpMethod = request.method
+    
+        let allHeaders = headers.merging(request.headers, uniquingKeysWith: { lhs, _ in lhs })
+    
+        for (field, value) in allHeaders {
+          urlRequest.addValue(value, forHTTPHeaderField: field)
+        }
+    
+        if let body = request.body {
+          urlRequest.httpBody = body
+        }
+    
+        return urlRequest
+  }
+  
+  func data(for request: GenericSessionRequestType) async throws -> GenericSessionResponse {
+    let tuple : (Data, URLResponse) = try await self.data(for: request)
+    return try URLGenericSessionResponse(tuple)
+    
+  }
+}
 protocol GenericRequest {
   associatedtype SuccessType : Decodable
   var path : String { get }
@@ -15,94 +95,101 @@ protocol GenericRequest {
   var requiresCredentials : Bool { get }
 }
 
-class GenericService {
-  internal init(baseURLComponents: URLComponents, credentialsContainer: SimpleCredContainer, session: URLSession, headers: [String : String]) {
+protocol GenericService {
+  func request<RequestType : GenericRequest>(
+    _ request: RequestType
+  ) async throws -> RequestType.SuccessType
+}
+
+class GenericServiceImpl<GenericSessionType: GenericSession> : GenericService {
+
+  
+ 
+
+  internal init(baseURLComponents: URLComponents, credentialsContainer: SimpleCredContainer, session: GenericSessionType, headers: [String : String]) {
     self.baseURLComponents = baseURLComponents
     self.credentialsContainer = credentialsContainer
     self.session = session
     self.headers = headers
   }
-  
-  
+
+
   private let baseURLComponents: URLComponents
   private let credentialsContainer: SimpleCredContainer
-  private let session: URLSession
+  private let session: GenericSessionType
   private let headers: [String: String]
-  
+
   private static func headers(
     withCredentials credentialsContainer: SimpleCredContainer?,
     mergedWith headers: [String: String]
   ) async throws -> [String: String] {
     let creds = try await credentialsContainer?.fetch()
-    
+
     let authorizationHeaders: [String: String]
     if let creds = creds {
       authorizationHeaders = creds.httpHeaders
     } else {
       authorizationHeaders = [:]
     }
-    
+
     return headers.merging(authorizationHeaders) { _, rhs in
       rhs
     }
   }
+
+//  private func build<RequestType : GenericRequest>(request: RequestType,
+//                     withBaseURL baseURLComponents: URLComponents,
+//                     withHeaders headers: [String : String]
+//  ) throws -> GenericSessionRequest  {
+//    var componenents = baseURLComponents
+//    componenents.path = "/\(request.path)"
+//    componenents.queryItems = request.parameters.map(URLQueryItem.init)
+//
+//    guard let url = componenents.url else {
+//      preconditionFailure()
+//    }
+//
+//    var urlRequest =
+//
+//    urlRequest.httpMethod = request.method
+//
+//    let allHeaders = headers.merging(request.headers, uniquingKeysWith: { lhs, _ in lhs })
+//
+//    for (field, value) in allHeaders {
+//      urlRequest.addValue(value, forHTTPHeaderField: field)
+//    }
+//
+//    if let body = request.body {
+//      urlRequest.httpBody = body
+//    }
+//
+//    return urlRequest
+//  }
+
+func request<RequestType>(_ request: RequestType) async throws -> RequestType.SuccessType where RequestType : GenericRequest {
   
-  private func build<RequestType : GenericRequest>(request: RequestType,
-                     withBaseURL baseURLComponents: URLComponents,
-                     withHeaders headers: [String : String]
-  ) throws -> URLRequest  {
-    var componenents = baseURLComponents
-    componenents.path = "/\(request.path)"
-    componenents.queryItems = request.parameters.map(URLQueryItem.init)
-    
-    guard let url = componenents.url else {
-      preconditionFailure()
-    }
-    
-    var urlRequest = URLRequest(url: url)
-    
-    urlRequest.httpMethod = request.method
-    
-    let allHeaders = headers.merging(request.headers, uniquingKeysWith: { lhs, _ in lhs })
-    
-    for (field, value) in allHeaders {
-      urlRequest.addValue(value, forHTTPHeaderField: field)
-    }
-    
-    if let body = request.body {
-      urlRequest.httpBody = body
-    }
-    
-    return urlRequest
+  let credetials = request.requiresCredentials ? credentialsContainer : nil
+
+  let headers = try await Self.headers(
+        withCredentials: credetials,
+        mergedWith: headers
+      )
+
+  
+  let sessionRequest = try self.session.build(
+    request: request,
+    withBaseURL: baseURLComponents,
+    withHeaders: headers
+  )
+
+  let response = try await session.data(for: sessionRequest)
+
+  guard response.statusCode / 100 == 2 else {
+    throw RequestError.invalidStatusCode(response.statusCode)
   }
-  
-  func request<SuccessType : Decodable>(
-    _ request: some GenericRequest
-  ) async throws -> some Decodable {
-    let sessionRequest: URLRequest
-    let credetials = request.requiresCredentials ? credentialsContainer : nil
-    
-    let headers = try await Self.headers(
-          withCredentials: credetials,
-          mergedWith: headers
-        )
-  
-    sessionRequest = try self.build(
-      request: request,
-      withBaseURL: baseURLComponents,
-      withHeaders: headers
-    )
-    
-    let (data, urlResponse) = try await session.data(for: sessionRequest)
-    guard let response = urlResponse as? HTTPURLResponse else {
-      throw RequestError.invalidResponse(urlResponse)
-    }
-    guard response.statusCode / 100 == 2 else {
-      throw RequestError.invalidStatusCode(response.statusCode)
-    }
-    
-    let decoder = JSONDecoder()
-    let successType = type(of: request).SuccessType
-    return try decoder.decode(successType, from: data)
-  }
+  let data : Data = response.data
+  let decoder = JSONDecoder()
+  let successType = type(of: request).SuccessType
+  return try decoder.decode(successType, from: data)
+}
 }
