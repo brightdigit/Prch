@@ -17,8 +17,8 @@ jobs:
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     strategy:
       matrix:
-        runs-on: [ubuntu-18.04, ubuntu-20.04]
-        swift-version: [5.2.4, 5.3.3, 5.4.1, 5.5.2, 5.6.2]
+        runs-on: [ubuntu-18.04, ubuntu-20.04, ubuntu-22.04]
+        swift-version: [5.7.3, 5.8]
     steps:
       - uses: actions/checkout@v2
       - name: Set Ubuntu Release DOT
@@ -51,31 +51,8 @@ jobs:
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     strategy:
       matrix:
-        runs-on: [macos-11, macos-10.15]
-        xcode: ["/Applications/Xcode_12.4.app", "/Applications/Xcode_11.7.app"]
-        include:
-          - runs-on: macos-10.15
-            xcode: "/Applications/Xcode_11.4.1.app"
-          - runs-on: macos-10.15
-            xcode: "/Applications/Xcode_11.5.app"
-          - runs-on: macos-10.15
-            xcode: "/Applications/Xcode_11.6.app"
-          - runs-on: macos-11
-            xcode: "/Applications/Xcode_12.5.1.app"
-          - runs-on: macos-11
-            xcode: "/Applications/Xcode_13.0.app"
-          - runs-on: macos-11
-            xcode: "/Applications/Xcode_13.1.app"
-          - runs-on: macos-11
-            xcode: "/Applications/Xcode_13.2.1.app"
-          - runs-on: macos-12
-            xcode: "/Applications/Xcode_13.2.1.app"
-          - runs-on: macos-12
-            xcode: "/Applications/Xcode_13.3.1.app"
-          - runs-on: macos-12
-            xcode: "/Applications/Xcode_13.4.app"
-          - runs-on: macos-12
-            xcode: "/Applications/Xcode_13.4.1.app"
+        runs-on: [macos-12]
+        xcode: ["/Applications/Xcode_13.4.1.app", "/Applications/Xcode_14.0.1.app", "/Applications/Xcode_14.1.app", "/Applications/Xcode_14.2.app"]
     steps:
       - uses: actions/checkout@v2
       - name: Set Xcode Name
@@ -95,25 +72,22 @@ jobs:
       #   run: bash <(curl https://codecov.io/bash) -F github -F macOS -F ${{ matrix.runs-on }}
       #   env:
       #     CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      - name: Build sourcedocs Documentation
-        if: ${{ matrix.os == 'macos-11' && matrix.xcode == '/Applications/Xcode_12.5.app' && !startsWith(github.ref, 'refs/tags/') }}
-        run: "swift run sourcedocs generate build -cra\ngit config --local user.email \"action@github.com\"\ngit config --local user.name \"GitHub Action\"\ngit status\ngit add Documentation\ngit diff-index --quiet HEAD || git commit -m \"[github action] Update Docs\"\ngit push    \n"
-  deploy:
-    name: Deploy to Netlify
-    needs: [build-macos, build-ubuntu]
-    env:
-      PACKAGE_NAME: Prch
-    runs-on: macos-11
-    if: ${{ github.ref == 'refs/heads/main' }}
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup Netlify
-        run: brew install netlify-cli
-      - name: Setup Xcode
-        run: sudo xcode-select -s /Applications/Xcode_13.0.app/Contents/Developer
-      - name: Resolve Package Dependencies
-        run: xcodebuild -resolvePackageDependencies -scheme ${{ env.PACKAGE_NAME }} -derivedDataPath DerivedData
-      - name: Build DocC Documentation
-        run: xcodebuild docbuild -scheme ${{ env.PACKAGE_NAME }} -destination 'platform=macOS' -derivedDataPath DerivedData
+  # deploy:
+  #   name: Deploy to Netlify
+  #   needs: [build-macos, build-ubuntu]
+  #   env:
+  #     PACKAGE_NAME: Prch
+  #   runs-on: macos-11
+  #   if: ${{ github.ref == 'refs/heads/main' }}
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Setup Netlify
+  #       run: brew install netlify-cli
+  #     - name: Setup Xcode
+  #       run: sudo xcode-select -s /Applications/Xcode_13.0.app/Contents/Developer
+  #     - name: Resolve Package Dependencies
+  #       run: xcodebuild -resolvePackageDependencies -scheme ${{ env.PACKAGE_NAME }} -derivedDataPath DerivedData
+  #     - name: Build DocC Documentation
+  #       run: xcodebuild docbuild -scheme ${{ env.PACKAGE_NAME }} -destination 'platform=macOS' -derivedDataPath DerivedData
     #  - name: Deploy Files
     #    run: netlify deploy --site ${{ secrets.NETLIFY_SITE_ID }} --auth ${{ secrets.NETLIFY_AUTH_TOKEN }} --prod

@@ -1,43 +1,41 @@
-import Foundation
-
-extension Result where Success: Response, Failure == ClientError {
-  init(
-    _: Success.Type,
-    result: Result<ResponseComponents, ClientError>,
-    decoder: ResponseDecoder
-  ) {
-    self = result.flatMap { response -> Result<Success, ClientError> in
-      guard let httpStatus = response.statusCode, let data = response.data else {
-        return .failure(ClientError.invalidResponse)
-      }
-      let result = Result<Success, Error> {
-        try Success(statusCode: httpStatus, data: data, decoder: decoder)
-      }
-      switch result {
-      case let .success(value):
-        return .success(value)
-
-      case let .failure(errorType as ClientError):
-        return .failure(errorType)
-
-      case let .failure(errorType as DecodingError):
-        return .failure(ClientError.decodingError(errorType))
-
-      case let .failure(errorType):
-        return .failure(ClientError.unknownError(errorType))
-      }
+extension Result {
+  public init(
+    _ asyncFunc: @escaping () async throws -> Success
+  ) async where Failure == Error {
+    let success: Success
+    do {
+      success = try await asyncFunc()
+    } catch {
+      self = .failure(error)
+      return
     }
+    self = .success(success)
   }
 
-  var response: ClientResult<Success.SuccessType, Success.FailureType> {
-    let success: Success
+  public func tryMap<NewSuccess>(
+    _ transform: @escaping (Success) throws -> (NewSuccess)
+  ) -> Result<NewSuccess, Error> {
+    let oldValue: Success
+    let newValue: NewSuccess
     switch self {
     case let .success(value):
-      success = value
+      oldValue = value
 
     case let .failure(error):
       return .failure(error)
     }
-    return success.response
+    do {
+      newValue = try transform(oldValue)
+    } catch {
+      return .failure(error)
+    }
+    return .success(newValue)
+  }
+
+  public func asError() -> Failure? where Success == Void {
+    guard case let .failure(error) = self else {
+      return nil
+    }
+    return error
   }
 }
