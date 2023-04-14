@@ -74,7 +74,7 @@ jobs:
     strategy:
       matrix:
         runs-on: [macos-12]
-        xcode: ["/Applications/Xcode_13.4.1.app", "/Applications/Xcode_14.0.1.app", "/Applications/Xcode_14.1.app", "/Applications/Xcode_14.2.app"]
+        xcode: ["/Applications/Xcode_14.0.1.app", "/Applications/Xcode_14.1.app", "/Applications/Xcode_14.2.app"]
     steps:
       - uses: actions/checkout@v3
       - name: Cache swift package modules
@@ -126,7 +126,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
       - name: Lint
         run: ./scripts/lint.sh
-        if: startsWith(matrix.xcode,'/Applications/Xcode_14.1')
+        if: startsWith(matrix.xcode,'/Applications/Xcode_14.2')
       - name: Dump PIF
         if: startsWith(matrix.xcode,'/Applications/Xcode_14')
         run: |
