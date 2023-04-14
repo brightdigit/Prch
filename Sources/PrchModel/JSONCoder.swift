@@ -3,7 +3,7 @@ import Foundation
 #if canImport(FoundationNetworking)
   import FoundationNetworking
 #endif
-public protocol LegacyCoder  {
+public protocol LegacyCoder {
   associatedtype DataType
 
   func encode<CodableType: Encodable>(_ value: CodableType) throws -> DataType
@@ -11,38 +11,33 @@ public protocol LegacyCoder  {
   func decode<CodableType: Decodable>(_: CodableType.Type, from data: DataType)
     throws -> CodableType
 }
-public protocol Coder : LegacyCoder{
-}
 
-enum CoderError : Error {
+public protocol Coder: LegacyCoder {}
+
+enum CoderError: Error {
   case missingData
   case missingDecoding
 }
 
-public struct Empty : ContentDecodable, ContentEncodable, Decodable {  
+public struct Empty: ContentDecodable, ContentEncodable, Decodable {
   public typealias DecodableType = Empty
-  
-  public var encodable: EncodableValue {
-    return .empty
-  }
-  
-  static public var decodable: Empty? {
-    return nil
-  }
-  
-  public static let value = Empty()
-  
-  internal init () {}
-  
-  public init(decoded: Empty?) throws {
-    
-  }
-}
-public struct JSONCoder: Coder {
 
-  
-  
-  
+  public var encodable: EncodableValue {
+    .empty
+  }
+
+  public static var decodable: Empty? {
+    nil
+  }
+
+  public static let value = Empty()
+
+  internal init() {}
+
+  public init(decoded _: Empty?) throws {}
+}
+
+public struct JSONCoder: Coder {
   public typealias DataType = Data
 
   private let encoder: JSONEncoder

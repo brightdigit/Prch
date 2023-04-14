@@ -4,6 +4,6 @@ public protocol ClientVoidRequest: ClientRequest
 
 extension ClientVoidRequest {
   public var body: BodyType {
-    return .value
+    .value
   }
 }

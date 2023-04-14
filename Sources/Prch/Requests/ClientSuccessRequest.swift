@@ -4,6 +4,6 @@ public protocol ClientSuccessRequest: ClientRequest
 
 extension ClientSuccessRequest {
   public var body: BodyType {
-    return .value
+    .value
   }
 }

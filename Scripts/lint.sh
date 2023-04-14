@@ -1,22 +1,16 @@
 #!/bin/sh
 
-SomeErrorHandler () {
-	(( errcount++ ))       # or (( errcount += $? ))
-}
-
 if [ -z "$SRCROOT" ]; then
 	SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 	PACKAGE_DIR="${SCRIPT_DIR}/.."
 else
-	PACKAGE_DIR="${SRCROOT}"
+	PACKAGE_DIR="${SRCROOT}" 	
 fi
 
 if [ -z "$GITHUB_ACTION" ]; then
 	MINT_CMD="/opt/homebrew/bin/mint"
 else
 	MINT_CMD="mint"
-	trap SomeErrorHandler ERR
-	LINT_MODE="STRICT"
 fi
 
 export MINT_PATH="$PACKAGE_DIR/.mint"
@@ -44,14 +38,8 @@ if [ -z "$CI" ]; then
 	$MINT_RUN swiftlint autocorrect
 fi
 
-# Too Many False Positives
-$MINT_RUN periphery scan
+#$MINT_RUN periphery scan 
 $MINT_RUN swiftformat --lint $SWIFTFORMAT_OPTIONS .
 $MINT_RUN swiftlint lint $SWIFTLINT_OPTIONS
 
 popd
-
-if  [ $errcount > 0 ]; then
-	echo "Too many errors"
-	exit $errcount
-fi

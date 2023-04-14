@@ -14,7 +14,7 @@ let package = Package(
     .library(
       name: "PrchModel",
       targets: ["PrchModel"]
-    ),
+    )
   ],
   dependencies: [
     // Dependencies declare other packages that this package depends on.

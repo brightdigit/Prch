@@ -1,8 +1,8 @@
 import PrchModel
 
 public protocol ClientRequest: ClientBaseRequest {
-  associatedtype SuccessType : ContentDecodable
-  associatedtype BodyType : ContentEncodable
+  associatedtype SuccessType: ContentDecodable
+  associatedtype BodyType: ContentEncodable
 
   var body: BodyType { get }
 

@@ -1,5 +1,5 @@
-import PrchModel
 import Foundation
+import PrchModel
 
 #if canImport(FoundationNetworking)
   import FoundationNetworking
@@ -13,8 +13,7 @@ public class ServiceImpl<
 >: Service, HeaderProvider where
   SessionType.SessionRequestType == RequestBuilderType.SessionRequestType,
   RequestBuilderType.SessionRequestType.DataType == CoderType.DataType,
-SessionType.SessionResponseType.DataType == CoderType.DataType {
-
+  SessionType.SessionResponseType.DataType == CoderType.DataType {
   private let baseURLComponents: URLComponents
   public let credentialsContainer: AuthorizationContainerType
   private let coder: CoderType
@@ -37,46 +36,38 @@ SessionType.SessionResponseType.DataType == CoderType.DataType {
     self.credentialsContainer = credentialsContainer
     self.headers = headers
   }
-  
-  
-  public func request<RequestType>(_ request: RequestType) async throws -> RequestType.SuccessType where RequestType : ClientRequest {
+
+  public func request<RequestType>(_ request: RequestType) async throws
+    -> RequestType.SuccessType where RequestType: ClientRequest {
     let sessionRequest: SessionType.SessionRequestType
 
     let headers = try await self.headers(withCredentials: RequestType.requiresCredentials)
 
-    
-      sessionRequest = try builder.build(
-        request: request,
-        withBaseURL: baseURLComponents,
-        withHeaders: headers,
-        withEncoder: coder
-      )
-    
-    
+    sessionRequest = try builder.build(
+      request: request,
+      withBaseURL: baseURLComponents,
+      withHeaders: headers,
+      withEncoder: coder
+    )
+
     let data = try await session.request(sessionRequest)
-    
-    
-        guard request.isValidStatusCode(data.statusCode) else {
-          throw RequestError.invalidStatusCode(data.statusCode)
-        }
-        guard let bodyData = data.data else {
-          throw RequestError.missingData
-        }
-    
+
+    guard request.isValidStatusCode(data.statusCode) else {
+      throw RequestError.invalidStatusCode(data.statusCode)
+    }
+    guard let bodyData = data.data else {
+      throw RequestError.missingData
+    }
+
     if let decodable = RequestType.SuccessType.decodable {
-      
-      let decoded = try self.coder.decode(decodable, from: bodyData)
+      let decoded = try coder.decode(decodable, from: bodyData)
       return try .init(decoded: decoded)
     }
-    
+
     guard let value = Empty.value as? RequestType.SuccessType else {
       throw RequestError.missingData
     }
-    
-    return value
-   
-    
-      
-  }
 
+    return value
+  }
 }

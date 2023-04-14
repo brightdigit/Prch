@@ -28,10 +28,9 @@ extension URLSession: Session {
     task.resume()
     return task
   }
-  
-  
+
   public func request(_ request: URLRequest) async throws -> URLSessionResponse {
-    let tuple = try await self.data(for: request)
+    let tuple = try await data(for: request)
     guard let response = URLSessionResponse(tuple) else {
       throw RequestError.invalidResponse(tuple.1)
     }
