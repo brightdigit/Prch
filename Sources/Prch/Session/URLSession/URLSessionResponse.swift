@@ -35,7 +35,10 @@ extension URLSessionResponse {
 }
 
 
-struct URLGenericSessionResponse : GenericSessionResponse {
+public struct URLGenericSessionResponse : GenericSessionResponse {
+  
+  public typealias DataType = Data
+  
   internal init(httpURLResponse: HTTPURLResponse, data: Data) {
     self.httpURLResponse = httpURLResponse
     self.data = data
@@ -49,9 +52,9 @@ struct URLGenericSessionResponse : GenericSessionResponse {
   }
 
   let httpURLResponse: HTTPURLResponse
-  let data: Data
+  public let data: Data
 
-  var statusCode: Int {
+  public var statusCode: Int {
     return httpURLResponse.statusCode
   }
 }

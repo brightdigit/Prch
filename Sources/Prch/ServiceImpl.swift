@@ -7,7 +7,7 @@ import PrchModel
 
 public class ServiceImpl<
   CoderType: Coder,
-  SessionType: Session,
+  SessionType: DefunctSession,
   RequestBuilderType: RequestBuilder,
   AuthorizationContainerType: AuthorizationContainer
 >: Service, HeaderProvider where
@@ -72,28 +72,22 @@ public class ServiceImpl<
   }
 }
 
-public class GenericServiceImpl<GenericRequestType> : GenericService {
-  
-  
-  
-  
-  public  init(
-    baseURLComponents: URLComponents,
-    credentialsContainer: SimpleCredContainer = .init(),
-    session: any GenericSession<GenericRequestType>,
-    headers: [String : String] = [:]
-  ) {
+public class GenericServiceImpl<GenericSessionType : GenericSession, CoderType : Coder> : GenericService where CoderType.DataType == GenericSessionType.GenericSessionResponseType.DataType {
+  internal init(baseURLComponents: URLComponents, credentialsContainer: SimpleCredContainer, session: GenericSessionType, headers: [String : String], coder: CoderType) {
     self.baseURLComponents = baseURLComponents
     self.credentialsContainer = credentialsContainer
     self.session = session
     self.headers = headers
+    self.coder = coder
   }
   
+
   
   private let baseURLComponents: URLComponents
   private let credentialsContainer: SimpleCredContainer
-  private let session: any GenericSession<GenericRequestType>
+  private let session: GenericSessionType
   private let headers: [String: String]
+  private let coder : CoderType
   
   private static func headers(
     withCredentials credentialsContainer: SimpleCredContainer?,
@@ -121,20 +115,19 @@ public class GenericServiceImpl<GenericRequestType> : GenericService {
       mergedWith: headers
     )
     
-    let sessionRequest = try self.session.build(
+    let response = try await session.data(
       request: request,
       withBaseURL: baseURLComponents,
-      withHeaders: headers
+      withHeaders: headers,
+      usingEncoder: self.coder
     )
     
-    let response = try await session.data(for: sessionRequest)
-    
-    guard response.statusCode / 100 == 2 else {
+    guard request.isValidStatusCode(response.statusCode) else {
       throw RequestError.invalidStatusCode(response.statusCode)
     }
-    let data : Data = response.data
-    let decoder = JSONDecoder()
+    
+    let data = response.data
     let successType = type(of: request).SuccessType
-    return try decoder.decode(successType, from: data)
+    return try self.coder.decode(successType, from: data)
   }
 }

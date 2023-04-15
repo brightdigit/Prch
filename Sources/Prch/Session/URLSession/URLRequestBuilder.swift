@@ -5,6 +5,7 @@ import PrchModel
   import FoundationNetworking
 #endif
 
+@available(*, deprecated)
 public struct URLRequestBuilder: RequestBuilder {
   public func build<BodyRequestType, CoderType>(
     request: BodyRequestType,

@@ -1,6 +1,8 @@
 import Foundation
+import PrchModel
 
-public protocol Session {
+@available(*, deprecated)
+public protocol DefunctSession {
   associatedtype SessionRequestType: SessionRequest
   associatedtype SessionResponseType: SessionResponse
   
@@ -15,12 +17,16 @@ public protocol Session {
 }
 
 public protocol GenericSession<GenericSessionRequestType> {
+  
   associatedtype GenericSessionRequestType
-  func build<RequestType : GenericRequest>(
+  associatedtype GenericSessionResponseType : GenericSessionResponse
+  
+  func data<RequestType : GenericRequest>(
     request: RequestType,
     withBaseURL baseURLComponents: URLComponents,
-    withHeaders headers: [String : String]
-  ) throws -> GenericSessionRequestType
+    withHeaders headers: [String : String],
+    usingEncoder encoder: any Coder<GenericSessionResponseType.DataType>
+  ) async throws -> GenericSessionResponseType
   
-  func data(for request: GenericSessionRequestType) async throws -> GenericSessionResponse
+  
 }

@@ -3,7 +3,8 @@ import Foundation
 #if canImport(FoundationNetworking)
   import FoundationNetworking
 #endif
-public protocol LegacyCoder {
+@available(*, deprecated)
+public protocol LegacyCoder<DataType> {
   associatedtype DataType
 
   func encode<CodableType: Encodable>(_ value: CodableType) throws -> DataType
@@ -12,7 +13,15 @@ public protocol LegacyCoder {
     throws -> CodableType
 }
 
-public protocol Coder: LegacyCoder {}
+public protocol Coder<DataType> {
+  associatedtype DataType
+
+  func encode<CodableType: Encodable>(_ value: CodableType) throws -> DataType
+
+  func decode<CodableType: Decodable>(_: CodableType.Type, from data: DataType)
+    throws -> CodableType
+  
+}
 
 enum CoderError: Error {
   case missingData

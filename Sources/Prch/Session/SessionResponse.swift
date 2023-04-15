@@ -7,7 +7,8 @@ public protocol SessionResponse<DataType> {
 }
 
 
-public protocol GenericSessionResponse {
+public protocol GenericSessionResponse<DataType> {
+  associatedtype DataType
   var statusCode : Int { get }
-  var data : Data { get }
+  var data : DataType { get }
 }
