@@ -9,3 +9,10 @@ public protocol Service {
     _ request: RequestType
   ) async throws -> RequestType.SuccessType
 }
+
+
+public protocol GenericService {
+  func request<RequestType : GenericRequest>(
+    _ request: RequestType
+  ) async throws -> RequestType.SuccessType
+}

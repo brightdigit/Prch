@@ -4,4 +4,5 @@ import Foundation
   import FoundationNetworking
 #endif
 
+@available(*, deprecated)
 extension URLSessionTask: SessionTask {}

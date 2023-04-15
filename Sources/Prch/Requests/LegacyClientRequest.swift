@@ -1,3 +1,4 @@
+@available(*, deprecated)
 public protocol LegacyClientRequest: ClientBaseRequest {
   associatedtype SuccessType
   associatedtype BodyType

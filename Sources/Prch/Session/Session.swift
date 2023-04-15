@@ -1,6 +1,10 @@
+import Foundation
+
 public protocol Session {
   associatedtype SessionRequestType: SessionRequest
   associatedtype SessionResponseType: SessionResponse
+  
+  @available(*, deprecated)
   @discardableResult
   func request(
     _ request: SessionRequestType,
@@ -10,10 +14,13 @@ public protocol Session {
   func request(_ request: SessionRequestType) async throws -> SessionResponseType
 }
 
-extension Session {
-  public func request(_ request: SessionRequestType) async throws -> SessionResponseType {
-    try await withCheckedThrowingContinuation { continuation in
-      self.request(request, continuation.resume(with:))
-    }
-  }
+public protocol GenericSession<GenericSessionRequestType> {
+  associatedtype GenericSessionRequestType
+  func build<RequestType : GenericRequest>(
+    request: RequestType,
+    withBaseURL baseURLComponents: URLComponents,
+    withHeaders headers: [String : String]
+  ) throws -> GenericSessionRequestType
+  
+  func data(for request: GenericSessionRequestType) async throws -> GenericSessionResponse
 }
