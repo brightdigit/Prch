@@ -1,5 +1,6 @@
 import Foundation
 
+@available(*, deprecated)
 public protocol Service {
   associatedtype AuthorizationContainerType: AuthorizationContainer
 
@@ -10,9 +11,8 @@ public protocol Service {
   ) async throws -> RequestType.SuccessType
 }
 
-
 public protocol GenericService {
-  func request<RequestType : GenericRequest>(
+  func request<RequestType: GenericRequest>(
     _ request: RequestType
   ) async throws -> RequestType.SuccessType
 }

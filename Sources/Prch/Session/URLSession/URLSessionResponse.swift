@@ -5,22 +5,22 @@ import Foundation
 #endif
 
 public struct URLSessionResponse: SessionResponse {
-  
   public typealias DataType = Data
 
   private let httpURLResponse: HTTPURLResponse
 
-  public let data: Data?
+  public let data: Data
 
   public var statusCode: Int {
     httpURLResponse.statusCode
   }
 
-  internal init(httpURLResponse: HTTPURLResponse, data: Data? = nil) {
+  internal init(httpURLResponse: HTTPURLResponse, data: Data) {
     self.httpURLResponse = httpURLResponse
     self.data = data
   }
-  internal init?(urlResponse: URLResponse?, data: Data?) {
+
+  internal init?(urlResponse: URLResponse?, data: Data) {
     guard let httpURLResponse = urlResponse as? HTTPURLResponse else {
       return nil
     }
@@ -34,11 +34,9 @@ extension URLSessionResponse {
   }
 }
 
-
-public struct URLGenericSessionResponse : GenericSessionResponse {
-  
+public struct URLGenericSessionResponse: SessionResponse {
   public typealias DataType = Data
-  
+
   internal init(httpURLResponse: HTTPURLResponse, data: Data) {
     self.httpURLResponse = httpURLResponse
     self.data = data
@@ -55,6 +53,6 @@ public struct URLGenericSessionResponse : GenericSessionResponse {
   public let data: Data
 
   public var statusCode: Int {
-    return httpURLResponse.statusCode
+    httpURLResponse.statusCode
   }
 }

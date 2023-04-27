@@ -20,7 +20,6 @@ public protocol Coder<DataType> {
 
   func decode<CodableType: Decodable>(_: CodableType.Type, from data: DataType)
     throws -> CodableType
-  
 }
 
 enum CoderError: Error {
