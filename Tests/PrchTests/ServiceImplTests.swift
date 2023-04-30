@@ -55,11 +55,13 @@ struct MockSessionResponse: SessionResponse {
   let statusCode: Int
 }
 
+struct MockCreds {}
+
 class MockSession: Session {
   let statusCode: Int = .random(in: 100 ... 999)
   let data: Data = .random()
   var passedRequest: (any GenericRequest)?
-  func data<RequestType>(request: RequestType, withBaseURL _: URLComponents, withHeaders _: [String: String], usingEncoder _: any Coder<Data>) async throws -> MockSessionResponse where RequestType: Prch.GenericRequest {
+  func data<RequestType>(request: RequestType, withBaseURL _: URLComponents, withHeaders _: [String: String], authorization _: MockCreds?, usingEncoder _: any Coder<Data>) async throws -> MockSessionResponse where RequestType: Prch.GenericRequest {
     passedRequest = request
     return MockSessionResponse(data: data, statusCode: statusCode)
   }
@@ -109,6 +111,12 @@ struct MockSessionGenericRequest: GenericRequest, Equatable {
   }
 }
 
+struct MockAuthContainer: AuthorizationContainer {
+  func fetch() async throws -> MockCreds? {
+    MockCreds()
+  }
+}
+
 final class ServiceImplTests: XCTestCase {
   func testExample() async throws {
     let successID = UUID()
@@ -116,7 +124,7 @@ final class ServiceImplTests: XCTestCase {
     let coder = MockerCoder(expectedSuccess: .init(id: successID))
     let service = GenericServiceImpl(
       baseURLComponents: .random(),
-      credentialsContainer: .init(),
+      credentialsContainer: MockAuthContainer(),
       session: session,
       headers: .random(withCount: 5),
       coder: coder

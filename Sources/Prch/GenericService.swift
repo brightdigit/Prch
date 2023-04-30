@@ -13,7 +13,9 @@ public protocol DeprecatedSessionResponse {
 public class GenericServiceImpl<GenericSessionType: Session>: GenericService {
   public init(
     baseURLComponents: URLComponents,
-    credentialsContainer: SimpleCredContainer = .init(),
+    credentialsContainer: any AuthorizationContainer<
+      GenericSessionType.AuthorizationType
+    >,
     session: GenericSessionType,
     headers: [String: String] = [:],
     coder: any Coder<GenericSessionType.GenericSessionResponseType.DataType>
@@ -26,7 +28,8 @@ public class GenericServiceImpl<GenericSessionType: Session>: GenericService {
   }
 
   private let baseURLComponents: URLComponents
-  private let credentialsContainer: SimpleCredContainer
+  private let credentialsContainer:
+    any AuthorizationContainer<GenericSessionType.AuthorizationType>
   private let session: GenericSessionType
   private let headers: [String: String]
   private let coder: any Coder<GenericSessionType.GenericSessionResponseType.DataType>
@@ -39,6 +42,7 @@ public class GenericServiceImpl<GenericSessionType: Session>: GenericService {
       request: request,
       withBaseURL: baseURLComponents,
       withHeaders: headers,
+      authorization: credentialsContainer.fetch(),
       usingEncoder: coder
     )
 

@@ -13,6 +13,7 @@ extension URLSession: Session {
     request: RequestType,
     withBaseURL baseURLComponents: URLComponents,
     withHeaders headers: [String: String],
+    authorization: URLSessionAuthorization?,
     usingEncoder encoder: any Coder<Data>
   ) async throws -> URLSessionResponse
     where RequestType: GenericRequest {
@@ -28,11 +29,16 @@ extension URLSession: Session {
 
     urlRequest.httpMethod = request.method
 
-    #warning("Add Credential Headers")
+    let authHeaders = (request.requiresCredentials ?
+      authorization?.httpHeaders : [:]
+    ) ?? [:]
+
     let allHeaders = headers.merging(
       request.headers,
       uniquingKeysWith: { lhs, _ in lhs }
-    )
+    ).merging(authHeaders) { _, rhs in
+      rhs
+    }
 
     for (field, value) in allHeaders {
       urlRequest.addValue(value, forHTTPHeaderField: field)

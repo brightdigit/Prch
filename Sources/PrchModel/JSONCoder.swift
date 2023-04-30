@@ -4,8 +4,7 @@ import Foundation
   import FoundationNetworking
 #endif
 
-@available(*, deprecated)
-public protocol LegacyCoder {
+public protocol Coder<DataType> {
   associatedtype DataType
 
   func encode<CodableType: Encodable>(_ value: CodableType) throws -> DataType
@@ -16,8 +15,6 @@ public protocol LegacyCoder {
   )
     throws -> CodableType
 }
-
-public protocol Coder<DataType>: LegacyCoder {}
 
 extension Coder {
   public func decodeContent<CodableType: ContentDecodable>(

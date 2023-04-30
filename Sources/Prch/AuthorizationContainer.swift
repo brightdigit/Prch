@@ -1,6 +1,6 @@
 import Foundation
 
-public protocol AuthorizationContainer {
-  associatedtype AuthorizationType: Authorization
+public protocol AuthorizationContainer<AuthorizationType> {
+  associatedtype AuthorizationType
   func fetch() async throws -> AuthorizationType?
 }
