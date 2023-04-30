@@ -43,17 +43,35 @@ public struct URLSessionResponse: SessionResponse {
     self.data = data
   }
 
-  internal init(_ tuple: (Data, URLResponse)) throws {
-    guard let response = tuple.1 as? HTTPURLResponse else {
-      throw RequestError.invalidResponse(tuple.1)
-    }
-    self.init(httpURLResponse: response, data: tuple.0)
-  }
-
   let httpURLResponse: HTTPURLResponse
   public let data: Data
 
   public var statusCode: Int {
     httpURLResponse.statusCode
+  }
+}
+
+extension URLSessionResponse {
+  internal init(_ tuple: (Data, URLResponse)) throws {
+    try self.init(urlResponse: tuple.1, data: tuple.0)
+  }
+
+  internal init(urlResponse: URLResponse, data: Data) throws {
+    guard let response = urlResponse as? HTTPURLResponse else {
+      throw RequestError.invalidResponse(urlResponse)
+    }
+    self.init(httpURLResponse: response, data: data)
+  }
+
+  internal init?(error: Error?, data: Data?, urlResponse: URLResponse?) throws {
+    if let error = error {
+      throw error
+    }
+
+    guard let urlResponse = urlResponse, let data = data else {
+      return nil
+    }
+
+    try self.init(urlResponse: urlResponse, data: data)
   }
 }

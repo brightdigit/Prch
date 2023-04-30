@@ -1,6 +1,10 @@
 import Foundation
 import PrchModel
 
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
 extension URLSession: Session {
   public typealias GenericSessionResponseType = URLSessionResponse
   public typealias GenericSessionRequestType = URLRequest
@@ -38,7 +42,23 @@ extension URLSession: Session {
       urlRequest.httpBody = try encoder.encode(value)
     }
 
-    let tuple: (Data, URLResponse) = try await data(for: urlRequest)
-    return try URLSessionResponse(tuple)
+    #if canImport(FoundationNetworking)
+      return try await withCheckedThrowingContinuation { continuation in
+        self.dataTask(with: urlRequest) { data, response, error in
+          let result = Result<URLSessionResponse?, Error>(catching: {
+            try URLSessionResponse(error: error, data: data, urlResponse: response)
+          }).flatMap { response in
+            guard let response = response else {
+              return .failure(RequestError.missingData)
+            }
+            return .success(response)
+          }
+          continuation.resume(with: result)
+        }
+      }
+    #else
+      let tuple: (Data, URLResponse) = try await data(for: urlRequest)
+      return try URLSessionResponse(tuple)
+    #endif
   }
 }
