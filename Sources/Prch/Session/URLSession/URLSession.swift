@@ -45,14 +45,15 @@ extension URLSession: Session {
     #if canImport(FoundationNetworking)
       return try await withCheckedThrowingContinuation { continuation in
         self.dataTask(with: urlRequest) { data, response, error in
-          let result = Result<URLSessionResponse?, Error>(catching: {
-            try URLSessionResponse(error: error, data: data, urlResponse: response)
-          }).flatMap { response in
-            guard let response = response else {
-              return .failure(RequestError.missingData)
+          let result: Result<URLSessionResponse, Error> =
+            Result<URLSessionResponse?, Error>(catching: {
+              try URLSessionResponse(error: error, data: data, urlResponse: response)
+            }).flatMap { response in
+              guard let response = response else {
+                return .failure(RequestError.missingData)
+              }
+              return .success(response)
             }
-            return .success(response)
-          }
           continuation.resume(with: result)
         }
       }
