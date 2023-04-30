@@ -9,7 +9,7 @@ public protocol DefunctSession {
   func request(_ request: SessionRequestType) async throws -> SessionResponseType
 }
 
-public protocol GenericSession<GenericSessionRequestType> {
+public protocol Session<GenericSessionRequestType> {
   associatedtype GenericSessionRequestType
   associatedtype GenericSessionResponseType: SessionResponse
 

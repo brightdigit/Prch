@@ -36,7 +36,12 @@ struct SimpleRequest {
 
 @available(*, deprecated)
 class SimpleService {
-  internal init(baseURLComponents: URLComponents, credentialsContainer: SimpleCredContainer, session: URLSession, headers: [String: String]) {
+  internal init(
+    baseURLComponents: URLComponents,
+    credentialsContainer: SimpleCredContainer,
+    session: URLSession,
+    datheaders: [String: String]
+  ) {
     self.baseURLComponents = baseURLComponents
     self.credentialsContainer = credentialsContainer
     self.session = session

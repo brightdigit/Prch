@@ -5,6 +5,7 @@ import PrchModel
   import FoundationNetworking
 #endif
 
+@available(*, deprecated)
 public protocol RequestBuilder {
   associatedtype SessionRequestType: SessionRequest
 
@@ -14,7 +15,8 @@ public protocol RequestBuilder {
     withHeaders headers: [String: String],
     withEncoder encoder: CoderType
   ) throws -> SessionRequestType
-    where CoderType.DataType == SessionRequestType.DataType, BodyRequestType.BodyType: ContentEncodable
+    where CoderType.DataType == SessionRequestType.DataType,
+    BodyRequestType.BodyType: ContentEncodable
 
   func headers<AuthorizationType: Authorization>(
     basedOnCredentials credentials: AuthorizationType

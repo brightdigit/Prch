@@ -4,7 +4,8 @@ import Foundation
   import FoundationNetworking
 #endif
 
-public struct URLSessionResponse: SessionResponse {
+@available(*, deprecated)
+public struct URLSessionDeprecatedResponse: SessionResponse {
   public typealias DataType = Data
 
   private let httpURLResponse: HTTPURLResponse
@@ -28,13 +29,13 @@ public struct URLSessionResponse: SessionResponse {
   }
 }
 
-extension URLSessionResponse {
+extension URLSessionDeprecatedResponse {
   internal init?(_ tuple: (Data, URLResponse)) {
     self.init(urlResponse: tuple.1, data: tuple.0)
   }
 }
 
-public struct URLGenericSessionResponse: SessionResponse {
+public struct URLSessionResponse: SessionResponse {
   public typealias DataType = Data
 
   internal init(httpURLResponse: HTTPURLResponse, data: Data) {

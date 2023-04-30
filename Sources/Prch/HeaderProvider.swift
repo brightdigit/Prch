@@ -1,3 +1,4 @@
+@available(*, deprecated)
 internal protocol HeaderProvider {
   associatedtype AuthorizationType: AuthorizationContainer
   associatedtype RequestBuilderType: RequestBuilder

@@ -1,5 +1,5 @@
 import Foundation
-
+import PrchModel
 @available(*, deprecated)
 public protocol Service {
   associatedtype AuthorizationContainerType: AuthorizationContainer
@@ -14,5 +14,5 @@ public protocol Service {
 public protocol GenericService {
   func request<RequestType: GenericRequest>(
     _ request: RequestType
-  ) async throws -> RequestType.SuccessType
+  ) async throws -> RequestType.SuccessType.DecodableType
 }
