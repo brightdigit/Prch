@@ -3,6 +3,10 @@ on:
   push:
     branches-ignore:
       - '*WIP'
+
+env:
+  CODEQL_ENABLE_EXPERIMENTAL_FEATURES_SWIFT: true
+
 jobs:
   build-ubuntu:
     name: Build on Ubuntu
@@ -79,16 +83,25 @@ jobs:
             iOSVersion: "16.0"
             watchOSVersion: "9.0"
             watchName: "Apple Watch Series 8 (41mm)"
+            iPhoneName: "iPhone 12"
           - runs-on: macos-12
             xcode: "/Applications/Xcode_14.1.app"
             iOSVersion: "16.1"
             watchOSVersion: "9.1"
-            watchName: "Apple Watch Ultra (49mm)"            
+            watchName: "Apple Watch Ultra (49mm)"
+            iPhoneName: "iPhone 13"
           - runs-on: macos-12
             xcode: "/Applications/Xcode_14.2.app"
             iOSVersion: "16.2"
             watchOSVersion: "9.1"
             watchName: "Apple Watch Ultra (49mm)"
+            iPhoneName: "iPhone 14"
+          - runs-on: macos-13
+            xcode: "/Applications/Xcode_14.3.app"
+            iOSVersion: "16.4"
+            watchOSVersion: "9.4"
+            watchName: "Apple Watch Ultra (49mm)"
+            iPhoneName: "iPhone 14 Pro Max"
     steps:
       - uses: actions/checkout@v3
       - name: Cache swift package modules
@@ -125,8 +138,14 @@ jobs:
         run: |
           brew update
           brew install mint
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: ${{ matrix.language }}
       - name: Build
         run: swift build
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
       - name: Test
         run: swift test --enable-code-coverage
       - uses: sersoft-gmbh/swift-coverage-action@v3
@@ -152,7 +171,7 @@ jobs:
             ATTEMPT=$(($ATTEMPT+1))
           done
       - name: Run iOS target tests
-        run:  xcodebuild build -scheme Prch -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 13,OS=${{ matrix.iOSVersion }}'
+        run: xcodebuild test -scheme SyndiKit -sdk iphonesimulator -destination 'platform=iOS Simulator,name=${{ matrix.iPhoneName }},OS=${{ matrix.iOSVersion }}' -enableCodeCoverage YES build test
       - uses: sersoft-gmbh/swift-coverage-action@v3
         with:
           fail-on-empty-output: true
