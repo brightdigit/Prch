@@ -1,15 +1,7 @@
-//
-//  File.swift
-//  
-//
-//  Created by Leo Dion on 4/12/23.
-//
-
 import Foundation
 
-
 extension URLComponents {
-  private static let randomCollection : [URLComponents] = [
+  private static let randomCollection: [URLComponents] = [
     "https://youku.com/non/lectus/aliquam/sit/amet/diam/in.png",
     "https://amazon.co.jp/nisl/aenean.json",
     "https://phoca.cz/ut.jsp",
@@ -74,8 +66,8 @@ extension URLComponents {
     "https://php.net/id/massa/id/nisl/venenatis/lacinia.jsp",
     "http://bloglines.com/ligula/in/lacus/curabitur.js",
     "https://smugmug.com/sollicitudin/ut/suscipit/a.jsp"
-  ].map(URLComponents.init(string:)).map{$0!}
-  static func random () -> Self {
-    return self.randomCollection.randomElement()!
+  ].map(URLComponents.init(string:)).map { $0! }
+  static func random() -> Self {
+    randomCollection.randomElement()!
   }
 }
