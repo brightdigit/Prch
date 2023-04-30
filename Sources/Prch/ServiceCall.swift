@@ -1,7 +1,7 @@
 import Foundation
 import PrchModel
 
-public protocol GenericRequest {
+public protocol ServiceCall {
   associatedtype SuccessType: ContentDecodable
   associatedtype BodyType: ContentEncodable
   var path: String { get }

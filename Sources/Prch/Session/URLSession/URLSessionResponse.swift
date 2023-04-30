@@ -4,23 +4,25 @@ import Foundation
   import FoundationNetworking
 #endif
 
-public struct URLSessionResponse: SessionResponse {
-  public typealias DataType = Data
+extension URLSession {
+  public struct Response: SessionResponse {
+    public typealias DataType = Data
 
-  internal init(httpURLResponse: HTTPURLResponse, data: Data) {
-    self.httpURLResponse = httpURLResponse
-    self.data = data
-  }
+    internal init(httpURLResponse: HTTPURLResponse, data: Data) {
+      self.httpURLResponse = httpURLResponse
+      self.data = data
+    }
 
-  let httpURLResponse: HTTPURLResponse
-  public let data: Data
+    let httpURLResponse: HTTPURLResponse
+    public let data: Data
 
-  public var statusCode: Int {
-    httpURLResponse.statusCode
+    public var statusCode: Int {
+      httpURLResponse.statusCode
+    }
   }
 }
 
-extension URLSessionResponse {
+extension URLSession.Response {
   internal init(_ tuple: (Data, URLResponse)) throws {
     try self.init(urlResponse: tuple.1, data: tuple.0)
   }

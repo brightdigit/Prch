@@ -16,7 +16,7 @@ public struct Empty: ContentDecodable, ContentEncodable, Equatable {
 
   public static let value = Empty()
 
-  internal init() {}
+  private init() {}
 
   public init(decoded _: Void) throws {}
 }

@@ -6,8 +6,8 @@ import PrchModel
 #endif
 
 extension URLSession: Session {
-  public typealias GenericSessionResponseType = URLSessionResponse
-  public typealias GenericSessionRequestType = URLRequest
+  public typealias ResponseType = URLSession.Response
+  public typealias RequestType = URLRequest
 
   public func data<RequestType>(
     request: RequestType,
@@ -15,8 +15,8 @@ extension URLSession: Session {
     withHeaders headers: [String: String],
     authorization: URLSessionAuthorization?,
     usingEncoder encoder: any Coder<Data>
-  ) async throws -> URLSessionResponse
-    where RequestType: GenericRequest {
+  ) async throws -> URLSession.Response
+    where RequestType: ServiceCall {
     var componenents = baseURLComponents
     componenents.path = "/\(request.path)"
     componenents.queryItems = request.parameters.map(URLQueryItem.init)
@@ -51,9 +51,9 @@ extension URLSession: Session {
     #if canImport(FoundationNetworking)
       return try await withCheckedThrowingContinuation { continuation in
         _ = self.dataTask(with: urlRequest) { data, response, error in
-          let result: Result<URLSessionResponse, Error> =
-            Result<URLSessionResponse?, Error>(catching: {
-              try URLSessionResponse(error: error, data: data, urlResponse: response)
+          let result: Result<Response, Error> =
+            Result<Response?, Error>(catching: {
+              try Response(error: error, data: data, urlResponse: response)
             }).flatMap { response in
               guard let response = response else {
                 return .failure(RequestError.missingData)
@@ -65,7 +65,7 @@ extension URLSession: Session {
       }
     #else
       let tuple: (Data, URLResponse) = try await data(for: urlRequest)
-      return try URLSessionResponse(tuple)
+      return try Response(tuple)
     #endif
   }
 }

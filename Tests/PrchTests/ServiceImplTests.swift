@@ -60,15 +60,15 @@ struct MockCreds {}
 class MockSession: Session {
   let statusCode: Int = .random(in: 100 ... 999)
   let data: Data = .random()
-  var passedRequest: (any GenericRequest)?
-  func data<RequestType>(request: RequestType, withBaseURL _: URLComponents, withHeaders _: [String: String], authorization _: MockCreds?, usingEncoder _: any Coder<Data>) async throws -> MockSessionResponse where RequestType: Prch.GenericRequest {
+  var passedRequest: (any ServiceCall)?
+  func data<RequestType>(request: RequestType, withBaseURL _: URLComponents, withHeaders _: [String: String], authorization _: MockCreds?, usingEncoder _: any Coder<Data>) async throws -> MockSessionResponse where RequestType: Prch.ServiceCall {
     passedRequest = request
     return MockSessionResponse(data: data, statusCode: statusCode)
   }
 
-  typealias GenericSessionRequestType = MockSessionRequest
+  typealias RequestType = MockSessionRequest
 
-  typealias GenericSessionResponseType = MockSessionResponse
+  typealias ResponseType = MockSessionResponse
 }
 
 struct MockSessionSuccess: ContentDecodable, Codable, Equatable {
@@ -79,7 +79,7 @@ struct MockBody: ContentEncodable, Codable, Equatable {
   let id: UUID
 }
 
-struct MockSessionGenericRequest: GenericRequest, Equatable {
+struct MockSessionGenericRequest: ServiceCall, Equatable {
   internal init(body: MockBody, path: String, parameters: [String: String], method: String, headers: [String: String], requiresCredentials: Bool) {
     self.body = body
     self.path = path
@@ -111,20 +111,14 @@ struct MockSessionGenericRequest: GenericRequest, Equatable {
   }
 }
 
-struct MockAuthContainer: AuthorizationContainer {
-  func fetch() async throws -> MockCreds? {
-    MockCreds()
-  }
-}
-
 final class ServiceImplTests: XCTestCase {
   func testExample() async throws {
     let successID = UUID()
     let session = MockSession()
     let coder = MockerCoder(expectedSuccess: .init(id: successID))
-    let service = GenericServiceImpl(
+    let service = Service(
       baseURLComponents: .random(),
-      credentialsContainer: MockAuthContainer(),
+      fetchAuthorization: { MockCreds() },
       session: session,
       headers: .random(withCount: 5),
       coder: coder
