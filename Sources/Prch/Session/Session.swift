@@ -1,14 +1,6 @@
 import Foundation
 import PrchModel
 
-@available(*, deprecated)
-public protocol DefunctSession {
-  associatedtype SessionRequestType: SessionRequest
-  associatedtype SessionResponseType: SessionResponse
-
-  func request(_ request: SessionRequestType) async throws -> SessionResponseType
-}
-
 public protocol Session<GenericSessionRequestType> {
   associatedtype GenericSessionRequestType
   associatedtype GenericSessionResponseType: SessionResponse

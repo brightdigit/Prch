@@ -5,11 +5,6 @@ import PrchModel
   import FoundationNetworking
 #endif
 
-public protocol DeprecatedSessionResponse {
-  var statusCode: Int { get }
-  var data: Data { get }
-}
-
 public class GenericServiceImpl<GenericSessionType: Session>: GenericService {
   public init(
     baseURLComponents: URLComponents,
