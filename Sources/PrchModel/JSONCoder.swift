@@ -1,59 +1,5 @@
 import Foundation
 
-#if canImport(FoundationNetworking)
-  import FoundationNetworking
-#endif
-
-public protocol Coder<DataType> {
-  associatedtype DataType
-
-  func encode<CodableType: Encodable>(_ value: CodableType) throws -> DataType
-
-  func decode<CodableType: Decodable>(
-    _: CodableType.Type,
-    from data: DataType
-  )
-    throws -> CodableType
-}
-
-extension Coder {
-  public func decodeContent<CodableType: ContentDecodable>(
-    _: CodableType.Type,
-    from data: DataType
-  )
-    throws -> CodableType.DecodableType {
-    try CodableType.decode(data, using: self)
-  }
-}
-
-enum CoderError: Error {
-  case missingData
-  case missingDecoding
-}
-
-public struct Empty: ContentDecodable, ContentEncodable, Equatable {
-  public static func decode<CoderType>(
-    _: CoderType.DataType,
-    using _: CoderType
-  ) throws where CoderType: Coder {}
-
-  public static var decodable: Void.Type {
-    Void.self
-  }
-
-  public typealias DecodableType = Void
-
-  public var encodable: EncodableValue {
-    .empty
-  }
-
-  public static let value = Empty()
-
-  internal init() {}
-
-  public init(decoded _: Void) throws {}
-}
-
 public struct JSONCoder: Coder {
   public typealias DataType = Data
 

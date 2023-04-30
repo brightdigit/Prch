@@ -50,7 +50,7 @@ extension URLSession: Session {
 
     #if canImport(FoundationNetworking)
       return try await withCheckedThrowingContinuation { continuation in
-        self.dataTask(with: urlRequest) { data, response, error in
+        _ = self.dataTask(with: urlRequest) { data, response, error in
           let result: Result<URLSessionResponse, Error> =
             Result<URLSessionResponse?, Error>(catching: {
               try URLSessionResponse(error: error, data: data, urlResponse: response)

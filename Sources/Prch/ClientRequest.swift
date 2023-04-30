@@ -1,7 +1,6 @@
 import Foundation
 import PrchModel
 
-
 public protocol GenericRequest {
   associatedtype SuccessType: ContentDecodable
   associatedtype BodyType: ContentEncodable
