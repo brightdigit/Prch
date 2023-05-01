@@ -170,7 +170,7 @@ jobs:
             ATTEMPT=$(($ATTEMPT+1))
           done
       - name: Run iOS target tests
-        run: xcodebuild test -scheme Prch -sdk iphonesimulator -destination 'platform=iOS Simulator,name=${{ matrix.iPhoneName }},OS=${{ matrix.iOSVersion }}' -enableCodeCoverage YES build test
+        run: xcodebuild test -scheme Prch-Package -sdk iphonesimulator -destination 'platform=iOS Simulator,name=${{ matrix.iPhoneName }},OS=${{ matrix.iOSVersion }}' -enableCodeCoverage YES build test
       - uses: sersoft-gmbh/swift-coverage-action@v3
         with:
           fail-on-empty-output: true
@@ -181,7 +181,7 @@ jobs:
           flags: iOS,iOS-${{ matrix.iOSVersion }}
           token: ${{ secrets.CODECOV_TOKEN }}
       - name: Run watchOS target tests
-        run: xcodebuild build -scheme Prch -sdk watchsimulator -destination 'platform=watchOS Simulator,name=${{ matrix.watchName }},OS=${{ matrix.watchOSVersion }}'
+        run: xcodebuild build -scheme Prch-Package -sdk watchsimulator -destination 'platform=watchOS Simulator,name=${{ matrix.watchName }},OS=${{ matrix.watchOSVersion }}'
       - uses: sersoft-gmbh/swift-coverage-action@v3
         with:
           fail-on-empty-output: true
