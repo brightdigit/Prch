@@ -146,16 +146,15 @@ jobs:
         run: swift build
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
-      - name: Test
-        run: swift test --enable-code-coverage
-      - uses: sersoft-gmbh/swift-coverage-action@v3
-        with:
-          fail-on-empty-output: true
-      - name: Upload package coverage to Codecov
-        uses: codecov/codecov-action@v3
+      - name: Run Swift Package tests
+        run: swift test -v --enable-code-coverage
+      - uses: sersoft-gmbh/swift-coverage-action@v2
+      - name: Upload SPM coverage to Codecov
+        uses: codecov/codecov-action@v2
         with:
           fail_ci_if_error: true
-          flags: spm,swift-${{ matrix.swift-version }}
+          flags: spm
+          verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
       - name: Lint
         run: ./scripts/lint.sh
