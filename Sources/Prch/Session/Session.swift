@@ -10,7 +10,7 @@ public protocol Session<RequestType> {
     request: RequestType,
     withBaseURL baseURLComponents: URLComponents,
     withHeaders headers: [String: String],
-    authorization: AuthorizationType?,
+    authorizationManager: any AuthorizationManager<AuthorizationType>,
     usingEncoder encoder: any Coder<ResponseType.DataType>
   ) async throws -> ResponseType
 }

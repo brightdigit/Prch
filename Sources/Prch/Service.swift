@@ -5,27 +5,23 @@ import PrchModel
   import FoundationNetworking
 #endif
 
-public class Service<SessionType: Session>: ServiceProtocol {
-  public init(
-    baseURLComponents: URLComponents,
-    fetchAuthorization: @escaping () async throws -> SessionType.AuthorizationType?,
-    session: SessionType,
-    headers: [String: String] = [:],
-    coder: any Coder<SessionType.ResponseType.DataType>
-  ) {
-    self.baseURLComponents = baseURLComponents
-    self.fetchAuthorization = fetchAuthorization
-    self.session = session
-    self.headers = headers
-    self.coder = coder
-  }
+public protocol AuthorizationManager<AuthorizationType> {
+  associatedtype AuthorizationType
+  func fetch() async throws -> AuthorizationType?
+}
 
-  private let baseURLComponents: URLComponents
-  private let fetchAuthorization: () async throws -> SessionType.AuthorizationType?
-  private let session: SessionType
-  private let headers: [String: String]
-  private let coder: any Coder<SessionType.ResponseType.DataType>
+public protocol Service<SessionType>: ServiceProtocol {
+  typealias SessionAuthenticationManager =
+    AuthorizationManager<SessionType.AuthorizationType>
+  associatedtype SessionType: Session
+  var baseURLComponents: URLComponents { get }
+  var authorizationManager: any SessionAuthenticationManager { get }
+  var session: SessionType { get }
+  var headers: [String: String] { get }
+  var coder: any Coder<SessionType.ResponseType.DataType> { get }
+}
 
+extension Service {
   public func request<RequestType>(
     _ request: RequestType
   ) async throws -> RequestType.SuccessType.DecodableType
@@ -34,7 +30,7 @@ public class Service<SessionType: Session>: ServiceProtocol {
       request: request,
       withBaseURL: baseURLComponents,
       withHeaders: headers,
-      authorization: fetchAuthorization(),
+      authorizationManager: authorizationManager,
       usingEncoder: coder
     )
 
