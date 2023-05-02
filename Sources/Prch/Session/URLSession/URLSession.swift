@@ -13,7 +13,7 @@ extension URLSession: Session {
     request: RequestType,
     withBaseURL baseURLComponents: URLComponents,
     withHeaders headers: [String: String],
-    authorization: URLSessionAuthorization?,
+    authorizationManager: any AuthorizationManager<URLSessionAuthorization>,
     usingEncoder encoder: any Coder<Data>
   ) async throws -> URLSession.Response
     where RequestType: ServiceCall {
@@ -27,10 +27,10 @@ extension URLSession: Session {
 
     var urlRequest = URLRequest(url: url)
 
-    urlRequest.httpMethod = request.method
+    urlRequest.httpMethod = request.method.rawValue
 
-    let authHeaders = (request.requiresCredentials ?
-      authorization?.httpHeaders : [:]
+    let authHeaders = try await(RequestType.requiresCredentials ?
+      authorizationManager.fetch()?.httpHeaders : [:]
     ) ?? [:]
 
     let allHeaders = headers.merging(
