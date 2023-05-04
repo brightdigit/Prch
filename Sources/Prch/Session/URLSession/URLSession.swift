@@ -18,10 +18,9 @@ extension URLSession: Session {
   ) async throws -> URLSession.Response
     where RequestType: ServiceCall {
     var componenents = baseURLComponents
-    componenents.path = "/\(request.path)"
     componenents.queryItems = request.parameters.map(URLQueryItem.init)
 
-    guard let url = componenents.url else {
+    guard let url = componenents.url?.appendingPathComponent(request.path) else {
       preconditionFailure()
     }
 
