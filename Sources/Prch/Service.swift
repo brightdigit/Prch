@@ -10,6 +10,22 @@ public protocol AuthorizationManager<AuthorizationType> {
   func fetch() async throws -> AuthorizationType?
 }
 
+public struct StaticBaseAPIContainer<API : StaticBaseAPI> : BaseAPI {
+  
+  public var baseURLComponents: URLComponents {
+    return API.baseURLComponents
+  }
+  public var headers: [String: String] {
+  return API.headers
+}
+  public var encoder: any Encoder<API.RequestDataType> {
+  return API.encoder
+}
+  public var decoder: any Decoder<API.ResponseDataType> {
+  return API.decoder
+}
+}
+
 public protocol Service<SessionType>: ServiceProtocol {
   typealias SessionAuthenticationManager =
     AuthorizationManager<SessionType.AuthorizationType>
@@ -17,9 +33,20 @@ public protocol Service<SessionType>: ServiceProtocol {
 // var baseURLComponents: URLComponents { get }
   var authorizationManager: any SessionAuthenticationManager { get }
   var session: SessionType { get }
+  var api : API { get }
 //  var headers: [String: String] { get }
 //  var encoder: any Encoder<SessionType.ResponseType.DataType> { get }
 //  var decoder: any Decoder<SessionType.ResponseType.DataType> { get }
+}
+
+public protocol StaticAPIService : Service  {
+  associatedtype StaticAPI : StaticBaseAPI
+}
+
+extension StaticAPIService where API == StaticBaseAPIContainer<StaticAPI> {
+  public var api: API {
+    return StaticBaseAPIContainer()
+  }
 }
 
 extension Service {
@@ -31,17 +58,17 @@ extension Service {
     
     let response = try await session.data(
       request: request,
-      withBaseURL: API.baseURLComponents,
-      withHeaders: API.headers,
+      withBaseURL: api.baseURLComponents,
+      withHeaders: api.headers,
       authorizationManager: authorizationManager,
-      usingEncoder: request.resolveEncoder()
+      usingEncoder: request.resolveEncoder(with: self.api)
     )
 
     guard request.isValidStatusCode(response.statusCode) else {
       throw RequestError.invalidStatusCode(response.statusCode)
     }
 
-    return try request.resolveDecoder().decodeContent(
+    return try request.resolveDecoder(with: self.api).decodeContent(
       RequestType.SuccessType.self,
       from: response.data
     )
