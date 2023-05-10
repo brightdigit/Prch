@@ -14,19 +14,16 @@ public protocol Service<SessionType>: ServiceProtocol {
   typealias SessionAuthenticationManager =
     AuthorizationManager<SessionType.AuthorizationType>
   associatedtype SessionType: Session where SessionType.ResponseType.DataType == API.ResponseDataType
-// var baseURLComponents: URLComponents { get }
   var authorizationManager: any SessionAuthenticationManager { get }
   var session: SessionType { get }
-//  var headers: [String: String] { get }
-//  var encoder: any Encoder<SessionType.ResponseType.DataType> { get }
-//  var decoder: any Decoder<SessionType.ResponseType.DataType> { get }
 }
 
 extension Service {
   public func request<RequestType>(
     _ request: RequestType
   ) async throws -> RequestType.SuccessType.DecodableType
-  where RequestType: ServiceCall, RequestType.API == Self.API, SessionType.RequestDataType == Self.API.RequestDataType {
+  where RequestType: ServiceCall, RequestType.API == Self.API,
+          SessionType.RequestDataType == Self.API.RequestDataType {
       
     
     let response = try await session.data(
