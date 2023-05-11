@@ -35,9 +35,8 @@ jobs:
           path: .build
           key: ${{ runner.os }}-${{ env.RELEASE_DOT }}-${{ env.cache-name }}-${{ matrix.swift-version }}-${{ hashFiles('Package.resolved') }}
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+            ${{ runner.os }}-${{ env.RELEASE_DOT }}-${{ env.cache-name }}-${{ matrix.swift-version }}-
+            ${{ runner.os }}-${{ env.RELEASE_DOT }}-${{ env.cache-name }}-
       - name: Cache swift
         id: cache-swift-linux
         uses: actions/cache@v3
@@ -45,11 +44,9 @@ jobs:
           cache-name: cache-swift
         with:
           path: swift-${{ env.SWIFT_VER }}-RELEASE-ubuntu${{ env.RELEASE_DOT }}
-          key: ${{ runner.os }}-${{ env.RELEASE_DOT }}-${{ env.cache-name }}-${{ env.SWIFT_VER }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ matrix.swift-version }}-${{ env.RELEASE_DOT }}
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+            ${{ runner.os }}-${{ env.cache-name }}-${{ matrix.swift-version }}-
       - name: Download Swift
         if: steps.cache-swift-linux.outputs.cache-hit != 'true'
         run: curl -O https://download.swift.org/swift-${SWIFT_VER}-release/ubuntu${RELEASE_NUM}/swift-${SWIFT_VER}-RELEASE/swift-${SWIFT_VER}-RELEASE-ubuntu${RELEASE_DOT}.tar.gz
@@ -90,12 +87,12 @@ jobs:
 #             watchOSVersion: "9.1"
 #             watchName: "Apple Watch Ultra (49mm)"
 #             iPhoneName: "iPhone 13"
-#           - runs-on: macos-12
-#             xcode: "/Applications/Xcode_14.2.app"
-#             iOSVersion: "16.2"
-#             watchOSVersion: "9.1"
-#             watchName: "Apple Watch Ultra (49mm)"
-#             iPhoneName: "iPhone 14"
+          - runs-on: macos-12
+            xcode: "/Applications/Xcode_14.2.app"
+            iOSVersion: "16.2"
+            watchOSVersion: "9.1"
+            watchName: "Apple Watch Ultra (49mm)"
+            iPhoneName: "iPhone 14"
           - runs-on: macos-13
             xcode: "/Applications/Xcode_14.3.app"
             iOSVersion: "16.4"
@@ -113,9 +110,7 @@ jobs:
           path: .build
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ matrix.xcode }}-${{ hashFiles('Package.resolved') }}
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ matrix.xcode }}-
       - name: Cache mint
         if: startsWith(matrix.xcode,'/Applications/Xcode_14.3')
         id: cache-mint
