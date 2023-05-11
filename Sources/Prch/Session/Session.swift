@@ -1,21 +1,16 @@
+import Foundation
+import PrchModel
+
 public protocol Session {
-  associatedtype SessionRequestType: SessionRequest
-  associatedtype SessionResponseType: SessionResponse
-  @discardableResult
-  func request(
-    _ request: SessionRequestType,
-    _ completed: @escaping (Result<SessionResponseType, Error>) -> Void
-  ) -> SessionTask
-  
-  
-  func request (_ request: SessionRequestType) async throws -> SessionResponseType
-}
+  associatedtype RequestDataType
+  associatedtype ResponseType: SessionResponse
+  associatedtype AuthorizationType
 
-
-extension Session {
-  public func request (_ request: SessionRequestType) async throws -> SessionResponseType {
-    try await withCheckedThrowingContinuation{ continuation in
-      self.request(request, continuation.resume(with:))
-    }
-  }
+  func data<CallType: ServiceCall>(
+    request: CallType,
+    withBaseURL baseURLComponents: URLComponents,
+    withHeaders headers: [String: String],
+    authorizationManager: any AuthorizationManager<AuthorizationType>,
+    usingEncoder encoder: any Encoder<RequestDataType>
+  ) async throws -> ResponseType
 }

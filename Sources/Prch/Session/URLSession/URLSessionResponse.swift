@@ -26,7 +26,6 @@ extension URLSession.Response {
   internal init(_ tuple: (Data, URLResponse)) throws {
     try self.init(urlResponse: tuple.1, data: tuple.0)
   }
-  
 
   internal init(urlResponse: URLResponse, data: Data) throws {
     guard let response = urlResponse as? HTTPURLResponse else {
@@ -43,16 +42,7 @@ extension URLSession.Response {
     guard let urlResponse = urlResponse, let data = data else {
       return nil
     }
-    self.httpURLResponse = httpURLResponse
-    self.data = data
-  }
 
-
-}
-
-extension URLSessionResponse {
-  
-  internal init?(_ tuple: (Data, URLResponse)) {
-    self.init(urlResponse: tuple.1, data: tuple.0)
+    try self.init(urlResponse: urlResponse, data: data)
   }
 }

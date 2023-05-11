@@ -13,8 +13,8 @@ extension URLSession: Session {
     request: RequestType,
     withBaseURL baseURLComponents: URLComponents,
     withHeaders headers: [String: String],
-    authorizationManager: any AuthorizationManager<URLSessionAuthorization>,
-    usingEncoder encoder: any Coder<Data>
+    authorizationManager: any AuthorizationManager<SessionAuthorization>,
+    usingEncoder encoder: any Encoder<Data>
   ) async throws -> URLSession.Response
     where RequestType: ServiceCall {
     var componenents = baseURLComponents
@@ -62,18 +62,9 @@ extension URLSession: Session {
           continuation.resume(with: result)
         }
       }
-      completed(result)
-    }
-    task.resume()
-    return task
-  }
-  
-  
-  public func request(_ request: URLRequest) async throws -> URLSessionResponse {
-    let tuple = try await self.data(for: request)
-    guard let response = URLSessionResponse(tuple) else {
-      throw RequestError.invalidResponse(tuple.1)
-    }
-    return response
+    #else
+      let tuple: (Data, URLResponse) = try await data(for: urlRequest)
+      return try Response(tuple)
+    #endif
   }
 }
