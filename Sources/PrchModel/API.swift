@@ -1,6 +1,6 @@
 import Foundation
 
-public protocol BaseAPI {
+public protocol API {
   associatedtype RequestDataType
   associatedtype ResponseDataType
   var baseURLComponents: URLComponents { get }
