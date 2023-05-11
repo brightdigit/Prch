@@ -5,40 +5,35 @@ import PrchModel
   import FoundationNetworking
 #endif
 
-public protocol AuthorizationManager<AuthorizationType> {
-  associatedtype AuthorizationType
-  func fetch() async throws -> AuthorizationType?
-}
-
 public protocol Service<SessionType>: ServiceProtocol {
   typealias SessionAuthenticationManager =
     AuthorizationManager<SessionType.AuthorizationType>
   associatedtype SessionType: Session
-  var baseURLComponents: URLComponents { get }
+    where SessionType.ResponseType.DataType == ServiceAPI.ResponseDataType
   var authorizationManager: any SessionAuthenticationManager { get }
   var session: SessionType { get }
-  var headers: [String: String] { get }
-  var coder: any Coder<SessionType.ResponseType.DataType> { get }
+  var api: ServiceAPI { get }
 }
 
 extension Service {
   public func request<RequestType>(
     _ request: RequestType
   ) async throws -> RequestType.SuccessType.DecodableType
-    where RequestType: ServiceCall {
+    where RequestType: ServiceCall, RequestType.ServiceAPI == Self.ServiceAPI,
+    SessionType.RequestDataType == Self.ServiceAPI.RequestDataType {
     let response = try await session.data(
       request: request,
-      withBaseURL: baseURLComponents,
-      withHeaders: headers,
+      withBaseURL: api.baseURLComponents,
+      withHeaders: api.headers,
       authorizationManager: authorizationManager,
-      usingEncoder: coder
+      usingEncoder: request.resolveEncoder(with: api)
     )
 
     guard request.isValidStatusCode(response.statusCode) else {
       throw RequestError.invalidStatusCode(response.statusCode)
     }
 
-    return try coder.decodeContent(
+    return try request.resolveDecoder(with: api).decodeContent(
       RequestType.SuccessType.self,
       from: response.data
     )
