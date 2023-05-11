@@ -20,6 +20,12 @@ jobs:
         swift-version: [5.7.3, 5.8]
     steps:
       - uses: actions/checkout@v3
+      - name: Set Ubuntu Release DOT
+        run: echo "RELEASE_DOT=$(lsb_release -sr)" >> $GITHUB_ENV
+      - name: Set Ubuntu Release NUM
+        run: echo "RELEASE_NUM=${RELEASE_DOT//[-._]/}"  >> $GITHUB_ENV
+      - name: Set Ubuntu Codename
+        run: echo "RELEASE_NAME=$(lsb_release -sc)"  >> $GITHUB_ENV
       - name: Cache swift package modules
         id: cache-spm-linux
         uses: actions/cache@v3
@@ -27,17 +33,11 @@ jobs:
           cache-name: cache-spm
         with:
           path: .build
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('Package.resolved') }}
+          key: ${{ runner.os }}-${{ env.RELEASE_DOT }}-${{ env.cache-name }}-${{ matrix.swift-version }}-${{ hashFiles('Package.resolved') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
-      - name: Set Ubuntu Release DOT
-        run: echo "RELEASE_DOT=$(lsb_release -sr)" >> $GITHUB_ENV
-      - name: Set Ubuntu Release NUM
-        run: echo "RELEASE_NUM=${RELEASE_DOT//[-._]/}"  >> $GITHUB_ENV
-      - name: Set Ubuntu Codename
-        run: echo "RELEASE_NAME=$(lsb_release -sc)"  >> $GITHUB_ENV
       - name: Cache swift
         id: cache-swift-linux
         uses: actions/cache@v3
@@ -111,7 +111,7 @@ jobs:
           cache-name: cache-spm
         with:
           path: .build
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('Package.resolved') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ matrix.xcode }}-${{ hashFiles('Package.resolved') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
