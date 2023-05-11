@@ -75,18 +75,18 @@ jobs:
     strategy:
       matrix:
         include:
-#           - runs-on: macos-12
-#             xcode: "/Applications/Xcode_14.0.1.app"
-#             iOSVersion: "16.0"
-#             watchOSVersion: "9.0"
-#             watchName: "Apple Watch Series 8 (41mm)"
-#             iPhoneName: "iPhone 12"
-#           - runs-on: macos-12
-#             xcode: "/Applications/Xcode_14.1.app"
-#             iOSVersion: "16.1"
-#             watchOSVersion: "9.1"
-#             watchName: "Apple Watch Ultra (49mm)"
-#             iPhoneName: "iPhone 13"
+          - runs-on: macos-12
+            xcode: "/Applications/Xcode_14.0.1.app"
+            iOSVersion: "16.0"
+            watchOSVersion: "9.0"
+            watchName: "Apple Watch Series 8 (41mm)"
+            iPhoneName: "iPhone 12"
+          - runs-on: macos-12
+            xcode: "/Applications/Xcode_14.1.app"
+            iOSVersion: "16.1"
+            watchOSVersion: "9.1"
+            watchName: "Apple Watch Ultra (49mm)"
+            iPhoneName: "iPhone 13"
           - runs-on: macos-12
             xcode: "/Applications/Xcode_14.2.app"
             iOSVersion: "16.2"
@@ -143,9 +143,12 @@ jobs:
         uses: github/codeql-action/analyze@v2
       - name: Run Swift Package tests
         run: swift test -v --enable-code-coverage
+        if: startsWith(matrix.xcode,'/Applications/Xcode_14.3')
       - uses: sersoft-gmbh/swift-coverage-action@v2
+        if: startsWith(matrix.xcode,'/Applications/Xcode_14.3')
       - name: Upload SPM coverage to Codecov
         uses: codecov/codecov-action@v2
+        if: startsWith(matrix.xcode,'/Applications/Xcode_14.3')
         with:
           fail_ci_if_error: true
           flags: spm
@@ -155,7 +158,8 @@ jobs:
         run: ./scripts/lint.sh
         if: startsWith(matrix.xcode,'/Applications/Xcode_14.3')
       - name: Dump PIF
-        if: startsWith(matrix.xcode,'/Applications/Xcode_14')
+        #if: startsWith(matrix.xcode,'/Applications/Xcode_14')
+        if: startsWith(matrix.xcode,'/Applications/Xcode_14.3')
         run: |
           swift package dump-pif > /dev/null
           MAX_ATTEMPT=3
@@ -166,21 +170,27 @@ jobs:
           done
       - name: Run iOS target tests
         run: xcodebuild test -scheme Prch-Package -sdk iphonesimulator -destination 'platform=iOS Simulator,name=${{ matrix.iPhoneName }},OS=${{ matrix.iOSVersion }}' -enableCodeCoverage YES build test
+        if: startsWith(matrix.xcode,'/Applications/Xcode_14.3')
       - uses: sersoft-gmbh/swift-coverage-action@v3
+        if: startsWith(matrix.xcode,'/Applications/Xcode_14.3')
         with:
           fail-on-empty-output: true
       - name: Upload iOS coverage to Codecov
         uses: codecov/codecov-action@v3
+        if: startsWith(matrix.xcode,'/Applications/Xcode_14.3')
         with:
           fail_ci_if_error: true
           flags: iOS,iOS-${{ matrix.iOSVersion }}
           token: ${{ secrets.CODECOV_TOKEN }}
       - name: Run watchOS target tests
         run: xcodebuild build -scheme Prch-Package -sdk watchsimulator -destination 'platform=watchOS Simulator,name=${{ matrix.watchName }},OS=${{ matrix.watchOSVersion }}'
+        if: startsWith(matrix.xcode,'/Applications/Xcode_14.3')
       - uses: sersoft-gmbh/swift-coverage-action@v3
+        if: startsWith(matrix.xcode,'/Applications/Xcode_14.3')
         with:
           fail-on-empty-output: true
       - name: Upload watchOS coverage to Codecov
+        if: startsWith(matrix.xcode,'/Applications/Xcode_14.3')
         uses: codecov/codecov-action@v3
         with:
           fail_ci_if_error: true
