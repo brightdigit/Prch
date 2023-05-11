@@ -26,7 +26,7 @@ extension ServiceCall {
     with api: API
   ) -> any Encoder<DataType>
     where API: BaseAPI, API.RequestDataType == DataType {
-    if #available(macOS 13.0.0, iOS 16.0, *) {
+    if #available(macOS 13.0.0, iOS 16.0, watchOS 9.0, tvOS 16.0, *) {
       if let custom = self as? any CustomServiceEncoding<DataType> {
         return custom.encoder
       } else {
@@ -43,7 +43,7 @@ extension ServiceCall {
     with api: API
   ) -> any Decoder<DataType>
     where API: BaseAPI, API.ResponseDataType == DataType {
-    if #available(macOS 13.0.0, iOS 16.0, *) {
+    if #available(macOS 13.0.0, iOS 16.0, watchOS 9.0, tvOS 16.0, *) {
       if let custom = self as? any CustomServiceDecoding<DataType> {
         return custom.decoder
       } else {
