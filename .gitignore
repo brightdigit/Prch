@@ -61,8 +61,6 @@ xcuserdata/
 build/
 DerivedData/
 *.moved-aside
-
-# Xcode
 *.pbxuser
 !default.pbxuser
 *.mode1v3
@@ -85,12 +83,11 @@ timeline.xctimeline
 playground.xcworkspace
 
 # Swift Package Manager
-#
 # Add this line if you want to avoid checking in source code from Swift Package Manager dependencies.
 # Packages/
 # Package.pins
 # Package.resolved
-*.xcodeproj
+# *.xcodeproj
 # Xcode automatically generates this directory with a .xcworkspacedata file and xcuserdata
 # hence it is not needed unless you have added a package configuration file to your project
 .swiftpm
@@ -111,9 +108,9 @@ playground.xcworkspace
 
 Carthage/Build/
 
-# Accio dependency management
-Dependencies/
-.accio/
+# Add this lines if you are using Accio dependency management (Deprecated since Xcode 12)
+# Dependencies/
+# .accio/
 
 # fastlane
 # It is recommended to not store the screenshots in the git repo.
@@ -133,15 +130,20 @@ fastlane/test_output
 iOSInjectionProject/
 
 ### SwiftPackageManager ###
-Packages
+#Packages
 xcuserdata
 *.xcodeproj
 
 
 ### SwiftPM ###
+
+
 ### Xcode ###
 # Xcode
 # gitignore contributors: remember to update Global/Xcode.gitignore, Objective-C.gitignore & Swift.gitignore
+
+
+
 
 ## Gcc Patch
 /*.gcno
@@ -153,7 +155,20 @@ xcuserdata
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
 
-*.pxd/QuickLook
-# End of https://www.toptal.com/developers/gitignore/api/macos,swift,SwiftPackageManager,Xcode
+/Support/**/*.plist
+/Support/**/*.entitlements
+*.ipa
+*.zip
+*.pkg
+*.app
 
-*.pxd/QuickLook
+**/*.xcassets/**/*.png
+**/*.xcassets/**/*.pdf
+**/*.xcassets/**/*.svg
+
+.bundle
+vendor
+.mint
+# End of https://www.toptal.com/developers/gitignore/api/xcode,macos
+
+*.apns
