@@ -1,0 +1,19 @@
+included: # paths to include during linting. `--path` is ignored if present.
+- Sources
+excluded:
+- Sources/BushelUI/Welcome/PurchaseView.swift
+# Customize specific rules
+missing:
+  severity: error
+
+partial:
+  severity: warning
+
+unused:
+  severity: none
+
+missing_comment:
+  severity: warning
+  
+json_comment_rule:
+  severity: none
