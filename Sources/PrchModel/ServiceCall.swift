@@ -1,8 +1,8 @@
 import Foundation
 
 public protocol ServiceCall {
-  associatedtype SuccessType: ContentDecodable
-  associatedtype BodyType: ContentEncodable
+  associatedtype SuccessType: ContentDecodable = Empty
+  associatedtype BodyType: ContentEncodable = Empty
   associatedtype ServiceAPI
   var path: String { get }
   var parameters: [String: String] { get }
@@ -14,6 +14,14 @@ public protocol ServiceCall {
 }
 
 extension ServiceCall {
+  var parameters: [String: String] { [:] }
+
+  var method: RequestMethod { .GET }
+
+  var headers: [String: String] { [:] }
+
+  static var requiresCredentials: Bool { false }
+
   public func isValidStatusCode(
     _ statusCode: Int
   ) -> Bool {
