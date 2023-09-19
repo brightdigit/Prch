@@ -13,7 +13,7 @@ public protocol ServiceCall {
   func isValidStatusCode(_ statusCode: Int) -> Bool
 }
 
-extension ServiceCall {
+public extension ServiceCall {
   var parameters: [String: String] { [:] }
 
   var method: RequestMethod { .GET }
@@ -22,7 +22,7 @@ extension ServiceCall {
 
   static var requiresCredentials: Bool { false }
 
-  public func isValidStatusCode(
+  func isValidStatusCode(
     _ statusCode: Int
   ) -> Bool {
     statusCode / 100 == 2

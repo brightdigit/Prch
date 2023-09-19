@@ -1,7 +1,9 @@
 public struct Empty: ContentDecodable, ContentEncodable, Equatable {
   public static func decode<CoderType>(
     _: CoderType.DataType,
+    code: Int,
     using _: CoderType
+    
   ) throws where CoderType: Decoder {}
 
   public static var decodable: Void.Type {

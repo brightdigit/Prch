@@ -35,6 +35,7 @@ extension Service {
 
     return try request.resolveDecoder(with: api).decodeContent(
       RequestType.SuccessType.self,
+      code: response.statusCode,
       from: response.data
     )
   }
