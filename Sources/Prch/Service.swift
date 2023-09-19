@@ -16,6 +16,9 @@ public protocol Service<SessionType>: ServiceProtocol {
 }
 
 extension Service {
+  public var authorizationManager: any SessionAuthenticationManager {
+    NullAuthorizationManager()
+  }
   public func request<RequestType>(
     _ request: RequestType
   ) async throws -> RequestType.SuccessType.DecodableType
