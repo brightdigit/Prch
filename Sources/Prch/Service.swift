@@ -1,35 +1,45 @@
-public struct Service<ResponseType: Response> {
-  public let id: String
-  public let tag: String
-  public let method: String
-  public let path: String
-  public let hasBody: Bool
-  public let isUpload: Bool
-  public let securityRequirements: [SecurityRequirement]
+import Foundation
+import PrchModel
 
-  public init(id: String,
-              tag: String = "",
-              method: String,
-              path: String,
-              hasBody: Bool,
-              isUpload: Bool = false,
-              securityRequirements: [SecurityRequirement] = []) {
-    self.id = id
-    self.tag = tag
-    self.method = method
-    self.path = path
-    self.hasBody = hasBody
-    self.isUpload = isUpload
-    self.securityRequirements = securityRequirements
-  }
+#if canImport(FoundationNetworking)
+  import FoundationNetworking
+#endif
+
+public protocol Service<SessionType>: ServiceProtocol {
+  typealias SessionAuthenticationManager =
+    AuthorizationManager<SessionType.AuthorizationType>
+  associatedtype SessionType: Session
+    where SessionType.ResponseType.DataType == ServiceAPI.ResponseDataType
+  var authorizationManager: any SessionAuthenticationManager { get }
+  var session: SessionType { get }
+  var api: ServiceAPI { get }
 }
 
-extension Service: CustomStringConvertible {
-  public var name: String {
-    "\(tag.isEmpty ? "" : "\(tag).")\(id)"
+extension Service {
+  public var authorizationManager: any SessionAuthenticationManager {
+    NullAuthorizationManager()
   }
+  public func request<RequestType>(
+    _ request: RequestType
+  ) async throws -> RequestType.SuccessType.DecodableType
+    where RequestType: ServiceCall, RequestType.ServiceAPI == Self.ServiceAPI,
+    SessionType.RequestDataType == Self.ServiceAPI.RequestDataType {
+    let response = try await session.data(
+      request: request,
+      withBaseURL: api.baseURLComponents,
+      withHeaders: api.headers,
+      authorizationManager: authorizationManager,
+      usingEncoder: request.resolveEncoder(with: api)
+    )
 
-  public var description: String {
-    "\(name): \(method) \(path)"
+    guard request.isValidStatusCode(response.statusCode) else {
+      throw RequestError.invalidStatusCode(response.statusCode)
+    }
+
+    return try request.resolveDecoder(with: api).decodeContent(
+      RequestType.SuccessType.self,
+      code: response.statusCode,
+      from: response.data
+    )
   }
 }
