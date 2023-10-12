@@ -11,9 +11,10 @@ public protocol Decoder<DataType> {
 extension Decoder {
   public func decodeContent<CodableType: ContentDecodable>(
     _: CodableType.Type,
+    code: Int,
     from data: DataType
   )
     throws -> CodableType.DecodableType {
-    try CodableType.decode(data, using: self)
+      try CodableType.decode(data, code: code, using: self)
   }
 }

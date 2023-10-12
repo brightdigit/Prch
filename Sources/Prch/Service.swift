@@ -16,6 +16,9 @@ public protocol Service<SessionType>: ServiceProtocol {
 }
 
 extension Service {
+  public var authorizationManager: any SessionAuthenticationManager {
+    NullAuthorizationManager()
+  }
   public func request<RequestType>(
     _ request: RequestType
   ) async throws -> RequestType.SuccessType.DecodableType
@@ -35,6 +38,7 @@ extension Service {
 
     return try request.resolveDecoder(with: api).decodeContent(
       RequestType.SuccessType.self,
+      code: response.statusCode,
       from: response.data
     )
   }
